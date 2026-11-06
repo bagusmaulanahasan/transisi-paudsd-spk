@@ -145,6 +145,7 @@ Buka tiap PNG (atau tampilkan lewat tool `read` bila memakai agen AI) lalu jalan
 | `AUTH_COOKIE` | *(kosong)* | Nama cookie sesi Supabase; kosongkan untuk halaman publik |
 | `CLICK_TEXT` | *(kosong)* | Klik tombol pertama yang teksnya mengandung string ini (untuk modal/dropdown) |
 | `INJECT_CSS` | *(kosong)* | Path file CSS hasil build yang disuntikkan (mengatasi Tailwind stale) |
+| `MOCK_FILE` | *(kosong)* | Path file JSON untuk menimpa/menambah data contoh `MOCK` |
 | `CHROME_PATH` | otomatis | Path binary Chrome bila tidak terdeteksi |
 | `CHROME_PROFILE` | folder temp | Folder profil Chrome sementara |
 
@@ -257,7 +258,7 @@ const ORIGIN = new URL(APP_URL).origin;
 const PROFILE_DIR = process.env.CHROME_PROFILE || path.join(os.tmpdir(), 'design-shot-profile');
 
 // Data contoh: kunci = potongan URL request, nilai = body JSON balasan.
-const MOCK = {
+let MOCK = {
   '/rest/v1/profiles': { nama_lengkap: 'Tim Pendidik', email: 'demo@paud.sch.id' },
   '/rest/v1/kriteria': [
     { id: 1, inisial: 'C1', nama: 'Kematangan Kognitif & Literasi Dasar', jenis: 'benefit', urutan: 1 },
@@ -282,6 +283,11 @@ const MOCK = {
     { id: 3, kelas_id: 2, nis: '2026003', nama: 'Citra Dewi' }
   ]
 };
+
+// Timpa atau tambah data contoh dari file JSON bila MOCK_FILE diisi.
+if (process.env.MOCK_FILE && fs.existsSync(process.env.MOCK_FILE)) {
+  Object.assign(MOCK, JSON.parse(fs.readFileSync(process.env.MOCK_FILE, 'utf8')));
+}
 
 // ==================== UTILITAS ====================
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -491,6 +497,13 @@ if (CLICK_TEXT) {
   });
   await sleep(800);
 }
+
+// Melaporkan lebar dokumen untuk mendeteksi overflow horizontal pada layar kecil.
+const metrics = await page('Runtime.evaluate', {
+  expression: 'JSON.stringify({ scrollWidth: document.documentElement.scrollWidth, innerWidth: window.innerWidth })',
+  returnByValue: true
+});
+console.log('Lebar halaman:', metrics.result.value);
 
 // Mengambil tangkapan layar seluruh halaman lalu menyimpannya.
 const { data } = await page('Page.captureScreenshot', { format: 'png', captureBeyondViewport: true });

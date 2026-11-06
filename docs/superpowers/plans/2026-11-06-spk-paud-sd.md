@@ -130,10 +130,10 @@
 - Consumes: Bobot AHP, jawaban indikator anak, dan jenis kriteria (Benefit/Cost).
 - Produces: Total skor alternatif per kriteria ($X_{ij}$), matriks normalisasi, nilai $Y_i$, dan ranking.
 
-- [ ] **Step 1: Buat fungsi perhitungan MOORA di `src/lib/moora.js`**
-- [ ] **Step 2: Buat halaman pengisian penilaian anak `src/routes/penilaian/+page.svelte` (validasi kelengkapan jawaban indikator)**
-- [ ] **Step 3: Integrasikan tombol "Lakukan Penilaian" dan pembaruan otomatis saat ada perubahan jawaban atau penambahan anak**
-- [ ] **Step 4: Commit modul penilaian dan MOORA**
+- [x] **Step 1: Buat fungsi perhitungan MOORA di `src/lib/moora.js`**
+- [x] **Step 2: Buat halaman pengisian penilaian anak `src/routes/penilaian/+page.svelte` (validasi kelengkapan jawaban indikator)**
+- [x] **Step 3: Integrasikan tombol "Lakukan Penilaian" dan pembaruan otomatis saat ada perubahan jawaban atau penambahan anak**
+- [x] **Step 4: Commit modul penilaian dan MOORA**
 
 ---
 
