@@ -63,8 +63,8 @@
 - Consumes: Daftar kriteria dengan jenis (Benefit/Cost) dan nilai matriks perbandingan berpasangan.
 - Produces: Bobot prioritas kriteria ($w_j$), Consistency Index (CI), dan Consistency Ratio (CR).
 
-- [ ] **Step 1: Buat fungsi perhitungan AHP di `src/lib/ahp.js` (normalisasi matriks, bobot eigen, CI, CR)**
-- [ ] **Step 2: Buat halaman CRUD kriteria `src/routes/kriteria/+page.svelte` dengan inisial otomatis C1, C2, dll.**
+- [x] **Step 1: Buat fungsi perhitungan AHP di `src/lib/ahp.js` (normalisasi matriks, bobot eigen, CI, CR)**
+- [x] **Step 2: Buat halaman CRUD kriteria `src/routes/kriteria/+page.svelte` dengan inisial otomatis C1, C2, dll.**
 - [ ] **Step 3: Tambahkan modul input matriks perbandingan AHP dan validasi CR ≤ 0,10**
 - [ ] **Step 4: Commit fitur kriteria & AHP**
 
