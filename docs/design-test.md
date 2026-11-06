@@ -185,8 +185,8 @@ const MOCK = {
 
 Catatan penting:
 
-- **Array** untuk query daftar (`select()`), **objek tunggal** untuk query `.single()` (contoh: `profiles`).
-- Supabase mengirim header `Accept: application/vnd.pgrst.object+json` untuk `.single()`; cukup balas objek, bukan array.
+- **Array** untuk query daftar (`select()`), **objek tunggal** untuk query `.single()` (contoh: `profiles`, detail kelas).
+- Skrip otomatis mengubah array menjadi objek pertama bila request memakai `.single()` (header `Accept: application/vnd.pgrst.object+json`), jadi Anda cukup menulis datanya sebagai array.
 - Bila halaman memakai filter (`.eq()`, `.is()`), skrip ini **tidak** menyaring data — mock mengembalikan semua baris. Untuk menguji state kosong, isi `[]`.
 
 ---
@@ -271,6 +271,15 @@ const MOCK = {
     { id: 1, indikator_id: null, opsi: 'Belum Berkembang', keterangan: 'Belum menunjukkan perkembangan', poin: 1 },
     { id: 2, indikator_id: null, opsi: 'Sedang Berkembang', keterangan: 'Mulai menunjukkan dengan bantuan', poin: 2 },
     { id: 3, indikator_id: null, opsi: 'Sesuai Harapan', keterangan: 'Sesuai tahapan usianya', poin: 3 }
+  ],
+  '/rest/v1/kelas': [
+    { id: 1, nama_kelas: 'Kelas A', tahun_ajaran: '2026/2027' },
+    { id: 2, nama_kelas: 'Kelas B', tahun_ajaran: '2026/2027' }
+  ],
+  '/rest/v1/anak': [
+    { id: 1, kelas_id: 1, nis: '2026001', nama: 'Aisyah Putri' },
+    { id: 2, kelas_id: 1, nis: null, nama: 'Bima Saputra' },
+    { id: 3, kelas_id: 2, nis: '2026003', nama: 'Citra Dewi' }
   ]
 };
 
@@ -436,6 +445,14 @@ handlers.push(async (msg) => {
         break;
       }
     }
+
+    // Query .single() meminta satu objek (Accept: application/vnd.pgrst.object+json),
+    // jadi array contoh otomatis diubah menjadi objek pertama.
+    const accept = request.headers.accept || request.headers.Accept || '';
+    if (accept.includes('vnd.pgrst.object') && Array.isArray(payload)) {
+      payload = payload[0] ?? null;
+    }
+
     await page('Fetch.fulfillRequest', {
       requestId,
       responseCode: 200,

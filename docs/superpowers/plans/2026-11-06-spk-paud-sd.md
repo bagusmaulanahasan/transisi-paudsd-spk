@@ -106,15 +106,16 @@
 **Files:**
 
 - Create: `src/routes/kelas/+page.svelte`, `src/routes/kelas/[id]/+page.svelte`
+- Create: `src/lib/anak.js`, `src/lib/anak.test.js`
 
 **Interfaces:**
 
 - Consumes: Data kelas (nama, tahun ajaran) dan data anak (NIS, nama, kelas_id).
 - Produces: Manajemen kelas dan daftar anak per kelas.
 
-- [ ] **Step 1: Buat halaman CRUD Kelas dalam bentuk tabel `src/routes/kelas/+page.svelte`**
-- [ ] **Step 2: Buat halaman detail kelas & CRUD Data Anak `src/routes/kelas/[id]/+page.svelte` dengan validasi NIS unik**
-- [ ] **Step 3: Commit modul kelas dan anak**
+- [x] **Step 1: Buat halaman CRUD Kelas dalam bentuk tabel `src/routes/kelas/+page.svelte`**
+- [x] **Step 2: Buat halaman detail kelas & CRUD Data Anak `src/routes/kelas/[id]/+page.svelte` dengan validasi NIS unik**
+- [x] **Step 3: Commit modul kelas dan anak**
 
 ---
 
