@@ -32,9 +32,9 @@
 - Consumes: Supabase client dari `src/lib/supabase.js`.
 - Produces: Helper IndexedDB untuk penyimpanan lokal dan antrean sinkronisasi (`sync_queue`).
 
-- [ ] **Step 1: Periksa dan verifikasi `src/lib/supabase.js` yang sudah ada**
-- [ ] **Step 2: Buat helper IndexedDB `src/lib/db.js` untuk cache data dan `sync_queue`**
-- [ ] **Step 3: Commit perubahan awal**
+- [x] **Step 1: Periksa dan verifikasi `src/lib/supabase.js` yang sudah ada**
+- [x] **Step 2: Buat helper IndexedDB `src/lib/db.js` untuk cache data dan `sync_queue`**
+- [x] **Step 3: Commit perubahan awal**
 
 ---
 
@@ -47,10 +47,10 @@
 - Consumes: Supabase Auth (`supabase.auth.signInWithPassword`, `supabase.auth.signOut`).
 - Produces: Halaman login, validasi sesi aktif, dan proteksi akses dashboard/menu utama (wajib login).
 
-- [ ] **Step 1: Buat halaman login `src/routes/login/+page.svelte` dengan validasi email dan password**
-- [ ] **Step 2: Konfigurasi layout utama `src/routes/+layout.svelte` dengan styling Tailwind, status indikator online/offline, dan tombol logout**
-- [ ] **Step 3: Tambahkan pemeriksaan sesi auth agar pengguna wajib login sebelum mengakses fitur aplikasi**
-- [ ] **Step 4: Commit modul autentikasi**
+- [x] **Step 1: Buat halaman login `src/routes/login/+page.svelte` dengan validasi email dan password**
+- [x] **Step 2: Konfigurasi layout utama `src/routes/+layout.svelte` dengan styling Tailwind, status indikator online/offline, dan tombol logout**
+- [x] **Step 3: Tambahkan pemeriksaan sesi auth agar pengguna wajib login sebelum mengakses fitur aplikasi**
+- [x] **Step 4: Commit modul autentikasi**
 
 ---
 
