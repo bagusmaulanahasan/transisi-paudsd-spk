@@ -4,77 +4,65 @@
 
 // Random Index (RI) standar untuk ukuran matriks 1 sampai 10
 const RANDOM_INDEX = {
-  1: 0.00,
-  2: 0.00,
+  1: 0.0,
+  2: 0.0,
   3: 0.58,
-  4: 0.90,
+  4: 0.9,
   5: 1.12,
   6: 1.24,
   7: 1.32,
   8: 1.41,
   9: 1.45,
-  10: 1.49
+  10: 1.49,
 };
 
 /**
  * Menghitung bobot prioritas kriteria, Consistency Index (CI), dan Consistency Ratio (CR) dari matriks perbandingan berpasangan.
- * @param {number[][} matrix - Matriks perbandingan berpasangan ukuran n x n
+ * Setiap nilai hasil perhitungan dibulatkan menjadi 3 angka di belakang koma (parseFloat(val.toFixed(3))).
+ * @param {number[][]} matrix - Matriks perbandingan berpasangan ukuran n x n
  * @returns {Object} { weights: number[], lambdaMax: number, ci: number, cr: number, isConsistent: boolean }
  */
 export function calculateAHP(matrix) {
   const n = matrix.length;
-  if (n === 0) return { weights: [], lambdaMax: 0, ci: 0, cr: 0, isConsistent: false };
-  if (n === 1) return { weights: [1.0], lambdaMax: 1, ci: 0, cr: 0, isConsistent: true };
+  if (n === 0)
+    return { weights: [], lambdaMax: 0, ci: 0, cr: 0, isConsistent: false };
+  if (n === 1)
+    return { weights: [1], lambdaMax: 1, ci: 0, cr: 0, isConsistent: true };
 
-  // 1. Hitung jumlah setiap kolom
+  const round3 = (v) => parseFloat(v.toFixed(3));
+
+  // 1. Jumlah tiap kolom
   const colSums = new Array(n).fill(0);
-  for (let j = 0; j < n; j++) {
-    for (let i = 0; i < n; i++) {
-      colSums[j] += matrix[i][j];
-    }
-  }
+  for (let j = 0; j < n; j++)
+    for (let i = 0; i < n; i++) colSums[j] += matrix[i][j];
 
-  // 2. Normalisasi matriks perbandingan berpasangan & hitung bobot prioritas (rata-rata baris)
-  const normalizedMatrix = [];
-  const weights = new Array(n).fill(0);
-
+  // 2. Normalisasi dan bobot (rata-rata baris), presisi penuh
+  const w = new Array(n).fill(0);
   for (let i = 0; i < n; i++) {
-    normalizedMatrix[i] = [];
     let rowSum = 0;
-    for (let j = 0; j < n; j++) {
-      const val = colSums[j] !== 0 ? matrix[i][j] / colSums[j] : 0;
-      normalizedMatrix[i][j] = val;
-      rowSum += val;
-    }
-    weights[i] = rowSum / n;
+    for (let j = 0; j < n; j++) rowSum += matrix[i][j] / colSums[j];
+    w[i] = rowSum / n;
   }
 
-  // 3. Hitung lambda max (λ_max)
+  // 3. λmax = rata-rata dari (A·w)_i / w_i   <-- diperbaiki: jumlah per BARIS
   let lambdaMax = 0;
-  for (let j = 0; j < n; j++) {
-    let weightedSumCol = 0;
-    for (let i = 0; i < n; i++) {
-      weightedSumCol += matrix[i][j] * weights[i];
-    }
-    lambdaMax += weightedSumCol / (weights[j] !== 0 ? weights[j] : 1);
+  for (let i = 0; i < n; i++) {
+    let aw = 0;
+    for (let j = 0; j < n; j++) aw += matrix[i][j] * w[j];
+    lambdaMax += aw / w[i];
   }
-  lambdaMax = lambdaMax / n;
+  lambdaMax /= n;
 
-  // 4. Hitung Consistency Index (CI)
-  const ci = (lambdaMax - n) / (n - 1 > 0 ? n - 1 : 1);
-
-  // 5. Hitung Consistency Ratio (CR)
-  const ri = RANDOM_INDEX[n] || 1.49;
-  const cr = ri !== 0 ? ci / ri : 0;
-
-  // Batas konsistensi CR <= 0.10
-  const isConsistent = cr <= 0.10;
+  // 4-5. CI dan CR
+  const ci = (lambdaMax - n) / (n - 1);
+  const ri = RANDOM_INDEX[n];
+  const cr = ri ? ci / ri : 0;
 
   return {
-    weights,
-    lambdaMax,
-    ci,
-    cr,
-    isConsistent
+    weights: w.map(round3),
+    lambdaMax: round3(lambdaMax),
+    ci: round3(ci),
+    cr: round3(cr),
+    isConsistent: cr <= 0.1,
   };
 }

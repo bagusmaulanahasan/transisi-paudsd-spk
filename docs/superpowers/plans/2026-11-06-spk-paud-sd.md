@@ -65,8 +65,8 @@
 
 - [x] **Step 1: Buat fungsi perhitungan AHP di `src/lib/ahp.js` (normalisasi matriks, bobot eigen, CI, CR)**
 - [x] **Step 2: Buat halaman CRUD kriteria `src/routes/kriteria/+page.svelte` dengan inisial otomatis C1, C2, dll.**
-- [ ] **Step 3: Tambahkan modul input matriks perbandingan AHP dan validasi CR ≤ 0,10**
-- [ ] **Step 4: Commit fitur kriteria & AHP**
+- [x] **Step 3: Tambahkan modul input matriks perbandingan AHP dan validasi CR ≤ 0,10**
+- [x] **Step 4: Commit fitur kriteria & AHP**
 
 ---
 
