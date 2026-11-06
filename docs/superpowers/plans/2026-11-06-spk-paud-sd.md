@@ -11,12 +11,14 @@
 **Spec:** `docs/prd.md`
 
 ## Global Constraints
+
 - Gunakan JavaScript murni, bukan TypeScript.
 - Pendekatan mobile-first; tabel responsif dengan scroll horizontal.
 - Inisial kriteria otomatis (C1, C2, dst.) dan poin opsi jawaban otomatis (1, 2, dst.).
 - Nilai $Y_i$ MOORA tidak dikategorikan (cukup nilai dan ranking).
 
 ## Review Focus
+
 - Validasi Consistency Ratio (CR) AHP harus ≤ 0,10 sebelum bobot dapat digunakan.
 - Validasi kelengkapan jawaban indikator sebelum perhitungan MOORA dilakukan.
 - Penanganan sinkronisasi offline ke Supabase via antrean IndexedDB.
@@ -24,11 +26,14 @@
 ---
 
 ### Task 1: Inisialisasi Proyek, Konfigurasi Tailwind & IndexedDB Helper
+
 **Files:**
+
 - Create: `src/lib/db.js` (IndexedDB helper)
 - Modify: `tailwind.config.js`
 
 **Interfaces:**
+
 - Consumes: Supabase client dari `src/lib/supabase.js`.
 - Produces: Helper IndexedDB untuk penyimpanan lokal dan antrean sinkronisasi (`sync_queue`).
 
@@ -39,11 +44,14 @@
 ---
 
 ### Task 2: Modul Autentikasi (Login & Proteksi Route)
+
 **Files:**
+
 - Create: `src/routes/login/+page.svelte`
 - Modify: `src/routes/+layout.svelte`, `src/routes/+layout.js` (atau hook proteksi session)
 
 **Interfaces:**
+
 - Consumes: Supabase Auth (`supabase.auth.signInWithPassword`, `supabase.auth.signOut`).
 - Produces: Halaman login, validasi sesi aktif, dan proteksi akses dashboard/menu utama (wajib login).
 
@@ -55,11 +63,14 @@
 ---
 
 ### Task 3: Modul Kelola Kriteria & Perbandingan AHP
+
 **Files:**
+
 - Create: `src/routes/kriteria/+page.svelte`, `src/lib/ahp.js`
 - Test: `src/lib/ahp.test.js` (atau test manual via konsol/halaman uji)
 
 **Interfaces:**
+
 - Consumes: Daftar kriteria dengan jenis (Benefit/Cost) dan nilai matriks perbandingan berpasangan.
 - Produces: Bobot prioritas kriteria ($w_j$), Consistency Index (CI), dan Consistency Ratio (CR).
 
@@ -71,25 +82,33 @@
 ---
 
 ### Task 4: Modul Kelola Indikator Pertanyaan & Opsi Jawaban
+
 **Files:**
+
 - Create: `src/routes/indikator/+page.svelte`
+- Create: `src/lib/opsi.js`, `src/lib/opsi.test.js`
+- Create: `docs/design-test.md` (panduan test design universal)
 - Modify: `src/routes/kriteria/+page.svelte` (jika diperlukan relasi)
 
 **Interfaces:**
+
 - Consumes: Kriteria ID dan data opsi jawaban.
 - Produces: CRUD Indikator pertanyaan dan opsi jawaban dengan poin otomatis (1, 2, 3, dst.).
 
-- [ ] **Step 1: Buat halaman pengelolaan indikator dan opsi jawaban `src/routes/indikator/+page.svelte`**
-- [ ] **Step 2: Terapkan aturan poin otomatis (1, 2, 3, ...) pada opsi jawaban yang tidak dapat diubah manual**
-- [ ] **Step 3: Commit modul indikator & opsi jawaban**
+- [x] **Step 1: Buat halaman pengelolaan indikator dan opsi jawaban `src/routes/indikator/+page.svelte`**
+- [x] **Step 2: Terapkan aturan poin otomatis (1, 2, 3, ...) pada opsi poin jawaban yang tidak dapat diubah manual**
+- [x] **Step 3: Commit modul indikator & opsi jawaban**
 
 ---
 
 ### Task 5: Modul Kelola Kelas dan Data Anak (Alternatif)
+
 **Files:**
+
 - Create: `src/routes/kelas/+page.svelte`, `src/routes/kelas/[id]/+page.svelte`
 
 **Interfaces:**
+
 - Consumes: Data kelas (nama, tahun ajaran) dan data anak (NIS, nama, kelas_id).
 - Produces: Manajemen kelas dan daftar anak per kelas.
 
@@ -100,10 +119,13 @@
 ---
 
 ### Task 6: Modul Penilaian Anak & Algoritma MOORA
+
 **Files:**
+
 - Create: `src/routes/penilaian/+page.svelte`, `src/lib/moora.js`
 
 **Interfaces:**
+
 - Consumes: Bobot AHP, jawaban indikator anak, dan jenis kriteria (Benefit/Cost).
 - Produces: Total skor alternatif per kriteria ($X_{ij}$), matriks normalisasi, nilai $Y_i$, dan ranking.
 
@@ -115,11 +137,14 @@
 ---
 
 ### Task 7: Modul Laporan Penilaian Read-Only & PWA Support
+
 **Files:**
+
 - Create: `src/routes/laporan/+page.svelte`
 - Modify: `static/manifest.json`, Service Worker registration
 
 **Interfaces:**
+
 - Consumes: Data kriteria, matriks AHP, bobot, matriks keputusan, normalisasi, nilai $Y_i$, dan ranking.
 - Produces: Haporan transparan read-only dan dukungan PWA offline-first.
 
