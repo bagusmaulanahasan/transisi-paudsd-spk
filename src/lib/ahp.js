@@ -66,3 +66,64 @@ export function calculateAHP(matrix) {
     isConsistent: cr <= 0.1,
   };
 }
+
+/**
+ * Menyusun matriks perbandingan berpasangan n x n dari data kriteria dan baris tabel perbandingan_ahp.
+ * Nilai yang tidak tersedia dianggap 1 (sama penting).
+ * @param {Array} kriteriaList - Daftar kriteria terurut.
+ * @param {Array} perbandinganList - Baris tabel perbandingan_ahp.
+ * @returns {number[][]} Matriks perbandingan ukuran n x n.
+ */
+export function susunMatriksPerbandingan(kriteriaList, perbandinganList) {
+  const n = kriteriaList.length;
+  const matrix = Array.from({ length: n }, () => Array(n).fill(1));
+
+  for (const item of perbandinganList) {
+    const i = kriteriaList.findIndex((kriteria) => kriteria.id === item.kriteria_1_id);
+    const j = kriteriaList.findIndex((kriteria) => kriteria.id === item.kriteria_2_id);
+    if (i !== -1 && j !== -1) matrix[i][j] = parseFloat(item.nilai);
+  }
+
+  return matrix;
+}
+
+/**
+ * Menghitung bobot AHP dari data kriteria dan baris perbandingan.
+ * Mengembalikan pesan yang bisa langsung ditampilkan bila bobot belum siap dipakai.
+ * @param {Array} kriteriaList - Daftar kriteria terurut.
+ * @param {Array} perbandinganList - Baris tabel perbandingan_ahp.
+ * @returns {{ bobot: number[], ahpSiap: boolean, pesan: string }}
+ */
+export function hitungBobotAhp(kriteriaList, perbandinganList) {
+  const n = kriteriaList.length;
+
+  if (n === 0) {
+    return {
+      bobot: [],
+      ahpSiap: false,
+      pesan: 'Belum ada kriteria penilaian. Tambahkan kriteria terlebih dahulu.'
+    };
+  }
+
+  if (n === 1) {
+    return { bobot: [1], ahpSiap: true, pesan: '' };
+  }
+
+  if (perbandinganList.length === 0) {
+    return {
+      bobot: [],
+      ahpSiap: false,
+      pesan: 'Bobot AHP belum diatur. Isi matriks perbandingan berpasangan terlebih dahulu.'
+    };
+  }
+
+  const hasil = calculateAHP(susunMatriksPerbandingan(kriteriaList, perbandinganList));
+
+  return {
+    bobot: hasil.weights,
+    ahpSiap: hasil.isConsistent,
+    pesan: hasil.isConsistent
+      ? ''
+      : `Matriks AHP belum konsisten (CR = ${hasil.cr.toFixed(3)}, batas 0.100). Perbaiki perbandingan agar bobot dapat dipakai.`
+  };
+}
