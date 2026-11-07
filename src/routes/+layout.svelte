@@ -86,7 +86,7 @@
 {:else if isLoginPage}
   <slot />
 {:else}
-  <div class="min-h-screen bg-slate-50 flex flex-col md:flex-row relative">
+  <div class="h-screen bg-slate-50 flex flex-col md:flex-row overflow-hidden relative">
     
     <!-- Mobile Header with Hamburger & Profile -->
     <header class="md:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 z-30 shrink-0">
@@ -148,7 +148,7 @@
 
     <!-- Sidebar / Sidenav (Desktop & Mobile Drawer) -->
     <aside class={`
-      fixed md:static inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-in-out
+      fixed md:static inset-y-0 left-0 z-50 w-72 h-full bg-white border-r border-slate-200 flex flex-col transition-transform duration-300 ease-in-out shrink-0
       ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
     `}>
       <div class="p-6 border-b border-slate-100 hidden md:flex items-center justify-between">
@@ -225,7 +225,7 @@
     </aside>
 
     <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col min-w-0">
+    <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
       <!-- Desktop Header with Profile Dropdown -->
       <header class="hidden md:flex h-16 bg-white border-b border-slate-200 items-center justify-between px-8 shrink-0">
         <div class="text-sm font-semibold text-slate-800 flex items-center space-x-2">
