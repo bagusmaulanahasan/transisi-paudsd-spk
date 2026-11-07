@@ -1,6 +1,7 @@
 <script>
   import { supabase } from '$lib/supabase';
   import { hitungBobotAhp } from '$lib/ahp';
+  import { cachedFetch, peekMemoryCache } from '$lib/cache';
   import { onMount } from 'svelte';
   import { 
     LayoutDashboard, 
@@ -14,19 +15,30 @@
     Loader2
   } from 'lucide-svelte';
 
-  let loading = true;
+  const CACHE_DASHBOARD = 'dashboard';
+
+  // Data dari memori cache langsung dipakai agar halaman tampil tanpa loading saat dibuka ulang.
+  const dataAwal = peekMemoryCache(CACHE_DASHBOARD);
+
+  let loading = dataAwal === null;
   let totalKelas = 0;
   let totalAnak = 0;
   let statusAhp = 'Memuat...';
   let ahpWarna = 'text-slate-600 bg-slate-50';
   let kelasList = [];
 
+  if (dataAwal) terapkanDashboard(dataAwal);
+
   onMount(async () => {
-    await fetchDashboardData();
+    const data = await cachedFetch(CACHE_DASHBOARD, ambilDashboard, terapkanDashboard);
+    if (data) terapkanDashboard(data);
     loading = false;
   });
 
-  async function fetchDashboardData() {
+  /**
+   * Mengambil seluruh data yang dibutuhkan dashboard dalam satu permintaan paralel.
+   */
+  async function ambilDashboard() {
     const [kelasRes, anakRes, kriteriaRes, ahpRes, hasilRes] = await Promise.all([
       supabase.from('kelas').select('*').order('nama_kelas', { ascending: true }),
       supabase.from('anak').select('id, kelas_id'),
@@ -35,17 +47,30 @@
       supabase.from('hasil_perhitungan').select('kelas_id')
     ]);
 
-    const kelasData = kelasRes.data || [];
-    const anakData = anakRes.data || [];
-    const kriteriaData = kriteriaRes.data || [];
-    const ahpData = ahpRes.data || [];
-    const hasilData = hasilRes.data || [];
+    if (kelasRes.error) throw kelasRes.error;
+    if (anakRes.error) throw anakRes.error;
+    if (kriteriaRes.error) throw kriteriaRes.error;
+    if (ahpRes.error) throw ahpRes.error;
+    if (hasilRes.error) throw hasilRes.error;
 
-    totalKelas = kelasData.length;
-    totalAnak = anakData.length;
+    return {
+      kelas: kelasRes.data || [],
+      anak: anakRes.data || [],
+      kriteria: kriteriaRes.data || [],
+      ahp: ahpRes.data || [],
+      hasil: hasilRes.data || []
+    };
+  }
 
-    // Hitung status AHP
-    const ahpCheck = hitungBobotAhp(kriteriaData, ahpData);
+  /**
+   * Mengolah data mentah menjadi angka statistik dan daftar kelas siap tampil.
+   * @param {Object} data - Hasil dari ambilDashboard().
+   */
+  function terapkanDashboard(data) {
+    totalKelas = data.kelas.length;
+    totalAnak = data.anak.length;
+
+    const ahpCheck = hitungBobotAhp(data.kriteria, data.ahp);
     if (ahpCheck.ahpSiap) {
       statusAhp = 'Konsisten (CR ≤ 0.10)';
       ahpWarna = 'text-emerald-600 bg-emerald-50';
@@ -54,11 +79,10 @@
       ahpWarna = 'text-amber-600 bg-amber-50';
     }
 
-    // Set kelas dengan jumlah anak dan status penilaian
-    const kelasSudahDinilai = new Set(hasilData.map(h => h.kelas_id));
+    const kelasSudahDinilai = new Set(data.hasil.map((baris) => baris.kelas_id));
 
-    kelasList = kelasData.map((kelas) => {
-      const jumlahAnak = anakData.filter(a => a.kelas_id === kelas.id).length;
+    kelasList = data.kelas.map((kelas) => {
+      const jumlahAnak = data.anak.filter((anak) => anak.kelas_id === kelas.id).length;
       const sudahDinilai = kelasSudahDinilai.has(kelas.id);
 
       return {

@@ -4,6 +4,7 @@
   import { hitungBobotAhp } from '$lib/ahp';
   import { hitungMoora } from '$lib/moora';
   import { simpanHasilPerhitungan } from '$lib/hasil';
+  import { cachedFetch, peekMemoryCache, mutateCache, invalidateCache } from '$lib/cache';
   import { onMount } from 'svelte';
   import {
     ArrowLeft,
@@ -21,19 +22,23 @@
 
   // ID anak diambil dari URL, misalnya /penilaian/12.
   const anakId = Number($page.params.anakId);
+  const CACHE_KEY = 'penilaian:detail:' + anakId;
+
+  // Data cache dipakai lebih dulu agar halaman tampil seketika saat dibuka ulang.
+  const dataAwal = peekMemoryCache(CACHE_KEY);
 
   // ==================== DATA ====================
-  let anak = null;
-  let kelas = null;
-  let anakList = [];
-  let jawabanList = [];
-  let kriteriaList = [];
-  let indikatorList = [];
-  let opsiList = [];
-  let perbandinganList = [];
+  let anak = dataAwal?.anak ?? null;
+  let kelas = dataAwal?.kelas ?? null;
+  let anakList = dataAwal?.anakList ?? [];
+  let jawabanList = dataAwal?.jawaban ?? [];
+  let kriteriaList = dataAwal?.kriteria ?? [];
+  let indikatorList = dataAwal?.indikator ?? [];
+  let opsiList = dataAwal?.opsi ?? [];
+  let perbandinganList = dataAwal?.perbandingan ?? [];
 
   // ==================== STATUS ====================
-  let loading = true;
+  let loading = dataAwal === null;
   let notFound = false;
   let modeEdit = false;
   let menyimpan = null;
@@ -44,67 +49,91 @@
   let statusSimpanHasil = '';
   let waktuPerhitungan = null;
 
+  if (dataAwal) terapkanData(dataAwal);
+
   onMount(async () => {
-    await fetchData();
+    const data = await cachedFetch(CACHE_KEY, ambilData, (dataBaru) => {
+      // Jangan timpa pilihan pengguna saat sedang mode edit.
+      if (!modeEdit) terapkanData(dataBaru);
+    });
+
+    if (data && data !== dataAwal) terapkanData(data);
+    else if (!data && !anak) notFound = true;
+
     loading = false;
   });
 
   /**
    * Mengambil data anak, kelas, master penilaian, dan jawaban seluruh anak sekelas.
    */
-  async function fetchData() {
+  async function ambilData() {
     const { data: anakData, error: anakError } = await supabase
       .from('anak')
       .select('*')
       .eq('id', anakId)
       .single();
 
-    if (anakError || !anakData) {
-      console.error('Error fetching anak:', anakError);
-      notFound = true;
-      return;
-    }
+    if (anakError) throw anakError;
+    if (!anakData) return { anak: null };
 
-    anak = anakData;
-
-    const { data: kelasData, error: kelasError } = await supabase
-      .from('kelas')
-      .select('*')
-      .eq('id', anak.kelas_id)
-      .single();
-
-    if (kelasError) console.error('Error fetching kelas:', kelasError);
-    kelas = kelasData;
-
-    const [kriteriaRes, indikatorRes, opsiRes, ahpRes, anakRes] = await Promise.all([
+    const [kelasRes, kriteriaRes, indikatorRes, opsiRes, ahpRes, anakRes] = await Promise.all([
+      supabase.from('kelas').select('*').eq('id', anakData.kelas_id).single(),
       supabase.from('kriteria').select('*').order('urutan', { ascending: true }),
       supabase.from('indikator').select('*').order('id', { ascending: true }),
       supabase.from('opsi_jawaban').select('*').is('indikator_id', null).order('poin', { ascending: true }),
       supabase.from('perbandingan_ahp').select('*'),
-      supabase.from('anak').select('*').eq('kelas_id', anak.kelas_id).order('nama', { ascending: true })
+      supabase.from('anak').select('*').eq('kelas_id', anakData.kelas_id).order('nama', { ascending: true })
     ]);
 
-    if (kriteriaRes.error) console.error('Error fetching kriteria:', kriteriaRes.error);
-    if (indikatorRes.error) console.error('Error fetching indikator:', indikatorRes.error);
-    if (opsiRes.error) console.error('Error fetching opsi:', opsiRes.error);
-    if (ahpRes.error) console.error('Error fetching AHP:', ahpRes.error);
-    if (anakRes.error) console.error('Error fetching anak sekelas:', anakRes.error);
+    if (kelasRes.error) throw kelasRes.error;
+    if (kriteriaRes.error) throw kriteriaRes.error;
+    if (indikatorRes.error) throw indikatorRes.error;
+    if (opsiRes.error) throw opsiRes.error;
+    if (ahpRes.error) throw ahpRes.error;
+    if (anakRes.error) throw anakRes.error;
 
-    kriteriaList = kriteriaRes.data || [];
-    indikatorList = indikatorRes.data || [];
-    opsiList = opsiRes.data || [];
-    perbandinganList = ahpRes.data || [];
-    anakList = anakRes.data?.length ? anakRes.data : [anak];
+    const daftarAnak = anakRes.data?.length ? anakRes.data : [anakData];
+    const anakIds = daftarAnak.map((item) => item.id);
 
-    const anakIds = anakList.map((item) => item.id);
     const { data: jawabanData, error: jawabanError } = await supabase
       .from('detail_penilaian')
       .select('*')
       .in('anak_id', anakIds);
 
-    if (jawabanError) console.error('Error fetching jawaban:', jawabanError);
-    jawabanList = jawabanData || [];
+    if (jawabanError) throw jawabanError;
 
+    return {
+      anak: anakData,
+      kelas: kelasRes.data,
+      kriteria: kriteriaRes.data || [],
+      indikator: indikatorRes.data || [],
+      opsi: opsiRes.data || [],
+      perbandingan: ahpRes.data || [],
+      anakList: daftarAnak,
+      jawaban: jawabanData || []
+    };
+  }
+
+  /**
+   * Menyimpan seluruh data hasil pengambilan ke state halaman.
+   * @param {Object} data - Hasil dari ambilData().
+   */
+  function terapkanData(data) {
+    if (!data.anak) {
+      notFound = true;
+      anak = null;
+      return;
+    }
+
+    notFound = false;
+    anak = data.anak;
+    kelas = data.kelas;
+    kriteriaList = data.kriteria;
+    indikatorList = data.indikator;
+    opsiList = data.opsi;
+    perbandinganList = data.perbandingan;
+    anakList = data.anakList;
+    jawabanList = data.jawaban;
     hitungUlang();
   }
 
@@ -183,6 +212,21 @@
     } else {
       jawabanList = [...jawabanList, payload];
     }
+
+    // Perbarui cache halaman detail dan daftar tanpa menghapusnya agar navigasi tetap instan.
+    mutateCache(CACHE_KEY, (lama) => ({ ...lama, jawaban: jawabanList }));
+    mutateCache('penilaian:kelas:' + anak.kelas_id, (lama) => ({
+      ...lama,
+      jawaban: [
+        ...lama.jawaban.filter(
+          (jawaban) => !(jawaban.anak_id === anak.id && jawaban.indikator_id === indikator.id)
+        ),
+        payload
+      ]
+    }));
+
+    // Status penilaian di dashboard berubah, jadi cache dashboard dibuang.
+    invalidateCache('dashboard');
 
     menyimpan = null;
     hitungUlang();

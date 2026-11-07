@@ -3,6 +3,7 @@
   import { hitungBobotAhp } from '$lib/ahp';
   import { hitungMoora } from '$lib/moora';
   import { simpanHasilPerhitungan } from '$lib/hasil';
+  import { cachedFetch, peekMemoryCache } from '$lib/cache';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
@@ -16,20 +17,32 @@
     Eye
   } from 'lucide-svelte';
 
+  // Data master dari cache memori dipakai lebih dulu agar tabel tampil seketika.
+  const kelasAwal = peekMemoryCache('master:kelas');
+  const kriteriaAwal = peekMemoryCache('master:kriteria');
+  const indikatorAwal = peekMemoryCache('master:indikator');
+  const ahpAwal = peekMemoryCache('master:ahp');
+
   // ==================== DATA MASTER ====================
-  let kelasList = [];
-  let kriteriaList = [];
-  let indikatorList = [];
-  let perbandinganList = [];
+  let kelasList = kelasAwal || [];
+  let kriteriaList = kriteriaAwal || [];
+  let indikatorList = indikatorAwal || [];
+  let perbandinganList = ahpAwal || [];
 
   // ==================== PILIHAN KELAS ====================
-  let selectedKelasId = null;
-  let anakList = [];
-  let jawabanList = [];
+  let selectedKelasId = pilihKelas(kelasAwal || []);
+
+  // Anak & jawaban dari cache memori dipakai langsung agar tabel tidak berkedip saat dibuka ulang.
+  const kelasDataAwal = selectedKelasId
+    ? peekMemoryCache('penilaian:kelas:' + selectedKelasId)
+    : null;
+
+  let anakList = kelasDataAwal?.anak ?? [];
+  let jawabanList = kelasDataAwal?.jawaban ?? [];
 
   // ==================== STATUS ====================
-  let loadingMaster = true;
-  let loadingKelas = false;
+  let loadingMaster = !(kelasAwal && kriteriaAwal && indikatorAwal && ahpAwal);
+  let loadingKelas = selectedKelasId !== null && kelasDataAwal === null;
   let bobot = [];
   let ahpSiap = false;
   let pesanAhp = '';
@@ -37,37 +50,50 @@
   let statusSimpanHasil = '';
   let waktuPerhitungan = null;
 
+  // Hitung hasil lebih awal dari cache agar angka langsung tampil tanpa loading.
+  if (kelasDataAwal && !loadingMaster) hitungUlang();
+
   onMount(async () => {
     await fetchMaster();
     loadingMaster = false;
   });
 
   /**
-   * Mengambil data master yang dibutuhkan halaman daftar penilaian.
+   * Menentukan kelas yang dipakai: dari query ?kelas= bila valid, jika tidak kelas pertama.
+   * @param {Array} daftarKelas
+   * @returns {number|null}
+   */
+  function pilihKelas(daftarKelas) {
+    const kelasDariUrl = Number($page.url.searchParams.get('kelas'));
+    const adaDiUrl = daftarKelas.some((kelas) => kelas.id === kelasDariUrl);
+    return adaDiUrl ? kelasDariUrl : daftarKelas[0]?.id ?? null;
+  }
+
+  /**
+   * Mengambil data master lewat cache agar perpindahan halaman berikutnya instan.
    */
   async function fetchMaster() {
-    const [kelasRes, kriteriaRes, indikatorRes, ahpRes] = await Promise.all([
-      supabase.from('kelas').select('*').order('nama_kelas', { ascending: true }),
-      supabase.from('kriteria').select('*').order('urutan', { ascending: true }),
-      supabase.from('indikator').select('*').order('id', { ascending: true }),
-      supabase.from('perbandingan_ahp').select('*')
+    const [kelasData, kriteriaData, indikatorData, ahpData] = await Promise.all([
+      cachedFetch('master:kelas', () =>
+        supabase.from('kelas').select('*').order('nama_kelas', { ascending: true })
+      ),
+      cachedFetch('master:kriteria', () =>
+        supabase.from('kriteria').select('*').order('urutan', { ascending: true })
+      ),
+      cachedFetch('master:indikator', () =>
+        supabase.from('indikator').select('*').order('id', { ascending: true })
+      ),
+      cachedFetch('master:ahp', () => supabase.from('perbandingan_ahp').select('*'))
     ]);
 
-    if (kelasRes.error) console.error('Error fetching kelas:', kelasRes.error);
-    if (kriteriaRes.error) console.error('Error fetching kriteria:', kriteriaRes.error);
-    if (indikatorRes.error) console.error('Error fetching indikator:', indikatorRes.error);
-    if (ahpRes.error) console.error('Error fetching AHP:', ahpRes.error);
-
-    kelasList = kelasRes.data || [];
-    kriteriaList = kriteriaRes.data || [];
-    indikatorList = indikatorRes.data || [];
-    perbandinganList = ahpRes.data || [];
+    if (kelasData) kelasList = kelasData;
+    if (kriteriaData) kriteriaList = kriteriaData;
+    if (indikatorData) indikatorList = indikatorData;
+    if (ahpData) perbandinganList = ahpData;
 
     if (kelasList.length > 0) {
-      // Kelas dari URL dipakai agar pilihan tidak hilang saat kembali dari halaman penilaian anak.
-      const kelasDariUrl = Number($page.url.searchParams.get('kelas'));
-      const adaDiUrl = kelasList.some((kelas) => kelas.id === kelasDariUrl);
-      selectedKelasId = adaDiUrl ? kelasDariUrl : kelasList[0].id;
+      // Pilihan dari URL dipertahankan agar tidak reset saat kembali dari halaman penilaian anak.
+      if (!selectedKelasId) selectedKelasId = pilihKelas(kelasList);
       await fetchKelasData();
     }
   }
@@ -79,42 +105,40 @@
     if (!selectedKelasId) {
       anakList = [];
       jawabanList = [];
-      hitungUlang();
-      return;
-    }
-
-    loadingKelas = true;
-
-    const { data: anakData, error } = await supabase
-      .from('anak')
-      .select('*')
-      .eq('kelas_id', selectedKelasId)
-      .order('nama', { ascending: true });
-
-    if (error) {
-      console.error('Error fetching anak:', error);
-      anakList = [];
-      jawabanList = [];
       loadingKelas = false;
       hitungUlang();
       return;
     }
 
-    anakList = anakData;
+    const cacheKey = 'penilaian:kelas:' + selectedKelasId;
+    const cacheTersedia = peekMemoryCache(cacheKey);
+    loadingKelas = cacheTersedia === null;
 
-    if (anakList.length > 0) {
-      const anakIds = anakList.map((anak) => anak.id);
+    const data = await cachedFetch(cacheKey, async () => {
+      const { data: anakData, error: anakError } = await supabase
+        .from('anak')
+        .select('*')
+        .eq('kelas_id', selectedKelasId)
+        .order('nama', { ascending: true });
+
+      if (anakError) throw anakError;
+
+      const daftarAnak = anakData || [];
+      if (daftarAnak.length === 0) return { anak: [], jawaban: [] };
+
+      const anakIds = daftarAnak.map((anak) => anak.id);
       const { data: jawabanData, error: jawabanError } = await supabase
         .from('detail_penilaian')
         .select('*')
         .in('anak_id', anakIds);
 
-      if (jawabanError) console.error('Error fetching jawaban:', jawabanError);
-      jawabanList = jawabanData || [];
-    } else {
-      jawabanList = [];
-    }
+      if (jawabanError) throw jawabanError;
 
+      return { anak: daftarAnak, jawaban: jawabanData || [] };
+    });
+
+    anakList = data?.anak || [];
+    jawabanList = data?.jawaban || [];
     loadingKelas = false;
     hitungUlang();
   }

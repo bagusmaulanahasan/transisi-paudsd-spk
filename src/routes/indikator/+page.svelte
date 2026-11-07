@@ -1,6 +1,7 @@
 <script>
   import { supabase } from '$lib/supabase';
   import { aturPoinOpsi } from '$lib/opsi';
+  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/cache';
   import {
     Plus,
     Trash2,
@@ -16,7 +17,12 @@
   import { onMount } from 'svelte';
 
   // ==================== SECTION 1: MASTER OPSI JAWABAN ====================
-  let masterOpsi = [];
+  const opsiAwal = peekMemoryCache('indikator:opsi');
+  const kriteriaAwal = peekMemoryCache('indikator:kriteria');
+  const kriteriaIdAwal = kriteriaAwal?.[0]?.id ?? null;
+  const indikatorAwal = kriteriaIdAwal ? peekMemoryCache('indikator:list:' + kriteriaIdAwal) : null;
+
+  let masterOpsi = opsiAwal || [];
   let showOpsiModal = false;
   let isEditingOpsi = false;
   let currentOpsiId = null;
@@ -24,10 +30,10 @@
   let keteranganText = '';
 
   // ==================== SECTION 2: INDIKATOR PERTANYAAN ====================
-  let kriteriaList = [];
-  let selectedKriteriaId = null;
-  let indikatorList = [];
-  let loading = true;
+  let kriteriaList = kriteriaAwal || [];
+  let selectedKriteriaId = kriteriaIdAwal;
+  let indikatorList = indikatorAwal || [];
+  let loading = !(opsiAwal && kriteriaAwal && indikatorAwal);
   let saving = false;
 
   // State modal indikator (tambah / ubah)
@@ -38,45 +44,51 @@
 
   onMount(async () => {
     await Promise.all([fetchMasterOpsi(), fetchKriteria()]);
+    loading = false;
   });
 
   /**
    * Mengambil master opsi jawaban global (indikator_id NULL) yang berlaku untuk semua kriteria.
    */
   async function fetchMasterOpsi() {
-    const { data, error } = await supabase
-      .from('opsi_jawaban')
-      .select('*')
-      .is('indikator_id', null)
-      .order('poin', { ascending: true });
+    const data = await cachedFetch(
+      'indikator:opsi',
+      () => supabase
+        .from('opsi_jawaban')
+        .select('*')
+        .is('indikator_id', null)
+        .order('poin', { ascending: true }),
+      (opsiBaru) => { masterOpsi = opsiBaru; }
+    );
 
-    if (error) {
-      console.error('Error fetching master opsi:', error);
-      return;
-    }
-    masterOpsi = data;
+    if (data) masterOpsi = data;
   }
 
   /**
    * Mengambil daftar kriteria lalu memuat indikator kriteria pertama.
    */
   async function fetchKriteria() {
-    loading = true;
-    const { data, error } = await supabase
-      .from('kriteria')
-      .select('*')
-      .order('urutan', { ascending: true });
+    if (kriteriaList.length === 0) loading = true;
 
-    if (error) {
-      console.error('Error fetching kriteria:', error);
-    } else {
-      kriteriaList = data;
-      if (!selectedKriteriaId && kriteriaList.length > 0) {
-        selectedKriteriaId = kriteriaList[0].id;
-      }
-      await fetchIndikator();
+    const data = await cachedFetch(
+      'indikator:kriteria',
+      () => supabase.from('kriteria').select('*').order('urutan', { ascending: true }),
+      (kriteriaBaru) => terapkanKriteria(kriteriaBaru)
+    );
+
+    if (data) terapkanKriteria(data);
+    await fetchIndikator();
+  }
+
+  /**
+   * Menyimpan daftar kriteria ke state dan memilih kriteria pertama bila belum ada pilihan.
+   * @param {Array} kriteriaBaru
+   */
+  function terapkanKriteria(kriteriaBaru) {
+    kriteriaList = kriteriaBaru;
+    if (!selectedKriteriaId && kriteriaList.length > 0) {
+      selectedKriteriaId = kriteriaList[0].id;
     }
-    loading = false;
   }
 
   /**
@@ -88,23 +100,28 @@
       return;
     }
 
-    const { data, error } = await supabase
-      .from('indikator')
-      .select('*')
-      .eq('kriteria_id', selectedKriteriaId)
-      .order('id', { ascending: true });
+    const kriteriaId = selectedKriteriaId;
 
-    if (error) {
-      console.error('Error fetching indikator:', error);
-      return;
-    }
-    indikatorList = data;
+    const data = await cachedFetch(
+      'indikator:list:' + kriteriaId,
+      () => supabase
+        .from('indikator')
+        .select('*')
+        .eq('kriteria_id', kriteriaId)
+        .order('id', { ascending: true }),
+      (indikatorBaru) => {
+        if (selectedKriteriaId === kriteriaId) indikatorList = indikatorBaru;
+      }
+    );
+
+    if (data) indikatorList = data;
   }
 
   /**
    * Menangani pergantian kriteria pada dropdown filter.
    */
   function onKriteriaChange() {
+    indikatorList = peekMemoryCache('indikator:list:' + selectedKriteriaId) || [];
     fetchIndikator();
   }
 
@@ -166,6 +183,7 @@
       if (error) alert(error.message);
     }
 
+    await invalidateDataCache();
     await fetchMasterOpsi();
     saving = false;
     closeOpsiModal();
@@ -185,6 +203,7 @@
       return;
     }
 
+    await invalidateDataCache();
     await fetchMasterOpsi();
     await syncPoinMaster();
   }
@@ -256,6 +275,7 @@
       if (error) alert(error.message);
     }
 
+    await invalidateDataCache();
     await fetchIndikator();
     saving = false;
     closeIndikatorModal();
@@ -274,6 +294,7 @@
       alert(error.message);
       return;
     }
+    await invalidateDataCache();
     await fetchIndikator();
   }
 

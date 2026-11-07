@@ -20,6 +20,7 @@
     WifiOff,
     BarChart3
   } from 'lucide-svelte';
+  import { cachedFetch } from '$lib/cache';
 
   let user = null;
   let profile = null;
@@ -37,8 +38,7 @@
     user = session?.user || null;
     
     if (user) {
-      const { data } = await supabase.from('profiles').select('nama_lengkap, email').eq('id', user.id).single();
-      profile = data;
+      await muatProfil(user.id);
     }
 
     loading = false;
@@ -50,8 +50,7 @@
     supabase.auth.onAuthStateChange(async (event, session) => {
       user = session?.user || null;
       if (user) {
-        const { data } = await supabase.from('profiles').select('nama_lengkap, email').eq('id', user.id).single();
-        profile = data;
+        await muatProfil(user.id);
       } else {
         profile = null;
       }
@@ -60,6 +59,20 @@
       }
     });
   });
+
+  /**
+   * Memuat profil user dari cache lokal lebih dulu, lalu memperbaruinya dari Supabase di latar belakang.
+   * @param {string} userId - ID user yang sedang login.
+   */
+  async function muatProfil(userId) {
+    const data = await cachedFetch(
+      'user_profile_' + userId,
+      () => supabase.from('profiles').select('nama_lengkap, email').eq('id', userId).single(),
+      (profilBaru) => { profile = profilBaru; },
+      { prefix: '' }
+    );
+    if (data) profile = data;
+  }
 
   async function handleLogout() {
     await supabase.auth.signOut();

@@ -1,6 +1,7 @@
 <script>
   import { supabase } from '$lib/supabase';
   import { calculateAHP } from '$lib/ahp';
+  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/cache';
   import { 
     Plus, 
     Trash2, 
@@ -13,8 +14,13 @@
   } from 'lucide-svelte';
   import { onMount } from 'svelte';
 
-  let kriteriaList = [];
-  let loading = true;
+  const CACHE_KRITERIA = 'kriteria';
+
+  // Pakai cache memori bila ada agar halaman langsung tampil tanpa loading.
+  const dataAwal = peekMemoryCache(CACHE_KRITERIA);
+
+  let kriteriaList = dataAwal?.kriteria ?? [];
+  let loading = dataAwal === null;
   let saving = false;
 
   let showModal = false;
@@ -33,57 +39,65 @@
     isConsistent: false
   };
 
+  if (dataAwal) terapkanKriteria(dataAwal);
+
   onMount(async () => {
-    await fetchKriteria();
+    const data = await cachedFetch(CACHE_KRITERIA, ambilKriteria, terapkanKriteria);
+    if (data) terapkanKriteria(data);
+    loading = false;
   });
 
   /**
-   * Mengambil data kriteria dari Supabase.
+   * Mengambil data kriteria dan matriks perbandingan AHP sekaligus.
    */
-  async function fetchKriteria() {
-    loading = true;
-    const { data, error } = await supabase
-      .from('kriteria')
-      .select('*')
-      .order('urutan', { ascending: true });
+  async function ambilKriteria() {
+    const [kriteriaRes, ahpRes] = await Promise.all([
+      supabase.from('kriteria').select('*').order('urutan', { ascending: true }),
+      supabase.from('perbandingan_ahp').select('*')
+    ]);
 
-    if (error) {
-      console.error('Error fetching kriteria:', error);
-    } else {
-      kriteriaList = data;
-      await fetchAHPMatrix();
-    }
-    loading = false;
+    if (kriteriaRes.error) throw kriteriaRes.error;
+    if (ahpRes.error) throw ahpRes.error;
+
+    return {
+      kriteria: kriteriaRes.data || [],
+      perbandingan: ahpRes.data || []
+    };
   }
 
   /**
-   * Mengambil nilai matriks AHP dari database atau inisialisasi jika kosong.
+   * Menyusun matriks perbandingan dari data tersimpan lalu menghitung bobot AHP.
+   * @param {{ kriteria: Array, perbandingan: Array }} data
    */
-  async function fetchAHPMatrix() {
-    const { data, error } = await supabase
-      .from('perbandingan_ahp')
-      .select('*');
-
-    if (error) {
-      console.error('Error fetching AHP matrix:', error);
-      return;
-    }
+  function terapkanKriteria(data) {
+    kriteriaList = data.kriteria;
 
     const n = kriteriaList.length;
     // Inisialisasi matriks identitas n x n
-    let matrix = Array(n).fill(0).map(() => Array(n).fill(1.0));
+    const matrix = Array.from({ length: n }, () => Array(n).fill(1.0));
 
-    // Map data dari database ke matriks local
-    data.forEach(item => {
-      const idx1 = kriteriaList.findIndex(k => k.id === item.kriteria_1_id);
-      const idx2 = kriteriaList.findIndex(k => k.id === item.kriteria_2_id);
+    for (const item of data.perbandingan) {
+      const idx1 = kriteriaList.findIndex((k) => k.id === item.kriteria_1_id);
+      const idx2 = kriteriaList.findIndex((k) => k.id === item.kriteria_2_id);
       if (idx1 !== -1 && idx2 !== -1) {
         matrix[idx1][idx2] = parseFloat(item.nilai);
       }
-    });
+    }
 
     pairwiseMatrix = matrix;
     recalculateAHP();
+  }
+
+  /**
+   * Memuat ulang data kriteria dari server setelah ada perubahan.
+   */
+  async function fetchKriteria() {
+    await invalidateDataCache();
+    if (kriteriaList.length === 0) loading = true;
+
+    const data = await cachedFetch(CACHE_KRITERIA, ambilKriteria, terapkanKriteria);
+    if (data) terapkanKriteria(data);
+    loading = false;
   }
 
   /**
@@ -196,6 +210,8 @@
     if (error) {
       alert('Gagal menyimpan matriks: ' + error.message);
     } else {
+      // Hapus cache data agar halaman penilaian memakai bobot terbaru.
+      await invalidateDataCache();
       alert('Matriks perbandingan dan bobot berhasil disimpan.');
     }
     saving = false;

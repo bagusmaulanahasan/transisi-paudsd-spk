@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { apakahNisDuplikat, normalisasiNis } from '$lib/anak';
+  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/cache';
   import {
     ArrowLeft,
     Plus,
@@ -19,13 +20,19 @@
 
   // ID kelas diambil dari URL, misalnya /kelas/3.
   const kelasId = Number($page.params.id);
+  const CACHE_KEY = 'kelas-detail:' + kelasId;
+
+  // Data cache dipakai lebih dulu agar halaman tidak menunggu server saat dibuka ulang.
+  const dataAwal = peekMemoryCache(CACHE_KEY);
 
   // ==================== STATE KELAS & ANAK ====================
-  let kelas = null;
-  let anakList = [];
-  let loading = true;
+  let kelas = dataAwal?.kelas ?? null;
+  let anakList = dataAwal?.anak ?? [];
+  let loading = dataAwal === null;
   let notFound = false;
   let saving = false;
+
+  if (dataAwal) terapkanDetail(dataAwal);
 
   // ==================== STATE MODAL ANAK ====================
   let showModal = false;
@@ -35,47 +42,58 @@
   let nisAnak = '';
 
   onMount(async () => {
-    await Promise.all([fetchKelas(), fetchAnak()]);
+    const data = await cachedFetch(CACHE_KEY, ambilDetail, terapkanDetail);
+    if (data) terapkanDetail(data);
+    else if (!kelas) notFound = true;
     loading = false;
   });
 
   /**
-   * Mengambil data kelas yang sedang dibuka berdasarkan ID dari URL.
+   * Mengambil data kelas dan seluruh anaknya dalam satu permintaan paralel.
    */
-  async function fetchKelas() {
-    const { data, error } = await supabase
-      .from('kelas')
-      .select('*')
-      .eq('id', kelasId)
-      .single();
+  async function ambilDetail() {
+    const [kelasRes, anakRes] = await Promise.all([
+      supabase.from('kelas').select('*').eq('id', kelasId).single(),
+      supabase
+        .from('anak')
+        .select('*')
+        .eq('kelas_id', kelasId)
+        .order('nama', { ascending: true })
+    ]);
 
-    if (error) {
-      console.error('Error fetching kelas:', error);
+    if (kelasRes.error) throw kelasRes.error;
+    if (anakRes.error) throw anakRes.error;
+
+    return { kelas: kelasRes.data, anak: anakRes.data || [] };
+  }
+
+  /**
+   * Menyimpan data kelas dan anak ke state halaman.
+   * @param {{ kelas: Object|null, anak: Array }} data
+   */
+  function terapkanDetail(data) {
+    if (!data.kelas) {
       notFound = true;
       kelas = null;
+      anakList = [];
       return;
     }
 
     notFound = false;
-    kelas = data;
+    kelas = data.kelas;
+    anakList = data.anak;
   }
 
   /**
-   * Mengambil seluruh anak pada kelas ini, diurutkan berdasarkan nama.
+   * Memuat ulang data kelas dan anak dari server setelah ada perubahan.
    */
-  async function fetchAnak() {
-    const { data, error } = await supabase
-      .from('anak')
-      .select('*')
-      .eq('kelas_id', kelasId)
-      .order('nama', { ascending: true });
+  async function fetchDetail() {
+    await invalidateDataCache();
+    if (!kelas) loading = true;
 
-    if (error) {
-      console.error('Error fetching anak:', error);
-      return;
-    }
-
-    anakList = data;
+    const data = await cachedFetch(CACHE_KEY, ambilDetail, terapkanDetail);
+    if (data) terapkanDetail(data);
+    loading = false;
   }
 
   /**
@@ -148,7 +166,7 @@
       }
     }
 
-    await fetchAnak();
+    await fetchDetail();
     saving = false;
     closeModal();
   }
@@ -166,7 +184,7 @@
       return;
     }
 
-    await fetchAnak();
+    await fetchDetail();
   }
 </script>
 

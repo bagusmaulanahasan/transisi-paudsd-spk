@@ -1,6 +1,7 @@
 <script>
   import { supabase } from '$lib/supabase';
   import { onMount } from 'svelte';
+  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/cache';
   import {
     Plus,
     Trash2,
@@ -13,11 +14,18 @@
     AlertCircle
   } from 'lucide-svelte';
 
+  const CACHE_KELAS = 'kelas-list';
+
+  // Data cache dipakai lebih dulu agar daftar kelas tampil seketika.
+  const dataAwal = peekMemoryCache(CACHE_KELAS);
+
   // ==================== STATE DAFTAR KELAS ====================
-  let kelasList = [];
-  let jumlahAnakMap = {};
-  let loading = true;
+  let kelasList = dataAwal?.kelas ?? [];
+  let jumlahAnakMap = dataAwal?.jumlahAnak ?? {};
+  let loading = dataAwal === null;
   let saving = false;
+
+  if (dataAwal) terapkanKelas(dataAwal);
 
   // ==================== STATE MODAL KELAS ====================
   let showModal = false;
@@ -37,47 +45,52 @@
   }
 
   onMount(async () => {
-    await fetchKelas();
+    const data = await cachedFetch(CACHE_KELAS, ambilKelas, terapkanKelas);
+    if (data) terapkanKelas(data);
+    loading = false;
   });
 
   /**
-   * Mengambil seluruh kelas dari Supabase lalu menghitung jumlah anak per kelas.
+   * Mengambil seluruh kelas dan jumlah anak per kelas dalam satu permintaan paralel.
    */
-  async function fetchKelas() {
-    loading = true;
-    const { data, error } = await supabase
-      .from('kelas')
-      .select('*')
-      .order('nama_kelas', { ascending: true });
+  async function ambilKelas() {
+    const [kelasRes, anakRes] = await Promise.all([
+      supabase.from('kelas').select('*').order('nama_kelas', { ascending: true }),
+      supabase.from('anak').select('kelas_id')
+    ]);
 
-    if (error) {
-      console.error('Error fetching kelas:', error);
-    } else {
-      kelasList = data;
+    if (kelasRes.error) throw kelasRes.error;
+    if (anakRes.error) throw anakRes.error;
+
+    const petaJumlah = {};
+    for (const anak of anakRes.data || []) {
+      if (anak.kelas_id !== null) {
+        petaJumlah[anak.kelas_id] = (petaJumlah[anak.kelas_id] || 0) + 1;
+      }
     }
 
-    await fetchJumlahAnak();
-    loading = false;
+    return { kelas: kelasRes.data || [], jumlahAnak: petaJumlah };
   }
 
   /**
-   * Menghitung jumlah anak untuk setiap kelas dari tabel anak.
+   * Menyimpan hasil pengambilan data ke state halaman.
+   * @param {{ kelas: Array, jumlahAnak: Object }} data
    */
-  async function fetchJumlahAnak() {
-    const { data, error } = await supabase.from('anak').select('kelas_id');
+  function terapkanKelas(data) {
+    kelasList = data.kelas;
+    jumlahAnakMap = data.jumlahAnak;
+  }
 
-    if (error) {
-      console.error('Error fetching jumlah anak:', error);
-      return;
-    }
+  /**
+   * Memuat ulang daftar kelas dari server setelah data berubah.
+   */
+  async function fetchKelas() {
+    await invalidateDataCache();
+    if (kelasList.length === 0) loading = true;
 
-    const map = {};
-    for (const anak of data) {
-      if (anak.kelas_id !== null) {
-        map[anak.kelas_id] = (map[anak.kelas_id] || 0) + 1;
-      }
-    }
-    jumlahAnakMap = map;
+    const data = await cachedFetch(CACHE_KELAS, ambilKelas, terapkanKelas);
+    if (data) terapkanKelas(data);
+    loading = false;
   }
 
   /**

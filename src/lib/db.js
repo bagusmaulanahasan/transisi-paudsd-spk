@@ -137,3 +137,50 @@ export async function getCache(key) {
     request.onerror = () => reject(request.error);
   });
 }
+
+/**
+ * Menghapus satu item cache lokal berdasarkan Key.
+ * @param {string} key
+ * @returns {Promise<void>}
+ */
+export async function deleteCache(key) {
+  const db = await openDB();
+  if (!db) return;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("cache", "readwrite");
+    const store = tx.objectStore("cache");
+    const request = store.delete(key);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/**
+ * Menghapus semua item cache yang key-nya diawali prefix tertentu.
+ * @param {string} prefix
+ * @returns {Promise<void>}
+ */
+export async function clearCacheByPrefix(prefix) {
+  const db = await openDB();
+  if (!db) return;
+
+  const semuaKey = await new Promise((resolve, reject) => {
+    const tx = db.transaction("cache", "readonly");
+    const request = tx.objectStore("cache").getAllKeys();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
+
+  const keyCocok = semuaKey.filter(
+    (key) => typeof key === "string" && key.startsWith(prefix),
+  );
+  if (keyCocok.length === 0) return;
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("cache", "readwrite");
+    const store = tx.objectStore("cache");
+    for (const key of keyCocok) store.delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
