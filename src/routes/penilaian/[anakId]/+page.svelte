@@ -80,7 +80,7 @@
       supabase.from('kelas').select('*').eq('id', anakData.kelas_id).single(),
       supabase.from('kriteria').select('*').order('urutan', { ascending: true }),
       supabase.from('indikator').select('*').order('id', { ascending: true }),
-      supabase.from('opsi_jawaban').select('*').is('indikator_id', null).order('poin', { ascending: true }),
+      supabase.from('opsi_jawaban').select('*').order('poin', { ascending: true }),
       supabase.from('perbandingan_ahp').select('*'),
       supabase.from('anak').select('*').eq('kelas_id', anakData.kelas_id).order('nama', { ascending: true })
     ]);

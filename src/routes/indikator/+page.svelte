@@ -56,7 +56,6 @@
       () => supabase
         .from('opsi_jawaban')
         .select('*')
-        .is('indikator_id', null)
         .order('poin', { ascending: true }),
       (opsiBaru) => { masterOpsi = opsiBaru; }
     );
@@ -175,7 +174,6 @@
       if (error) alert(error.message);
     } else {
       const { error } = await supabase.from('opsi_jawaban').insert({
-        indikator_id: null,
         opsi: opsiText.trim(),
         keterangan: keteranganText.trim() || null,
         poin: masterOpsi.length + 1
