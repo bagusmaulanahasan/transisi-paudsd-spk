@@ -2,7 +2,8 @@
   import { supabase } from '$lib/db/supabase';
   import { aturPoinOpsi } from '$lib/domain/opsi';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
-  import { notifyError } from '$lib/notifications';
+  import { notifyError, notifySuccess } from '$lib/notifications';
+  import { confirmAction } from '$lib/confirm';
   import {
     Plus,
     Trash2,
@@ -172,14 +173,22 @@
         .from('opsi_jawaban')
         .update({ opsi: opsiText.trim(), keterangan: keteranganText.trim() || null })
         .eq('id', currentOpsiId);
-      if (error) notifyError(error.message);
+      if (error) {
+        notifyError(error.message);
+      } else {
+        notifySuccess('Berhasil memperbarui opsi jawaban.');
+      }
     } else {
       const { error } = await supabase.from('opsi_jawaban').insert({
         opsi: opsiText.trim(),
         keterangan: keteranganText.trim() || null,
         poin: masterOpsi.length + 1
       });
-      if (error) notifyError(error.message);
+      if (error) {
+        notifyError(error.message);
+      } else {
+        notifySuccess('Berhasil menambah opsi jawaban baru.');
+      }
     }
 
     await invalidateDataCache();
@@ -192,9 +201,12 @@
    * Menghapus master opsi lalu menyinkronkan ulang poin menjadi 1..n berurutan.
    */
   async function deleteOpsi(opsi) {
-    if (!confirm(`Hapus opsi "${opsi.opsi}"?\nOpsi ini berlaku untuk semua kriteria dan penilaian anak yang memakainya ikut terhapus.`)) {
-      return;
-    }
+    const confirmed = await confirmAction({
+      title: `Hapus opsi "${opsi.opsi}"?`,
+      message: 'Opsi ini berlaku untuk semua kriteria dan penilaian anak yang memakainya ikut terhapus.'
+    });
+
+    if (!confirmed) return;
 
     const { error } = await supabase.from('opsi_jawaban').delete().eq('id', opsi.id);
     if (error) {
@@ -202,6 +214,7 @@
       return;
     }
 
+    notifySuccess('Berhasil menghapus opsi jawaban.');
     await invalidateDataCache();
     await fetchMasterOpsi();
     await syncPoinMaster();
@@ -266,12 +279,20 @@
         .from('indikator')
         .update({ pertanyaan: pertanyaan.trim() })
         .eq('id', currentIndikatorId);
-      if (error) notifyError(error.message);
+      if (error) {
+        notifyError(error.message);
+      } else {
+        notifySuccess('Berhasil memperbarui indikator.');
+      }
     } else {
       const { error } = await supabase
         .from('indikator')
         .insert({ kriteria_id: selectedKriteriaId, pertanyaan: pertanyaan.trim() });
-      if (error) notifyError(error.message);
+      if (error) {
+        notifyError(error.message);
+      } else {
+        notifySuccess('Berhasil menambah indikator baru.');
+      }
     }
 
     await invalidateDataCache();
@@ -284,15 +305,20 @@
    * Menghapus indikator beserta penilaian anak terkait (ikut terhapus via cascade).
    */
   async function deleteIndikator(item) {
-    if (!confirm(`Hapus indikator "${item.pertanyaan.slice(0, 40)}..."?\nData penilaian anak pada indikator ini ikut terhapus.`)) {
-      return;
-    }
+    const confirmed = await confirmAction({
+      title: `Hapus indikator "${item.pertanyaan.slice(0, 40)}..."?`,
+      message: 'Data penilaian anak pada indikator ini ikut terhapus.'
+    });
+
+    if (!confirmed) return;
 
     const { error } = await supabase.from('indikator').delete().eq('id', item.id);
     if (error) {
       notifyError(error.message);
       return;
     }
+
+    notifySuccess('Berhasil menghapus indikator.');
     await invalidateDataCache();
     await fetchIndikator();
   }

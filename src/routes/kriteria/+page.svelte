@@ -3,6 +3,7 @@
   import { calculateAHP } from '$lib/spk/ahp';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import { notifyError, notifySuccess } from '$lib/notifications';
+  import { confirmAction } from '$lib/confirm';
   import { 
     Plus, 
     Trash2, 
@@ -145,14 +146,22 @@
         .from('kriteria')
         .update({ nama: namaKriteria, jenis: jenisKriteria })
         .eq('id', currentId);
-      if (error) notifyError(error.message);
+      if (error) {
+        notifyError(error.message);
+      } else {
+        notifySuccess('Berhasil memperbarui kriteria.');
+      }
     } else {
       const urutan = kriteriaList.length + 1;
       const inisial = `C${urutan}`;
       const { error } = await supabase
         .from('kriteria')
         .insert([{ inisial, nama: namaKriteria, jenis: jenisKriteria, urutan }]);
-      if (error) notifyError(error.message);
+      if (error) {
+        notifyError(error.message);
+      } else {
+        notifySuccess('Berhasil menambah kriteria baru.');
+      }
     }
 
     await fetchKriteria();
@@ -168,13 +177,21 @@
       notifyError('Minimal harus ada 2 kriteria.');
       return;
     }
-    if (!confirm('Hapus kriteria ini? Data perbandingan AHP terkait akan ikut terpengaruh.')) return;
+
+    const confirmed = await confirmAction({
+      title: 'Hapus kriteria ini?',
+      message: 'Data perbandingan AHP terkait akan ikut terpengaruh.'
+    });
+
+    if (!confirmed) return;
 
     const { error: delError } = await supabase.from('kriteria').delete().eq('id', id);
     if (delError) {
       notifyError(delError.message);
       return;
     }
+
+    notifySuccess('Berhasil menghapus kriteria.');
 
     // Ambil data terbaru untuk re-index urutan & inisial
     const { data } = await supabase.from('kriteria').select('*').order('urutan', { ascending: true });

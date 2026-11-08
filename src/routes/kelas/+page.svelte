@@ -3,7 +3,8 @@
   import { onMount } from 'svelte';
   import { fetchKelasDenganJumlahAnak } from '$lib/services/kelas';
   import { peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
-  import { notifyError } from '$lib/notifications';
+  import { notifyError, notifySuccess } from '$lib/notifications';
+  import { confirmAction } from '$lib/confirm';
   import {
     Plus,
     Trash2,
@@ -128,6 +129,7 @@
         saving = false;
         return;
       }
+      notifySuccess('Berhasil memperbarui kelas.');
     } else {
       const { error } = await supabase.from('kelas').insert(payload);
       if (error) {
@@ -135,6 +137,7 @@
         saving = false;
         return;
       }
+      notifySuccess('Berhasil menambah kelas baru.');
     }
 
     await fetchKelas();
@@ -147,12 +150,17 @@
    */
   async function deleteKelas(item) {
     const jumlahAnak = jumlahAnakMap[item.id] || 0;
-    const pesan =
+    const confirmMessage =
       jumlahAnak > 0
-        ? `Hapus kelas "${item.nama_kelas}"?\n${jumlahAnak} data anak beserta penilaiannya ikut terhapus dan tidak bisa dikembalikan.`
-        : `Hapus kelas "${item.nama_kelas}"?`;
+        ? `${jumlahAnak} data anak beserta penilaiannya ikut terhapus dan tidak bisa dikembalikan.`
+        : 'Data kelas akan dihapus permanen.';
 
-    if (!confirm(pesan)) return;
+    const confirmed = await confirmAction({
+      title: `Hapus kelas "${item.nama_kelas}"?`,
+      message: confirmMessage
+    });
+
+    if (!confirmed) return;
 
     const { error } = await supabase.from('kelas').delete().eq('id', item.id);
     if (error) {
@@ -160,6 +168,7 @@
       return;
     }
 
+    notifySuccess('Berhasil menghapus kelas.');
     await fetchKelas();
   }
 </script>

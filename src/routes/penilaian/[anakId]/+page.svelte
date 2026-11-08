@@ -5,7 +5,8 @@
   import { hitungMoora } from '$lib/spk/moora';
   import { simpanHasilPerhitungan } from '$lib/services/hasil';
   import { cachedFetch, peekMemoryCache, mutateCache, invalidateCache } from '$lib/db/cache';
-  import { notifyError } from '$lib/notifications';
+  import { notifyError, notifySuccess } from '$lib/notifications';
+  import { confirmAction } from '$lib/confirm';
   import { onMount } from 'svelte';
   import {
     ArrowLeft,
@@ -201,6 +202,8 @@
       menyimpan = null;
       return;
     }
+
+    notifySuccess('Berhasil menyimpan penilaian.');
 
     const index = jawabanList.findIndex(
       (jawaban) => jawaban.anak_id === anak.id && jawaban.indikator_id === indikator.id

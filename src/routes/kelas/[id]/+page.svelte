@@ -4,7 +4,8 @@
   import { onMount } from 'svelte';
   import { apakahNisDuplikat, normalisasiNis } from '$lib/domain/anak';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
-  import { notifyError } from '$lib/notifications';
+  import { notifyError, notifySuccess } from '$lib/notifications';
+  import { confirmAction } from '$lib/confirm';
   import {
     ArrowLeft,
     Plus,
@@ -158,6 +159,7 @@
         saving = false;
         return;
       }
+      notifySuccess('Berhasil memperbarui data anak.');
     } else {
       const { error } = await supabase.from('anak').insert(payload);
       if (error) {
@@ -165,6 +167,7 @@
         saving = false;
         return;
       }
+      notifySuccess('Berhasil menambah anak baru.');
     }
 
     await fetchDetail();
@@ -176,8 +179,12 @@
    * Menghapus data anak beserta seluruh penilaian yang terkait.
    */
   async function deleteAnak(item) {
-    const pesan = `Hapus data anak "${item.nama}"?\nSeluruh penilaian anak ini ikut terhapus dan tidak bisa dikembalikan.`;
-    if (!confirm(pesan)) return;
+    const confirmed = await confirmAction({
+      title: `Hapus data anak "${item.nama}"?`,
+      message: 'Seluruh penilaian anak ini ikut terhapus dan tidak bisa dikembalikan.'
+    });
+
+    if (!confirmed) return;
 
     const { error } = await supabase.from('anak').delete().eq('id', item.id);
     if (error) {
@@ -185,6 +192,7 @@
       return;
     }
 
+    notifySuccess('Berhasil menghapus data anak.');
     await fetchDetail();
   }
 </script>
