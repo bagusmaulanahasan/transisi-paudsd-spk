@@ -1,6 +1,6 @@
 <script>
   import '../app.css';
-  import { supabase } from '$lib/supabase';
+  import { supabase } from '$lib/db/supabase';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
@@ -20,7 +20,7 @@
     WifiOff,
     BarChart3
   } from 'lucide-svelte';
-  import { cachedFetch } from '$lib/cache';
+  import { cachedFetch } from '$lib/db/cache';
 
   let user = null;
   let profile = null;

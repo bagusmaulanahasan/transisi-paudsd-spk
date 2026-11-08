@@ -1,10 +1,10 @@
 <script>
-  import { supabase } from '$lib/supabase';
+  import { supabase } from '$lib/db/supabase';
   import { page } from '$app/stores';
-  import { hitungBobotAhp } from '$lib/ahp';
-  import { hitungMoora } from '$lib/moora';
-  import { simpanHasilPerhitungan } from '$lib/hasil';
-  import { cachedFetch, peekMemoryCache, mutateCache, invalidateCache } from '$lib/cache';
+  import { hitungBobotAhp } from '$lib/spk/ahp';
+  import { hitungMoora } from '$lib/spk/moora';
+  import { simpanHasilPerhitungan } from '$lib/services/hasil';
+  import { cachedFetch, peekMemoryCache, mutateCache, invalidateCache } from '$lib/db/cache';
   import { onMount } from 'svelte';
   import {
     ArrowLeft,

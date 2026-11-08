@@ -1,7 +1,7 @@
 <script>
-  import { supabase } from '$lib/supabase';
-  import { hitungBobotAhp } from '$lib/ahp';
-  import { cachedFetch, peekMemoryCache } from '$lib/cache';
+  import { supabase } from '$lib/db/supabase';
+  import { hitungBobotAhp } from '$lib/spk/ahp';
+  import { cachedFetch, peekMemoryCache } from '$lib/db/cache';
   import { onMount } from 'svelte';
   import { 
     LayoutDashboard, 

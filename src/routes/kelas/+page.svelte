@@ -1,7 +1,7 @@
 <script>
-  import { supabase } from '$lib/supabase';
+  import { supabase } from '$lib/db/supabase';
   import { onMount } from 'svelte';
-  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/cache';
+  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import {
     Plus,
     Trash2,

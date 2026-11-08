@@ -1,8 +1,8 @@
 <script>
-  import { supabase } from '$lib/supabase';
-  import { hitungBobotAhp, susunMatriksPerbandingan, getAHPDetail } from '$lib/ahp';
-  import { hitungMoora, getMooraDetail } from '$lib/moora';
-  import { cachedFetch, peekMemoryCache } from '$lib/cache';
+  import { supabase } from '$lib/db/supabase';
+  import { hitungBobotAhp, susunMatriksPerbandingan, getAHPDetail } from '$lib/spk/ahp';
+  import { hitungMoora, getMooraDetail } from '$lib/spk/moora';
+  import { cachedFetch, peekMemoryCache } from '$lib/db/cache';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import DetailAHP from './DetailAHP.svelte';

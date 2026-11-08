@@ -1,7 +1,7 @@
 <script>
-  import { supabase } from '$lib/supabase';
-  import { calculateAHP } from '$lib/ahp';
-  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/cache';
+  import { supabase } from '$lib/db/supabase';
+  import { calculateAHP } from '$lib/spk/ahp';
+  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import { 
     Plus, 
     Trash2, 

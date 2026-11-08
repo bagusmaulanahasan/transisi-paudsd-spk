@@ -1,5 +1,5 @@
 <script>
-  import { supabase } from '$lib/supabase';
+  import { supabase } from '$lib/db/supabase';
   import { goto } from '$app/navigation';
 
   let email = '';

@@ -2,7 +2,7 @@
  * Cache memori + IndexedDB dengan strategi stale-while-revalidate.
  * Data langsung ditampilkan dari cache, lalu diperbarui dari server di latar belakang.
  */
-import { getCache, setCache, deleteCache, clearCacheByPrefix } from './db';
+import { getCache, setCache, deleteCache, clearCacheByPrefix } from './indexeddb';
 
 // Semua cache data halaman memakai prefix ini agar bisa dibersihkan sekaligus saat data berubah.
 const PREFIX_DATA = 'data:';

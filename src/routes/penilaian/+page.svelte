@@ -1,9 +1,9 @@
 <script>
-  import { supabase } from '$lib/supabase';
-  import { hitungBobotAhp } from '$lib/ahp';
-  import { hitungMoora } from '$lib/moora';
-  import { simpanHasilPerhitungan } from '$lib/hasil';
-  import { cachedFetch, peekMemoryCache } from '$lib/cache';
+  import { supabase } from '$lib/db/supabase';
+  import { hitungBobotAhp } from '$lib/spk/ahp';
+  import { hitungMoora } from '$lib/spk/moora';
+  import { simpanHasilPerhitungan } from '$lib/services/hasil';
+  import { cachedFetch, peekMemoryCache } from '$lib/db/cache';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';

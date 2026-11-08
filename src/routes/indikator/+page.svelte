@@ -1,7 +1,7 @@
 <script>
-  import { supabase } from '$lib/supabase';
-  import { aturPoinOpsi } from '$lib/opsi';
-  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/cache';
+  import { supabase } from '$lib/db/supabase';
+  import { aturPoinOpsi } from '$lib/domain/opsi';
+  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import {
     Plus,
     Trash2,
