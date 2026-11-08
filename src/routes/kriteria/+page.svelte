@@ -245,7 +245,8 @@
   {:else}
     <!-- Table Kriteria -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-      <div class="p-5 md:p-6 border-b border-slate-100 flex items-center justify-between">
+      <!-- <div class="p-5 md:p-6 border-b border-slate-100 flex items-center justify-between"> -->
+       <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div class="flex items-center space-x-3">
           <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
             <ListTree class="w-5 h-5" />
@@ -257,13 +258,13 @@
         </div>
         <div class="flex items-center gap-3">
           <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
-            Total: {kriteriaList.length} Kriteria Aktif
+            Total: {kriteriaList.length} Kriteria
           </span>
           <button 
             on:click={openAddModal}
             class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
           >
-            <Plus class="w-4 h-4 mr-1.5" />
+            <Plus class="w-4 h-5 mr-1.5" />
             <span>Tambah Kriteria</span>
           </button>
         </div>

@@ -324,7 +324,7 @@
       <!-- Tabel Hasil MOORA -->
       <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div class="flex items-start gap-3">
+          <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
               <Trophy class="w-5 h-5 text-blue-600" />
             </div>

@@ -309,7 +309,7 @@
     <!-- Identitas Anak -->
     <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-        <div class="flex items-start gap-4">
+        <div class="flex items-center gap-4">
           <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
             <UserRound class="w-7 h-7 text-blue-600" />
           </div>
@@ -339,7 +339,7 @@
           {#if modeEdit}
             <button
               on:click={selesaiEdit}
-              class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-emerald-200"
+              class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-emerald-200"
             >
               <CheckCircle2 class="w-4 h-4" />
               Selesai
@@ -347,7 +347,7 @@
           {:else}
             <button
               on:click={mulaiEdit}
-              class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-blue-200"
+              class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-blue-200"
             >
               <PencilLine class="w-4 h-4" />
               Edit Penilaian
@@ -452,7 +452,7 @@
     <!-- Jawaban Penilaian -->
     <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div class="flex items-start gap-3">
+        <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
             <ClipboardList class="w-5 h-5 text-blue-600" />
           </div>
