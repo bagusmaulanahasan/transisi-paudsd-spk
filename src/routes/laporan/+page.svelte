@@ -1,8 +1,9 @@
 <script>
-  import { supabase } from '$lib/db/supabase';
   import { hitungBobotAhp, susunMatriksPerbandingan, getAHPDetail } from '$lib/spk/ahp';
   import { hitungMoora, getMooraDetail } from '$lib/spk/moora';
-  import { cachedFetch, peekMemoryCache } from '$lib/db/cache';
+  import { fetchMasterData } from '$lib/services/masterData';
+  import { fetchKelasPenilaian } from '$lib/services/penilaian';
+  import { peekMemoryCache } from '$lib/db/cache';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import DetailAHP from './DetailAHP.svelte';
@@ -62,23 +63,12 @@
   }
 
   async function fetchMaster() {
-    const [kelasData, kriteriaData, indikatorData, ahpData] = await Promise.all([
-      cachedFetch('master:kelas', () =>
-        supabase.from('kelas').select('*').order('nama_kelas', { ascending: true })
-      ),
-      cachedFetch('master:kriteria', () =>
-        supabase.from('kriteria').select('*').order('urutan', { ascending: true })
-      ),
-      cachedFetch('master:indikator', () =>
-        supabase.from('indikator').select('*').order('id', { ascending: true })
-      ),
-      cachedFetch('master:ahp', () => supabase.from('perbandingan_ahp').select('*'))
-    ]);
+    const master = await fetchMasterData();
 
-    if (kelasData) kelasList = kelasData;
-    if (kriteriaData) kriteriaList = kriteriaData;
-    if (indikatorData) indikatorList = indikatorData;
-    if (ahpData) perbandinganList = ahpData;
+    kelasList = master.kelas;
+    kriteriaList = master.kriteria;
+    indikatorList = master.indikator;
+    perbandinganList = master.perbandingan;
 
     if (kelasList.length > 0) {
       if (!selectedKelasId) selectedKelasId = pilihKelas(kelasList);
@@ -99,28 +89,7 @@
     const cacheTersedia = peekMemoryCache(cacheKey);
     loadingKelas = cacheTersedia === null;
 
-    const data = await cachedFetch(cacheKey, async () => {
-      const { data: anakData, error: anakError } = await supabase
-        .from('anak')
-        .select('*')
-        .eq('kelas_id', selectedKelasId)
-        .order('nama', { ascending: true });
-
-      if (anakError) throw anakError;
-
-      const daftarAnak = anakData || [];
-      if (daftarAnak.length === 0) return { anak: [], jawaban: [] };
-
-      const anakIds = daftarAnak.map((anak) => anak.id);
-      const { data: jawabanData, error: jawabanError } = await supabase
-        .from('detail_penilaian')
-        .select('*')
-        .in('anak_id', anakIds);
-
-      if (jawabanError) throw jawabanError;
-
-      return { anak: daftarAnak, jawaban: jawabanData || [] };
-    });
+    const data = await fetchKelasPenilaian(selectedKelasId);
 
     anakList = data?.anak || [];
     jawabanList = data?.jawaban || [];

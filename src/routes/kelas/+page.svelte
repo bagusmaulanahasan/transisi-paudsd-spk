@@ -1,7 +1,8 @@
 <script>
   import { supabase } from '$lib/db/supabase';
   import { onMount } from 'svelte';
-  import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
+  import { fetchKelasDenganJumlahAnak } from '$lib/services/kelas';
+  import { peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import {
     Plus,
     Trash2,
@@ -45,32 +46,10 @@
   }
 
   onMount(async () => {
-    const data = await cachedFetch(CACHE_KELAS, ambilKelas, terapkanKelas);
+    const data = await fetchKelasDenganJumlahAnak(terapkanKelas);
     if (data) terapkanKelas(data);
     loading = false;
   });
-
-  /**
-   * Mengambil seluruh kelas dan jumlah anak per kelas dalam satu permintaan paralel.
-   */
-  async function ambilKelas() {
-    const [kelasRes, anakRes] = await Promise.all([
-      supabase.from('kelas').select('*').order('nama_kelas', { ascending: true }),
-      supabase.from('anak').select('kelas_id')
-    ]);
-
-    if (kelasRes.error) throw kelasRes.error;
-    if (anakRes.error) throw anakRes.error;
-
-    const petaJumlah = {};
-    for (const anak of anakRes.data || []) {
-      if (anak.kelas_id !== null) {
-        petaJumlah[anak.kelas_id] = (petaJumlah[anak.kelas_id] || 0) + 1;
-      }
-    }
-
-    return { kelas: kelasRes.data || [], jumlahAnak: petaJumlah };
-  }
 
   /**
    * Menyimpan hasil pengambilan data ke state halaman.
@@ -88,7 +67,7 @@
     await invalidateDataCache();
     if (kelasList.length === 0) loading = true;
 
-    const data = await cachedFetch(CACHE_KELAS, ambilKelas, terapkanKelas);
+    const data = await fetchKelasDenganJumlahAnak(terapkanKelas);
     if (data) terapkanKelas(data);
     loading = false;
   }
