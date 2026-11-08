@@ -28,6 +28,7 @@
   let currentId = null;
   let namaKriteria = '';
   let jenisKriteria = 'benefit';
+  let modeEditMatriks = false;
 
   // Matriks perbandingan berpasangan
   let pairwiseMatrix = [];
@@ -212,6 +213,7 @@
     } else {
       // Hapus cache data agar halaman penilaian memakai bobot terbaru.
       await invalidateDataCache();
+      modeEditMatriks = false;
       alert('Matriks perbandingan dan bobot berhasil disimpan.');
     }
     saving = false;
@@ -313,18 +315,36 @@
           <h2 class="text-lg font-bold text-slate-900 tracking-tight">Matriks Perbandingan Berpasangan (AHP)</h2>
           <p class="text-xs text-slate-500 mt-0.5">Batas konsistensi yang diizinkan: CR ≤ 0.10. Simpan perubahan ke database setelah nilai konsisten.</p>
         </div>
-        <button 
-          on:click={saveAHPToDB}
-          disabled={saving || !ahpResult.isConsistent}
-          class="px-5 py-2.5 bg-slate-900 hover:bg-blue-600 disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit shadow-md"
-        >
-          {#if saving}
-            <Loader2 class="w-4 h-4 animate-spin" />
+        <div class="flex items-center gap-2">
+          {#if !modeEditMatriks}
+            <button 
+              on:click={() => modeEditMatriks = true}
+              class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit shadow-md shadow-blue-200"
+            >
+              <Edit2 class="w-4 h-4" />
+              <span>Edit Matriks</span>
+            </button>
           {:else}
-            <Save class="w-4 h-4" />
+            <button 
+              on:click={() => modeEditMatriks = false}
+              class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit"
+            >
+              <span>Batal</span>
+            </button>
+            <button 
+              on:click={saveAHPToDB}
+              disabled={saving || !ahpResult.isConsistent}
+              class="px-5 py-2.5 bg-slate-900 hover:bg-blue-600 disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit shadow-md"
+            >
+              {#if saving}
+                <Loader2 class="w-4 h-4 animate-spin" />
+              {:else}
+                <Save class="w-4 h-4" />
+              {/if}
+              <span>Simpan Perubahan</span>
+            </button>
           {/if}
-          <span>Simpan Matriks & Bobot</span>
-        </button>
+        </div>
       </div>
 
       <!-- Keterangan Skala Saaty -->
@@ -365,18 +385,24 @@
                     {#if i === j}
                       <div class="w-20 mx-auto py-1.5 px-2 bg-slate-100 text-slate-400 font-bold rounded-lg border border-transparent">1.0</div>
                     {:else if i < j}
-                      <input 
-                        type="number" 
-                        step="0.01" 
-                        min="0.1" 
-                        max="9"
-                        bind:value={pairwiseMatrix[i][j]} 
-                        on:input={() => {
-                          pairwiseMatrix[j][i] = parseFloat((1 / pairwiseMatrix[i][j]).toFixed(3));
-                          recalculateAHP();
-                        }}
-                        class="w-20 text-center py-1.5 px-2 bg-blue-50 border border-blue-200 rounded-lg text-xs font-bold text-blue-800 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none transition"
-                      />
+                      {#if modeEditMatriks}
+                        <input 
+                          type="number" 
+                          step="0.01" 
+                          min="0.1" 
+                          max="9"
+                          bind:value={pairwiseMatrix[i][j]} 
+                          on:input={() => {
+                            pairwiseMatrix[j][i] = parseFloat((1 / pairwiseMatrix[i][j]).toFixed(3));
+                            recalculateAHP();
+                          }}
+                          class="w-20 text-center py-1.5 px-2 bg-blue-50 border border-blue-200 rounded-lg text-xs font-bold text-blue-800 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none transition"
+                        />
+                      {:else}
+                        <div class="w-20 mx-auto py-1.5 px-2 bg-slate-50 text-slate-700 font-semibold rounded-lg border border-slate-100">
+                          {pairwiseMatrix[i][j]}
+                        </div>
+                      {/if}
                     {:else}
                       <div class="w-20 mx-auto py-1.5 px-2 bg-slate-50 text-slate-500 font-medium rounded-lg border border-slate-100">
                         {pairwiseMatrix[i][j]}
