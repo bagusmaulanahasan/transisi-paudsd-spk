@@ -26,9 +26,21 @@
             <tr class="hover:bg-slate-50/60 transition-colors">
               {#each columns as col, colIndex}
                 <td class={`px-6 py-4 whitespace-nowrap ${col.class || ''}`}>
-                  <slot name="cell" {item} {index} {col} {colIndex}>
+                  {#if col.key === 'aksi'}
+                    <slot name="aksi" {item} {index} />
+                  {:else if col.key === 'status'}
+                    <slot name="status" {item} {index} />
+                  {:else if col.key === 'poin'}
+                    <slot name="poin" {item} {index} />
+                  {:else if col.key === 'keterangan'}
+                    <slot name="keterangan" {item} {index} />
+                  {:else if col.key === 'opsi'}
+                    <slot name="opsi" {item} {index} />
+                  {:else if col.key === 'no'}
+                    <slot name="no" {item} {index} />
+                  {:else}
                     {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
-                  </slot>
+                  {/if}
                 </td>
               {/each}
             </tr>
