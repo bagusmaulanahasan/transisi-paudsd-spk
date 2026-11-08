@@ -37,6 +37,10 @@
     const { data: { session } } = await supabase.auth.getSession();
     user = session?.user || null;
     
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+
     if (user) {
       await muatProfil(user.id);
     }

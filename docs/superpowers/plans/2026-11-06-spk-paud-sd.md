@@ -149,6 +149,6 @@
 - Consumes: Data kriteria, matriks AHP, bobot, matriks keputusan, normalisasi, nilai $Y_i$, dan ranking.
 - Produces: Haporan transparan read-only dan dukungan PWA offline-first.
 
-- [ ] **Step 1: Buat halaman laporan read-only `src/routes/laporan/+page.svelte` menampilkan tahapan dari AHP hingga ranking MOORA**
-- [ ] **Step 2: Konfigurasi Web App Manifest dan Service Worker untuk PWA & offline-first**
-- [ ] **Step 3: Commit laporan dan PWA**
+- [x] **Step 1: Buat halaman laporan read-only `src/routes/laporan/+page.svelte` menampilkan tahapan dari AHP hingga ranking MOORA**
+- [x] **Step 2: Konfigurasi Web App Manifest dan Service Worker untuk PWA & offline-first**
+- [x] **Step 3: Commit laporan dan PWA**
