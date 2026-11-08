@@ -27,13 +27,14 @@
   
   <input
     id={inputId}
-    {type}
+    type={type}
     {placeholder}
     {disabled}
     {min}
     {max}
     {step}
-    bind:value
+    value={value}
+    on:input={(e) => (value = e.target.value)}
     class={`w-full px-3.5 py-2.5 bg-white text-slate-900 text-xs font-medium rounded-xl border transition duration-150 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:bg-slate-50 disabled:cursor-not-allowed ${
       error
         ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-200'
