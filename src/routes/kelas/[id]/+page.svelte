@@ -12,6 +12,7 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import Modal from '$lib/components/ui/Modal.svelte';
+  import Table from '$lib/components/ui/Table.svelte';
   import {
     ArrowLeft,
     Plus,
@@ -278,57 +279,50 @@
           </EmptyState>
         </div>
       {:else}
-        <div class="px-5 md:px-6 pt-4 md:pt-0">
-          <p class="xl:hidden text-[11px] text-slate-400 font-medium">Geser tabel ke samping untuk melihat semua kolom.</p>
-        </div>
-
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse min-w-[680px]">
-            <thead>
-              <tr class="bg-slate-50/50">
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest w-16">No.</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest w-44">NIS</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Nama Lengkap Anak</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right w-48">Aksi</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              {#each anakList as item, index (item.id)}
-                <tr class="hover:bg-slate-50/30 transition">
-                  <td class="px-6 py-4 text-sm font-bold text-slate-500">{index + 1}</td>
-                  <td class="px-6 py-4">
-                    {#if item.nis}
-                      <span class="text-sm font-semibold text-slate-700">{item.nis}</span>
-                    {:else}
-                      <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
-                        Belum diisi
-                      </span>
-                    {/if}
-                  </td>
-                  <td class="px-6 py-4 text-sm font-bold text-slate-800">{item.nama}</td>
-                  <td class="px-6 py-4 text-right whitespace-nowrap space-x-2">
-                    {#if !item.nis}
-                      <Button
-                        variant="outline"
-                        className="bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-100 gap-1.5 px-3 py-2 h-auto text-[11px]"
-                        on:click={() => openEditModal(item)}
-                        title="Isi NIS"
-                      >
-                        <PencilLine class="w-3.5 h-3.5" />
-                        <span>Isi NIS</span>
-                      </Button>
-                    {/if}
-                    <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Data Anak">
-                      <Edit2 class="w-3.5 h-3.5" />
-                    </Button>
-                    <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteAnak(item)} title="Hapus Data Anak">
-                      <Trash2 class="w-3.5 h-3.5" />
-                    </Button>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
+          <Table
+            columns={[
+              { key: 'no', label: 'No.', class: 'w-16' },
+              { key: 'nis', label: 'NIS', class: 'w-44' },
+              { key: 'nama', label: 'Nama Lengkap Anak' },
+              { key: 'aksi', label: 'Aksi', class: 'text-right w-48' }
+            ]}
+            data={anakList.map((item, index) => ({ ...item, no: index + 1 }))}
+          >
+            <svelte:fragment slot="nis" let:item>
+              {#if item.nis}
+                <span class="text-sm font-semibold text-slate-700">{item.nis}</span>
+              {:else}
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
+                  Belum diisi
+                </span>
+              {/if}
+            </svelte:fragment>
+            <svelte:fragment slot="nama" let:item>
+              <span class="text-sm font-bold text-slate-800">{item.nama}</span>
+            </svelte:fragment>
+            <svelte:fragment slot="aksi" let:item>
+              <div class="text-right whitespace-nowrap space-x-2">
+                {#if !item.nis}
+                  <Button
+                    variant="outline"
+                    className="bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-100 gap-1.5 px-3 py-2 h-auto text-[11px]"
+                    on:click={() => openEditModal(item)}
+                    title="Isi NIS"
+                  >
+                    <PencilLine class="w-3.5 h-3.5" />
+                    <span>Isi NIS</span>
+                  </Button>
+                {/if}
+                <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Data Anak">
+                  <Edit2 class="w-3.5 h-3.5" />
+                </Button>
+                <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteAnak(item)} title="Hapus Data Anak">
+                  <Trash2 class="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </svelte:fragment>
+          </Table>
         </div>
 
         <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">

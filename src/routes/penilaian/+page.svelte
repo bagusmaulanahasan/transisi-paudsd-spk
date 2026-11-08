@@ -23,6 +23,7 @@
   import Button from '$lib/components/ui/Button.svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
+  import Table from '$lib/components/ui/Table.svelte';
 
   // Data master dari cache memori dipakai lebih dulu agar tabel tampil seketika.
   const kelasAwal = peekMemoryCache('master:kelas');
@@ -336,90 +337,84 @@
               className="border-dashed bg-slate-50/50"
             />
           {:else}
-            <div class="xl:hidden">
-              <p class="text-[11px] text-slate-400 font-medium">Geser tabel ke samping untuk melihat semua kolom.</p>
-            </div>
-
             <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse" style={`min-width: ${640 + kriteriaList.length * 80}px`}>
-                <thead>
-                  <tr class="bg-slate-50">
-                    <th class="px-3 sm:px-4 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest w-12 sm:w-16">No.</th>
-                    <th class="px-4 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest w-20 lg:w-32 hidden lg:table-cell">NIS</th>
-                    <th class="px-4 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest w-[130px] lg:w-auto">Nama Anak</th>
-                    <th class="px-2 sm:px-3 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap lg:hidden">Aksi</th>
-                    {#each kriteriaList as kriteria (kriteria.id)}
-                      <th class="px-4 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">{kriteria.inisial}</th>
-                    {/each}
-                    <th class="px-4 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">Nilai Yi</th>
-                    <th class="px-4 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">Ranking</th>
-                    <th class="px-2 sm:px-4 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap hidden lg:table-cell">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                  {#each hasil.baris as baris, index (baris.anak_id)}
-                    <tr
-                      class="cursor-pointer transition hover:bg-blue-50 focus:outline-none focus:bg-blue-50"
-                      tabindex="0"
-                      role="link"
-                      aria-label={`Buka penilaian ${baris.nama}`}
-                      on:click={() => bukaAnak(baris.anak_id)}
-                      on:keydown={(event) => bukaAnakDariKeyboard(event, baris.anak_id)}
+              <Table
+                columns={[
+                  { key: 'no', label: 'No.', class: 'w-12 sm:w-16' },
+                  { key: 'nis', label: 'NIS', class: 'w-20 lg:w-32 hidden lg:table-cell' },
+                  { key: 'nama', label: 'Nama Anak', class: 'w-[130px] lg:w-auto' },
+                  { key: 'aksi_mobile', label: 'Aksi', class: 'text-center whitespace-nowrap lg:hidden' },
+                  ...kriteriaList.map(k => ({ key: 'k_' + k.id, label: k.inisial, class: 'text-center' })),
+                  { key: 'yi', label: 'Nilai Yi', class: 'text-center whitespace-nowrap' },
+                  { key: 'ranking', label: 'Ranking', class: 'text-center whitespace-nowrap' },
+                  { key: 'aksi', label: 'Aksi', class: 'text-center whitespace-nowrap hidden lg:table-cell' }
+                ]}
+                data={hasil.baris.map((baris, index) => {
+                  let mapped = {
+                    ...baris,
+                    no: index + 1
+                  };
+                  baris.nilai.forEach((val, idx) => {
+                    if (kriteriaList[idx]) {
+                      mapped['k_' + kriteriaList[idx].id] = val;
+                    }
+                  });
+                  return mapped;
+                })}
+                className=""
+              >
+                <svelte:fragment slot="cell" let:item let:col>
+                  {#if col.key === 'nis'}
+                    {#if item.nis}
+                      <span class="text-sm font-semibold text-slate-700">{item.nis}</span>
+                    {:else}
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 whitespace-nowrap">
+                        Belum diisi
+                      </span>
+                    {/if}
+                  {:else if col.key === 'nama'}
+                    <span class="text-sm font-bold text-slate-800 leading-snug">{item.nama}</span>
+                  {:else if col.key === 'aksi_mobile'}
+                    <a
+                      href={`/penilaian/${item.anak_id}?kelas=${selectedKelasId}`}
+                      on:click|stopPropagation
+                      class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 rounded-lg text-[11px] font-bold transition whitespace-nowrap"
                     >
-                      <td class="px-3 sm:px-4 py-4 text-sm font-bold text-slate-500">{index + 1}</td>
-                      <td class="px-4 py-4 w-20 lg:w-32 hidden lg:table-cell">
-                        {#if baris.nis}
-                          <span class="text-sm font-semibold text-slate-700">{baris.nis}</span>
-                        {:else}
-                          <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 whitespace-nowrap">
-                            Belum diisi
-                          </span>
-                        {/if}
-                      </td>
-                      <td class="px-4 py-4 w-[130px] lg:w-auto text-sm font-bold text-slate-800 leading-snug">{baris.nama}</td>
-                      <td class="px-2 sm:px-3 py-4 text-center lg:hidden">
-                        <a
-                          href={`/penilaian/${baris.anak_id}?kelas=${selectedKelasId}`}
-                          on:click|stopPropagation
-                          class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 rounded-lg text-[11px] font-bold transition whitespace-nowrap"
-                        >
-                          <Eye class="w-3.5 h-3.5" />
-                          Lihat
-                        </a>
-                      </td>
-                      {#each baris.nilai as nilai}
-                        <td class="px-4 py-4 text-sm font-semibold text-slate-700 text-center">{nilai}</td>
-                      {/each}
-                      <td class="px-4 py-4 text-sm font-extrabold text-slate-900 text-center">
-                        {baris.yi !== null ? baris.yi.toFixed(3) : '—'}
-                      </td>
-                      <td class="px-4 py-4 text-center">
-                        {#if baris.ranking !== null}
-                          <span class="inline-flex items-center justify-center min-w-[34px] px-2.5 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-lg">
-                            {baris.ranking}
-                          </span>
-                        {:else if !ahpSiap}
-                          <span class="text-xs font-bold text-slate-400">—</span>
-                        {:else}
-                          <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 whitespace-nowrap">
-                            Belum lengkap
-                          </span>
-                        {/if}
-                      </td>
-                      <td class="px-2 sm:px-4 py-4 text-center hidden lg:table-cell">
-                        <a
-                          href={`/penilaian/${baris.anak_id}?kelas=${selectedKelasId}`}
-                          on:click|stopPropagation
-                          class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 rounded-lg text-[11px] font-bold transition whitespace-nowrap"
-                        >
-                          <Eye class="w-3.5 h-3.5" />
-                          Lihat
-                        </a>
-                      </td>
-                    </tr>
-                  {/each}
-                </tbody>
-              </table>
+                      <Eye class="w-3.5 h-3.5" />
+                      Lihat
+                    </a>
+                  {:else if col.key.startsWith('k_')}
+                    <span class="text-sm font-semibold text-slate-700 text-center">{item[col.key]}</span>
+                  {:else if col.key === 'yi'}
+                    <span class="text-sm font-extrabold text-slate-900 text-center">
+                      {item.yi !== null ? item.yi.toFixed(3) : '—'}
+                    </span>
+                  {:else if col.key === 'ranking'}
+                    {#if item.ranking !== null}
+                      <span class="inline-flex items-center justify-center min-w-[34px] px-2.5 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-lg">
+                        {item.ranking}
+                      </span>
+                    {:else if !ahpSiap}
+                      <span class="text-xs font-bold text-slate-400">—</span>
+                    {:else}
+                      <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 whitespace-nowrap">
+                        Belum lengkap
+                      </span>
+                    {/if}
+                  {:else if col.key === 'aksi'}
+                    <a
+                      href={`/penilaian/${item.anak_id}?kelas=${selectedKelasId}`}
+                      on:click|stopPropagation
+                      class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-100 rounded-lg text-[11px] font-bold transition whitespace-nowrap"
+                    >
+                      <Eye class="w-3.5 h-3.5" />
+                      Lihat
+                    </a>
+                  {:else}
+                    {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
+                  {/if}
+                </svelte:fragment>
+              </Table>
             </div>
 
             {#if hasil.jumlahLengkap < hasil.jumlahAnak}
