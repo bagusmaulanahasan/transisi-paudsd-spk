@@ -154,3 +154,135 @@ export function hitungMoora({
     jumlahAnak: keputusan.length
   };
 }
+
+/**
+ * Menghasilkan rincian lengkap perhitungan MOORA per tahap (B1 - B6) untuk transparansi laporan.
+ * Memakai ulang susunMatriksKeputusan dan normalisasiMatriks.
+ * @param {Object} data - { anakList, kriteriaList, indikatorList, jawabanList, bobot, ahpSiap }
+ * @returns {Object} Rincian lengkap tahap MOORA
+ */
+export function getMooraDetail({
+  anakList,
+  kriteriaList,
+  indikatorList,
+  jawabanList,
+  bobot = [],
+  ahpSiap = true
+}) {
+  const keputusan = susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jawabanList);
+  const lengkap = keputusan.filter((baris) => baris.lengkap);
+  const belumLengkap = keputusan.filter((baris) => !baris.lengkap);
+
+  if (!ahpSiap || lengkap.length === 0 || kriteriaList.length === 0) {
+    return {
+      keputusan,
+      lengkap,
+      belumLengkap,
+      pembagi: [],
+      normalisasi: [],
+      berbobot: [],
+      hasilAkhir: [],
+      ahpSiap
+    };
+  }
+
+  const matriksLengkap = lengkap.map((baris) => baris.nilai);
+  const numKriteria = kriteriaList.length;
+  const pembagi = new Array(numKriteria).fill(0);
+
+  for (let j = 0; j < numKriteria; j++) {
+    let sumSq = 0;
+    for (let i = 0; i < matriksLengkap.length; i++) {
+      sumSq += matriksLengkap[i][j] ** 2;
+    }
+    pembagi[j] = bulat3(Math.sqrt(sumSq));
+  }
+
+  const normalisasi = normalisasiMatriks(matriksLengkap);
+  const berbobot = normalisasi.map((baris) =>
+    baris.map((nilai, j) => bulat3(nilai * (bobot[j] ?? 0)))
+  );
+
+  const hasilAkhir = lengkap.map((baris, index) => {
+    const rowNorm = normalisasi[index];
+    const rowW = berbobot[index];
+    let benefitSum = 0;
+    let costSum = 0;
+
+    kriteriaList.forEach((kriteria, j) => {
+      const valW = rowW[j] ?? 0;
+      if (kriteria.jenis === 'cost') {
+        costSum += valW;
+      } else {
+        benefitSum += valW;
+      }
+    });
+
+    const yi = bulat3(benefitSum - costSum);
+
+    return {
+      ...baris,
+      normalisasi: rowNorm,
+      berbobot: rowW,
+      benefitSum: bulat3(benefitSum),
+      costSum: bulat3(costSum),
+      yi,
+      ranking: null
+    };
+  });
+
+  hasilAkhir.sort((a, b) => b.yi - a.yi);
+  hasilAkhir.forEach((baris, index) => {
+    const sebelumnya = hasilAkhir[index - 1];
+    if (sebelumnya && sebelumnya.yi === baris.yi) {
+      baris.ranking = sebelumnya.ranking;
+    } else {
+      baris.ranking = index + 1;
+    }
+  });
+
+  // Pengecekan kesamaan Yi/ranking dengan hitungMoora secara silent (console.warn jika berbeda)
+  try {
+    const pembanding = hitungMoora({
+      anakList,
+      kriteriaList,
+      indikatorList,
+      jawabanList,
+      bobot,
+      ahpSiap
+    });
+    const petaPembanding = new Map(pembanding.baris.map((b) => [b.anak_id, b]));
+    for (const baris of hasilAkhir) {
+      const lain = petaPembanding.get(baris.anak_id);
+      if (!lain || lain.yi !== baris.yi || lain.ranking !== baris.ranking) {
+        console.warn(
+          'getMooraDetail: hasil Yi/ranking berbeda dengan hitungMoora untuk',
+          baris.nama
+        );
+        break;
+      }
+    }
+  } catch (e) {
+    console.warn('getMooraDetail assertion error:', e);
+  }
+
+  const barisBelumLengkapSorted = belumLengkap.map((baris) => ({
+    ...baris,
+    normalisasi: null,
+    berbobot: null,
+    yi: null,
+    ranking: null
+  })).sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+
+  return {
+    keputusan,
+    lengkap,
+    belumLengkap: barisBelumLengkapSorted,
+    pembagi,
+    normalisasi,
+    berbobot,
+    hasilAkhir: [...hasilAkhir, ...barisBelumLengkapSorted],
+    ahpSiap
+  };
+}
+

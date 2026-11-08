@@ -127,3 +127,97 @@ export function hitungBobotAhp(kriteriaList, perbandinganList) {
       : `Matriks AHP belum konsisten (CR = ${hasil.cr.toFixed(3)}, batas 0.100). Perbaiki perbandingan agar bobot dapat dipakai.`
   };
 }
+
+/**
+ * Menghitung rincian langkah-langkah AHP secara transparan untuk tampilan detail laporan.
+ * @param {number[][]} matrix - Matriks perbandingan berpasangan n x n
+ * @returns {Object} { n, colSums, normalizedMatrix, weights, awVector, lambdaMax, ci, ri, cr, isConsistent }
+ */
+export function getAHPDetail(matrix) {
+  const n = matrix.length;
+  const round3 = (v) => parseFloat(v.toFixed(3));
+
+  if (n === 0) {
+    return {
+      n: 0,
+      colSums: [],
+      normalizedMatrix: [],
+      weights: [],
+      awVector: [],
+      lambdaMax: 0,
+      ci: 0,
+      ri: 0,
+      cr: 0,
+      isConsistent: false
+    };
+  }
+
+  if (n === 1) {
+    return {
+      n: 1,
+      colSums: [matrix[0][0] || 1],
+      normalizedMatrix: [[1]],
+      weights: [1],
+      awVector: [1],
+      lambdaMax: 1,
+      ci: 0,
+      ri: 0,
+      cr: 0,
+      isConsistent: true
+    };
+  }
+
+  // 1. Jumlah tiap kolom
+  const colSums = new Array(n).fill(0);
+  for (let j = 0; j < n; j++) {
+    for (let i = 0; i < n; i++) {
+      colSums[j] += matrix[i][j];
+    }
+  }
+
+  // 2. Matriks normalisasi dan bobot (rata-rata baris)
+  const normalizedMatrix = Array.from({ length: n }, () => new Array(n).fill(0));
+  const w = new Array(n).fill(0);
+
+  for (let i = 0; i < n; i++) {
+    let rowSum = 0;
+    for (let j = 0; j < n; j++) {
+      const normVal = matrix[i][j] / colSums[j];
+      normalizedMatrix[i][j] = normVal;
+      rowSum += normVal;
+    }
+    w[i] = rowSum / n;
+  }
+
+  // 3. Vektor (A · w)_i dan λmax
+  const awVector = new Array(n).fill(0);
+  let lambdaMax = 0;
+  for (let i = 0; i < n; i++) {
+    let aw = 0;
+    for (let j = 0; j < n; j++) {
+      aw += matrix[i][j] * w[j];
+    }
+    awVector[i] = aw;
+    lambdaMax += aw / w[i];
+  }
+  lambdaMax /= n;
+
+  // 4. CI, RI, CR
+  const ci = (lambdaMax - n) / (n - 1);
+  const ri = RANDOM_INDEX[n] || 0;
+  const cr = ri ? ci / ri : 0;
+
+  return {
+    n,
+    colSums: colSums.map(round3),
+    normalizedMatrix: normalizedMatrix.map((row) => row.map(round3)),
+    weights: w.map(round3),
+    awVector: awVector.map(round3),
+    lambdaMax: round3(lambdaMax),
+    ci: round3(ci),
+    ri,
+    cr: round3(cr),
+    isConsistent: cr <= 0.1
+  };
+}
+

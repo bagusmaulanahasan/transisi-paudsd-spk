@@ -1,10 +1,12 @@
 <script>
   import { supabase } from '$lib/supabase';
-  import { hitungBobotAhp } from '$lib/ahp';
-  import { hitungMoora } from '$lib/moora';
+  import { hitungBobotAhp, susunMatriksPerbandingan, getAHPDetail } from '$lib/ahp';
+  import { hitungMoora, getMooraDetail } from '$lib/moora';
   import { cachedFetch, peekMemoryCache } from '$lib/cache';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
+  import DetailAHP from './DetailAHP.svelte';
+  import DetailMoora from './DetailMoora.svelte';
   import {
     FileText,
     Loader2,
@@ -41,6 +43,10 @@
   let ahpSiap = false;
   let pesanAhp = '';
   let hasil = { baris: [], jumlahLengkap: 0, jumlahAnak: 0 };
+
+  // Detail Perhitungan State
+  let ahpDetail = null;
+  let mooraDetail = null;
 
   if (kelasDataAwal && !loadingMaster) hitungUlang();
 
@@ -123,10 +129,24 @@
   }
 
   function hitungUlang() {
+    const matrix = susunMatriksPerbandingan(kriteriaList, perbandinganList);
     const hasilAhp = hitungBobotAhp(kriteriaList, perbandinganList);
+    
     bobot = hasilAhp.bobot;
     ahpSiap = hasilAhp.ahpSiap;
     pesanAhp = hasilAhp.pesan;
+
+    // Hitung rincian untuk transparansi
+    ahpDetail = getAHPDetail(matrix);
+    
+    mooraDetail = getMooraDetail({
+      anakList,
+      kriteriaList,
+      indikatorList,
+      jawabanList,
+      bobot,
+      ahpSiap
+    });
 
     hasil = hitungMoora({
       anakList,
@@ -142,6 +162,7 @@
     window.print();
   }
 </script>
+
 
 <svelte:head>
   <title>Laporan Perhitungan - SPK Transisi PAUD-SD</title>
@@ -281,7 +302,7 @@
             <tr>
               <th class="p-3">No.</th>
               <th class="p-3">Nama Anak</th>
-              <th class="p-3">Nilai Optimasi ($Y_i$)</th>
+              <th class="p-3">Nilai Optimasi (Yᵢ)</th>
               <th class="p-3">Ranking</th>
             </tr>
           </thead>
@@ -307,6 +328,22 @@
           </tbody>
         </table>
       </div>
+    </div>
+
+    <!-- DETAIL PERHITUNGAN -->
+    <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-6">
+      <div class="flex items-center gap-3">
+        <div class="p-3 bg-white rounded-xl border border-slate-200">
+          <FileText class="w-6 h-6 text-blue-600" />
+        </div>
+        <div>
+          <h2 class="text-xl font-extrabold text-slate-900">Detail Perhitungan</h2>
+          <p class="text-sm text-slate-500 font-medium">Transparansi langkah perhitungan AHP & MOORA.</p>
+        </div>
+      </div>
+      
+      <DetailAHP {kriteriaList} {perbandinganList} ahpDetail={ahpDetail} />
+      <DetailMoora {kriteriaList} mooraDetail={mooraDetail} bobot={bobot} />
     </div>
   {/if}
 </div>
