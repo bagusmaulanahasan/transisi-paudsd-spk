@@ -10,7 +10,9 @@
     CheckCircle2, 
     Calculator,
     Save,
-    Loader2
+    Loader2,
+    ListTree,
+    Scale
   } from 'lucide-svelte';
   import { onMount } from 'svelte';
 
@@ -255,7 +257,15 @@
     <!-- Table Kriteria -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
       <div class="p-5 md:p-6 border-b border-slate-100 flex items-center justify-between">
-        <h2 class="text-lg font-bold text-slate-900 tracking-tight">Daftar Kriteria Penilaian</h2>
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+            <ListTree class="w-5 h-5" />
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900 tracking-tight">Daftar Kriteria Penilaian</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Daftar kriteria aktif yang digunakan dalam perhitungan.</p>
+          </div>
+        </div>
         <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
           Total: {kriteriaList.length} Kriteria Aktif
         </span>
@@ -311,15 +321,20 @@
     <!-- AHP Matrix Section -->
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900 tracking-tight">Matriks Perbandingan Berpasangan (AHP)</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Batas konsistensi yang diizinkan: CR ≤ 0.10. Simpan perubahan ke database setelah nilai konsisten.</p>
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
+            <Scale class="w-5 h-5" />
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900 tracking-tight">Matriks Perbandingan Berpasangan (AHP)</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Batas konsistensi yang diizinkan: CR ≤ 0.10. Simpan perubahan ke database setelah nilai konsisten.</p>
+          </div>
         </div>
         <div class="flex items-center gap-2">
           {#if !modeEditMatriks}
             <button 
               on:click={() => modeEditMatriks = true}
-              class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit shadow-md shadow-blue-200"
+              class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit shadow-md shadow-blue-200"
             >
               <Edit2 class="w-4 h-4" />
               <span>Edit Matriks</span>
@@ -350,15 +365,15 @@
       <!-- Keterangan Skala Saaty -->
       <div class="bg-blue-50/70 border border-blue-100 rounded-xl p-4 text-xs text-blue-900 space-y-2">
         <p class="font-extrabold uppercase tracking-wide flex items-center space-x-1.5">
-          <span>ℹ️ Panduan Skala Perbandingan Saaty (1 - 9):</span>
+          <span>Panduan Skala Perbandingan Saaty (1 - 9):</span>
         </p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 pt-1 font-medium text-[11px]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 pt-1 font-medium text-[11px]">
           <div><strong>1</strong> : Sama penting</div>
           <div><strong>3</strong> : Sedikit lebih penting</div>
           <div><strong>5</strong> : Lebih penting</div>
           <div><strong>7</strong> : Sangat lebih penting</div>
           <div><strong>9</strong> : Mutlak lebih penting</div>
-          <div class="col-span-full opacity-80 pt-1"><em>Nilai 2, 4, 6, 8 adalah nilai tengah antar penilaian berdekatan.</em></div>
+          <div class="col-span-full"><em>Nilai 2, 4, 6, 8 adalah nilai tengah antar penilaian berdekatan.</em></div>
         </div>
       </div>
 
