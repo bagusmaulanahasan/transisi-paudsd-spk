@@ -8,16 +8,10 @@
   import { onMount } from 'svelte';
   import DetailAHP from './DetailAHP.svelte';
   import DetailMoora from './DetailMoora.svelte';
-  import {
-    FileText,
-    Loader2,
-    School,
-    Users,
-    CheckCircle2,
-    AlertCircle,
-    Printer,
-    ArrowLeft
-  } from 'lucide-svelte';
+  import TahapBobot from './TahapBobot.svelte';
+  import TahapMatriks from './TahapMatriks.svelte';
+  import TahapHasil from './TahapHasil.svelte';
+  import { FileText, Loader2, School, Printer } from 'lucide-svelte';
 
   const kelasAwal = peekMemoryCache('master:kelas');
   const kriteriaAwal = peekMemoryCache('master:kriteria');
@@ -188,116 +182,9 @@
       <p class="text-xs text-slate-500 mt-1">Tambahkan kelas terlebih dahulu untuk melihat laporan.</p>
     </div>
   {:else}
-    <!-- TAHAP 1: BOBOT AHP -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4 print:border-slate-300">
-      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-        <h2 class="text-base font-bold text-slate-900">Tahap 1: Bobot Prioritas Kriteria (AHP)</h2>
-        <span class={`px-2.5 py-1 rounded-full text-xs font-semibold ${ahpSiap ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-          {ahpSiap ? 'Konsisten (CR ≤ 0.10)' : 'Perlu Diperbaiki'}
-        </span>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
-            <tr>
-              <th class="p-3">Inisial</th>
-              <th class="p-3">Nama Kriteria</th>
-              <th class="p-3">Jenis MOORA</th>
-              <th class="p-3">Bobot Prioritas</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 text-slate-700">
-            {#each kriteriaList as item, i}
-              <tr>
-                <td class="p-3 font-bold text-blue-600">C{item.urutan || i + 1}</td>
-                <td class="p-3 font-medium">{item.nama_kriteria}</td>
-                <td class="p-3 font-semibold uppercase text-slate-500">{item.jenis}</td>
-                <td class="p-3 font-bold text-slate-900">{(bobot[i] ?? 0).toFixed(3)}</td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- TAHAP 2: MATRIKS KEPUSATAN -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4 print:border-slate-300">
-      <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
-        Tahap 2: Matriks Keputusan (X) — Total Poin per Kriteria
-      </h2>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
-            <tr>
-              <th class="p-3">No.</th>
-              <th class="p-3">Nama Anak</th>
-              {#each kriteriaList as k, i}
-                <th class="p-3">C{k.urutan || i + 1}</th>
-              {/each}
-              <th class="p-3">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 text-slate-700">
-            {#each hasil.baris as baris, idx}
-              <tr>
-                <td class="p-3">{idx + 1}</td>
-                <td class="p-3 font-bold">{baris.nama}</td>
-                {#each baris.nilai as val}
-                  <td class="p-3 font-medium">{val}</td>
-                {/each}
-                <td class="p-3 font-semibold">
-                  {#if baris.lengkap}
-                    <span class="text-emerald-600">Lengkap</span>
-                  {:else}
-                    <span class="text-amber-600">Belum Lengkap ({baris.terjawab}/{baris.total})</span>
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- TAHAP 3: HASIL MOORA & RANKING -->
-    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4 print:border-slate-300">
-      <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
-        Tahap 3: Hasil Akhir MOORA & Ranking Prioritas Stimulasi
-      </h2>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
-            <tr>
-              <th class="p-3">No.</th>
-              <th class="p-3">Nama Anak</th>
-              <th class="p-3">Nilai Optimasi (Yᵢ)</th>
-              <th class="p-3">Ranking</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100 text-slate-700">
-            {#each hasil.baris as baris, idx}
-              <tr class={baris.ranking === 1 ? 'bg-blue-50/50 font-bold' : ''}>
-                <td class="p-3">{idx + 1}</td>
-                <td class="p-3 font-bold">{baris.nama}</td>
-                <td class="p-3 font-bold text-slate-900">
-                  {baris.yi !== null ? baris.yi.toFixed(3) : '—'}
-                </td>
-                <td class="p-3">
-                  {#if baris.ranking !== null}
-                    <span class={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${baris.ranking === 1 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                      {baris.ranking}
-                    </span>
-                  {:else}
-                    <span class="text-slate-400">—</span>
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <TahapBobot {kriteriaList} {bobot} {ahpSiap} />
+    <TahapMatriks {kriteriaList} {hasil} />
+    <TahapHasil {hasil} />
 
     <!-- DETAIL PERHITUNGAN -->
     <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-6">
