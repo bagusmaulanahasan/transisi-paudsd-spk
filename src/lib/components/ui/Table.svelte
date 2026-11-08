@@ -26,17 +26,9 @@
             <tr class="hover:bg-slate-50/60 transition-colors">
               {#each columns as col, colIndex}
                 <td class={`px-6 py-4 whitespace-nowrap ${col.class || ''}`}>
-                  {#if $$slots.cell}
-                    <slot name="cell" {item} {index} {col} {colIndex}>
-                      {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
-                    </slot>
-                  {:else if $$slots[col.key]}
-                    <slot name={col.key} {item} {index}>
-                      {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
-                    </slot>
-                  {:else}
+                  <slot name="cell" {item} {index} {col} {colIndex}>
                     {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
-                  {/if}
+                  </slot>
                 </td>
               {/each}
             </tr>

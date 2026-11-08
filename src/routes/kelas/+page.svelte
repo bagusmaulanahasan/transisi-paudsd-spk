@@ -11,6 +11,8 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import Modal from '$lib/components/ui/Modal.svelte';
+  import Table from '$lib/components/ui/Table.svelte';
+  import Input from '$lib/components/ui/Input.svelte';
   import {
     Plus,
     Trash2,
@@ -197,7 +199,7 @@
     <LoadingState text="Sinkronisasi data kelas..." />
   {:else}
     <!-- Tabel Daftar Kelas -->
-    <Card padding="p-0">
+    <Card className="p-0">
       <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
@@ -237,65 +239,54 @@
           </EmptyState>
         </div>
       {:else}
-        <div class="px-5 md:px-6 pt-4 md:pt-0">
-          <p class="xl:hidden text-[11px] text-slate-400 font-medium">Geser tabel ke samping untuk melihat semua kolom.</p>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse min-w-[720px]">
-            <thead>
-              <tr class="bg-slate-50/50">
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest w-16">No.</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Nama Kelas</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Tahun Ajaran</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center">Jumlah Anak</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right w-48">Aksi</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              {#each kelasList as item, index (item.id)}
-                <tr class="hover:bg-slate-50/30 transition">
-                  <td class="px-6 py-4 text-sm font-bold text-slate-500">{index + 1}</td>
-                  <td class="px-6 py-4">
-                    <a
-                      href={`/kelas/${item.id}`}
-                      class="text-sm font-bold text-slate-800 hover:text-blue-600 transition"
-                    >
-                      {item.nama_kelas}
-                    </a>
-                  </td>
-                  <td class="px-6 py-4">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-                      {item.tahun_ajaran}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 text-center">
-                    <span class="inline-flex items-center gap-1.5 text-sm font-bold text-slate-700">
-                      <Users class="w-3.5 h-3.5 text-slate-400" />
-                      {jumlahAnakMap[item.id] || 0}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 text-right whitespace-nowrap space-x-2">
-                    <a
-                      href={`/kelas/${item.id}`}
-                      class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition"
-                      title="Kelola Anak"
-                    >
-                      <Users class="w-3.5 h-3.5" />
-                      <span>Kelola Anak</span>
-                    </a>
-                    <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Kelas">
-                      <Edit2 class="w-3.5 h-3.5" />
-                    </Button>
-                    <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteKelas(item)} title="Hapus Kelas">
-                      <Trash2 class="w-3.5 h-3.5" />
-                    </Button>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
+        <Table
+          columns={[
+            { key: 'no', label: 'No.', class: 'w-16' },
+            { key: 'nama_kelas', label: 'Nama Kelas' },
+            { key: 'tahun_ajaran', label: 'Tahun Ajaran' },
+            { key: 'jumlah_anak', label: 'Jumlah Anak', class: 'text-center' },
+            { key: 'aksi', label: 'Aksi', class: 'text-right w-48' }
+          ]}
+          data={kelasList.map((k, i) => ({ ...k, no: i + 1, jumlah_anak: jumlahAnakMap[k.id] || 0 }))}
+        >
+          <svelte:fragment slot="nama_kelas" let:item>
+            <a
+              href={`/kelas/${item.id}`}
+              class="text-sm font-bold text-slate-800 hover:text-blue-600 transition"
+            >
+              {item.nama_kelas}
+            </a>
+          </svelte:fragment>
+          <svelte:fragment slot="tahun_ajaran" let:item>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
+              {item.tahun_ajaran}
+            </span>
+          </svelte:fragment>
+          <svelte:fragment slot="jumlah_anak" let:item>
+            <span class="inline-flex items-center gap-1.5 text-sm font-bold text-slate-700">
+              <Users class="w-3.5 h-3.5 text-slate-400" />
+              {item.jumlah_anak}
+            </span>
+          </svelte:fragment>
+          <svelte:fragment slot="aksi" let:item>
+            <div class="flex justify-end gap-2">
+              <a
+                href={`/kelas/${item.id}`}
+                class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition"
+                title="Kelola Anak"
+              >
+                <Users class="w-3.5 h-3.5" />
+                <span>Kelola Anak</span>
+              </a>
+              <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Kelas">
+                <Edit2 class="w-3.5 h-3.5" />
+              </Button>
+              <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteKelas(item)} title="Hapus Kelas">
+                <Trash2 class="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </svelte:fragment>
+        </Table>
 
         <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
           <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
@@ -307,30 +298,23 @@
   {/if}
 </div>
 
-<!-- Modal Tambah / Ubah Kelas -->
 <Modal isOpen={showModal} title={isEditing ? 'Ubah Kelas' : 'Tambah Kelas Baru'} on:close={closeModal}>
   <div class="space-y-5">
-    <div>
-      <label for="nama-kelas" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Nama Kelas</label>
-      <input
-        id="nama-kelas"
-        type="text"
-        bind:value={namaKelas}
-        placeholder="Contoh: Kelas A"
-        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
-      />
-    </div>
+    <Input
+      id="nama-kelas"
+      label="Nama Kelas"
+      bind:value={namaKelas}
+      placeholder="Contoh: Kelas A"
+      required
+    />
 
-    <div>
-      <label for="tahun-ajaran" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Tahun Ajaran</label>
-      <input
-        id="tahun-ajaran"
-        type="text"
-        bind:value={tahunAjaran}
-        placeholder="Contoh: 2026/2027"
-        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
-      />
-    </div>
+    <Input
+      id="tahun-ajaran"
+      label="Tahun Ajaran"
+      bind:value={tahunAjaran}
+      placeholder="Contoh: 2026/2027"
+      required
+    />
 
     <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed flex items-start gap-2">
       <AlertCircle class="w-4 h-4 shrink-0 mt-0.5" />
