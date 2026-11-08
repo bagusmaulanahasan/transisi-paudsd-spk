@@ -21,6 +21,11 @@
     PencilLine,
     School
   } from 'lucide-svelte';
+  import PageHeader from '$lib/components/ui/PageHeader.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import LoadingState from '$lib/components/ui/LoadingState.svelte';
+  import EmptyState from '$lib/components/ui/EmptyState.svelte';
 
   // ID anak diambil dari URL, misalnya /penilaian/12.
   const anakId = Number($page.params.anakId);
@@ -281,25 +286,23 @@
 
 <div class="space-y-8">
   {#if loading}
-    <div class="flex items-center justify-center p-12 bg-white rounded-2xl border border-slate-100 shadow-sm">
-      <div class="flex flex-col items-center space-y-3">
-        <Loader2 class="w-8 h-8 text-blue-600 animate-spin" />
-        <p class="text-slate-500 text-sm font-medium">Memuat data penilaian anak...</p>
-      </div>
-    </div>
+    <LoadingState text="Memuat data penilaian anak..." />
   {:else if notFound}
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-10 text-center">
-      <AlertCircle class="w-10 h-10 text-amber-400 mx-auto mb-3" />
-      <p class="text-base font-bold text-slate-800">Data anak tidak ditemukan</p>
-      <p class="text-xs text-slate-500 mt-1 mb-5">Anak mungkin sudah dihapus dari kelas ini.</p>
-      <a
-        href="/penilaian"
-        class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
-      >
-        <ArrowLeft class="w-4 h-4 mr-1.5" />
-        <span>Kembali ke Daftar Penilaian</span>
-      </a>
-    </div>
+    <EmptyState
+      title="Data anak tidak ditemukan"
+      description="Anak mungkin sudah dihapus dari kelas ini."
+      icon={AlertCircle}
+    >
+      <svelte:fragment slot="action">
+        <a
+          href="/penilaian"
+          class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
+        >
+          <ArrowLeft class="w-4 h-4 mr-1.5" />
+          <span>Kembali ke Daftar Penilaian</span>
+        </a>
+      </svelte:fragment>
+    </EmptyState>
   {:else}
     <!-- Tombol kembali -->
     <a
@@ -311,7 +314,7 @@
     </a>
 
     <!-- Identitas Anak -->
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6">
+    <Card className="p-5 md:p-6">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
         <div class="flex items-center gap-4">
           <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
@@ -341,29 +344,23 @@
 
         <div class="flex items-center gap-2">
           {#if modeEdit}
-            <button
-              on:click={selesaiEdit}
-              class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-emerald-200"
-            >
-              <CheckCircle2 class="w-4 h-4" />
+            <Button variant="primary" on:click={selesaiEdit} className="shadow-sm shadow-emerald-200">
+              <CheckCircle2 class="w-4 h-4 mr-1.5" />
               Selesai
-            </button>
+            </Button>
           {:else}
-            <button
-              on:click={mulaiEdit}
-              class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold transition shadow-sm shadow-blue-200"
-            >
-              <PencilLine class="w-4 h-4" />
+            <Button variant="primary" on:click={mulaiEdit} className="bg-green-600 hover:bg-green-700 shadow-sm shadow-blue-200">
+              <PencilLine class="w-4 h-4 mr-1.5" />
               Edit Penilaian
-            </button>
+            </Button>
           {/if}
         </div>
       </div>
-    </section>
+    </Card>
 
     <!-- Ringkasan Yi & Ranking -->
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <Card className="p-5 md:p-6">
         <div class="flex items-center justify-between gap-3">
           <div>
             <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Nilai Yi</p>
@@ -384,9 +381,9 @@
             Nilai optimasi MOORA, dibulatkan 3 angka di belakang koma.
           {/if}
         </p>
-      </div>
+      </Card>
 
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6">
+      <Card className="p-5 md:p-6">
         <div class="flex items-center justify-between gap-3">
           <div>
             <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Ranking</p>
@@ -409,8 +406,8 @@
             Ranking belum tersedia.
           {/if}
         </p>
-      </div>
-    </section>
+      </Card>
+    </div>
 
     {#if !ahpSiap}
       <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-3">
@@ -454,7 +451,7 @@
     {/if}
 
     <!-- Jawaban Penilaian -->
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <Card className="overflow-hidden p-0">
       <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
@@ -574,7 +571,7 @@
             : 'Tampilan ini hanya untuk melihat hasil. Tekan tombol Edit Penilaian di atas untuk mengubah jawaban.'}
         </p>
       </div>
-    </section>
+    </Card>
 
     {#if statusSimpanHasil}
       <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">

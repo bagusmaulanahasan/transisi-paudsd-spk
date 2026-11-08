@@ -18,6 +18,11 @@
     Trophy,
     Eye
   } from 'lucide-svelte';
+  import PageHeader from '$lib/components/ui/PageHeader.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import LoadingState from '$lib/components/ui/LoadingState.svelte';
+  import EmptyState from '$lib/components/ui/EmptyState.svelte';
 
   // Data master dari cache memori dipakai lebih dulu agar tabel tampil seketika.
   const kelasAwal = peekMemoryCache('master:kelas');
@@ -188,42 +193,39 @@
 
 <div class="space-y-8">
   <!-- Header Halaman -->
-  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Penilaian Anak & Perankingan MOORA</h1>
-      <p class="text-sm text-slate-500 mt-1 font-medium">
-        Pilih kelas, lalu klik <span class="font-bold text-slate-700">Lihat</span> pada baris anak untuk membuka penilaian. Tampilan awal hanya baca.
-      </p>
-    </div>
-    <span class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-xl text-[11px] font-bold w-fit">
-      <Trophy class="w-3.5 h-3.5" />
-      Perhitungan otomatis
-    </span>
-  </div>
+  <PageHeader
+    title="Penilaian Anak & Perankingan MOORA"
+    subtitle="Pilih kelas, lalu klik Lihat pada baris anak untuk membuka penilaian. Tampilan awal hanya baca."
+  >
+    <svelte:fragment slot="action">
+      <span class="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-xl text-[11px] font-bold w-fit">
+        <Trophy class="w-3.5 h-3.5" />
+        Perhitungan otomatis
+      </span>
+    </svelte:fragment>
+  </PageHeader>
 
   {#if loadingMaster}
-    <div class="flex items-center justify-center p-12 bg-white rounded-2xl border border-slate-100 shadow-sm">
-      <div class="flex flex-col items-center space-y-3">
-        <Loader2 class="w-8 h-8 text-blue-600 animate-spin" />
-        <p class="text-slate-500 text-sm font-medium">Menyiapkan data penilaian...</p>
-      </div>
-    </div>
+    <LoadingState text="Menyiapkan data penilaian..." />
   {:else if kelasList.length === 0}
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-10 text-center">
-      <School class="w-10 h-10 text-slate-300 mx-auto mb-3" />
-      <p class="text-base font-bold text-slate-800">Belum ada kelas</p>
-      <p class="text-xs text-slate-500 mt-1 mb-5">Tambahkan kelas dan data anak terlebih dahulu sebelum melakukan penilaian.</p>
-      <a
-        href="/kelas"
-        class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
-      >
-        <span>Buka Kelola Kelas</span>
-        <ArrowRight class="w-4 h-4 ml-1.5" />
-      </a>
-    </div>
+    <EmptyState
+      title="Belum ada kelas"
+      description="Tambahkan kelas dan data anak terlebih dahulu sebelum melakukan penilaian."
+      icon={School}
+    >
+      <svelte:fragment slot="action">
+        <a
+          href="/kelas"
+          class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
+        >
+          <span>Buka Kelola Kelas</span>
+          <ArrowRight class="w-4 h-4 ml-1.5" />
+        </a>
+      </svelte:fragment>
+    </EmptyState>
   {:else}
     <!-- Pemilihan Kelas -->
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 md:p-6 space-y-4">
+    <Card className="p-5 md:p-6 space-y-4">
       <div class="max-w-md">
         <label for="pilih-kelas" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Pilih Kelas</label>
         <select
@@ -240,28 +242,26 @@
       <p class="text-[11px] text-slate-400 font-medium leading-relaxed">
         Nilai Yi dan ranking dihitung otomatis dari jawaban terbaru seluruh anak di kelas ini.
       </p>
-    </section>
+    </Card>
 
     {#if loadingKelas}
-      <div class="flex items-center justify-center p-12 bg-white rounded-2xl border border-slate-100 shadow-sm">
-        <div class="flex flex-col items-center space-y-3">
-          <Loader2 class="w-8 h-8 text-blue-600 animate-spin" />
-          <p class="text-slate-500 text-sm font-medium">Memuat data kelas...</p>
-        </div>
-      </div>
+      <LoadingState text="Memuat data kelas..." />
     {:else if anakList.length === 0}
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-10 text-center">
-        <Users class="w-10 h-10 text-slate-300 mx-auto mb-3" />
-        <p class="text-base font-bold text-slate-800">Belum ada anak pada kelas ini</p>
-        <p class="text-xs text-slate-500 mt-1 mb-5">Tambahkan data anak terlebih dahulu, lalu kembali ke halaman penilaian.</p>
-        <a
-          href={`/kelas/${selectedKelasId}`}
-          class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
-        >
-          <Users class="w-4 h-4 mr-1.5" />
-          <span>Kelola Anak Kelas Ini</span>
-        </a>
-      </div>
+      <EmptyState
+        title="Belum ada anak pada kelas ini"
+        description="Tambahkan data anak terlebih dahulu, lalu kembali ke halaman penilaian."
+        icon={Users}
+      >
+        <svelte:fragment slot="action">
+          <a
+            href={`/kelas/${selectedKelasId}`}
+            class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
+          >
+            <Users class="w-4 h-4 mr-1.5" />
+            <span>Kelola Anak Kelas Ini</span>
+          </a>
+        </svelte:fragment>
+      </EmptyState>
     {:else}
       {#if !ahpSiap}
         <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-3">
@@ -292,7 +292,7 @@
       {/if}
 
       <!-- Tabel Hasil MOORA -->
-      <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <Card className="overflow-hidden p-0">
         <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
@@ -329,11 +329,12 @@
           </div>
 
           {#if hasil.baris.length === 0}
-            <div class="flex flex-col items-center justify-center p-10 text-center border border-dashed border-slate-300 rounded-xl bg-slate-50/50">
-              <Users class="w-8 h-8 text-slate-300 mb-3" />
-              <p class="text-sm font-bold text-slate-700">Belum ada data untuk dihitung</p>
-              <p class="text-xs text-slate-500 mt-1">Tambahkan anak dan isi jawaban indikator terlebih dahulu.</p>
-            </div>
+            <EmptyState
+              title="Belum ada data untuk dihitung"
+              description="Tambahkan anak dan isi jawaban indikator terlebih dahulu."
+              icon={Users}
+              className="border-dashed bg-slate-50/50"
+            />
           {:else}
             <div class="xl:hidden">
               <p class="text-[11px] text-slate-400 font-medium">Geser tabel ke samping untuk melihat semua kolom.</p>
@@ -444,7 +445,7 @@
             <p class="text-[11px] text-slate-500 font-medium leading-relaxed">{statusSimpanHasil}</p>
           </div>
         {/if}
-      </section>
+      </Card>
     {/if}
   {/if}
 </div>
