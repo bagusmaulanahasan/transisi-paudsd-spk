@@ -4,6 +4,11 @@
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { confirmAction } from '$lib/confirm';
+  import PageHeader from '$lib/components/ui/PageHeader.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Modal from '$lib/components/ui/Modal.svelte';
+  import LoadingState from '$lib/components/ui/LoadingState.svelte';
   import { 
     Plus, 
     Trash2, 
@@ -247,24 +252,17 @@
 </svelte:head>
 
 <div class="space-y-8">
-  <!-- Header Section -->
-  <div>
-    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Kelola Kriteria & Pembobotan AHP</h1>
-    <p class="text-sm text-slate-500 mt-1 font-medium">Tentukan kriteria penilaian anak beserta bobot prioritas menggunakan perbandingan berpasangan AHP.</p>
-  </div>
+<PageHeader 
+    title="Kelola Kriteria & Pembobotan AHP" 
+    subtitle="Tentukan kriteria penilaian anak beserta bobot prioritas menggunakan perbandingan berpasangan AHP."
+  />
 
   {#if loading}
-    <div class="flex items-center justify-center p-12 bg-white rounded-2xl border border-slate-100 shadow-sm">
-      <div class="flex flex-col items-center space-y-3">
-        <Loader2 class="w-8 h-8 text-blue-600 animate-spin" />
-        <p class="text-slate-500 text-sm font-medium">Sinkronisasi data database...</p>
-      </div>
-    </div>
+    <LoadingState text="Sinkronisasi data database..." />
   {:else}
     <!-- Table Kriteria -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-      <!-- <div class="p-5 md:p-6 border-b border-slate-100 flex items-center justify-between"> -->
-       <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <Card className="flex flex-col">
+       <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4 -mx-6 -mt-6 mb-6">
         <div class="flex items-center space-x-3">
           <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
             <ListTree class="w-5 h-5" />
@@ -278,13 +276,10 @@
           <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
             Total: {kriteriaList.length} Kriteria
           </span>
-          <button 
-            on:click={openAddModal}
-            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
-          >
+          <Button on:click={openAddModal}>
             <Plus class="w-4 h-5 mr-1.5" />
             <span>Tambah Kriteria</span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -313,31 +308,23 @@
                   {ahpResult.weights[index] ? ahpResult.weights[index].toFixed(3) : '0.000'}
                 </td>
                 <td class="px-6 py-4 text-right space-x-2">
-                  <button 
-                    on:click={() => openEditModal(item)}
-                    class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition inline-flex items-center"
-                    title="Edit Kriteria"
-                  >
+                  <Button variant="ghost" className="p-2" on:click={() => openEditModal(item)}>
                     <Edit2 class="w-3.5 h-3.5" />
-                  </button>
-                  <button 
-                    on:click={() => deleteKriteria(item.id)}
-                    class="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition inline-flex items-center"
-                    title="Hapus Kriteria"
-                  >
+                  </Button>
+                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteKriteria(item.id)}>
                     <Trash2 class="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </td>
               </tr>
             {/each}
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
 
     <!-- AHP Matrix Section -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+    <Card className="space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 -mx-6 -mt-6 p-6 mb-0">
         <div class="flex items-center space-x-3">
           <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
             <Scale class="w-5 h-5" />
@@ -349,32 +336,25 @@
         </div>
         <div class="flex items-center gap-2">
           {#if !modeEditMatriks}
-            <button 
-              on:click={() => modeEditMatriks = true}
-              class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit shadow-md shadow-blue-200"
-            >
-              <Edit2 class="w-4 h-4" />
+            <Button on:click={() => modeEditMatriks = true} className="bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200">
+              <Edit2 class="w-4 h-4 mr-1.5" />
               <span>Edit Matriks</span>
-            </button>
+            </Button>
           {:else}
-            <button 
-              on:click={() => modeEditMatriks = false}
-              class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit"
-            >
+            <Button variant="ghost" on:click={() => modeEditMatriks = false}>
               <span>Batal</span>
-            </button>
-            <button 
+            </Button>
+            <Button 
               on:click={saveAHPToDB}
               disabled={saving || !ahpResult.isConsistent}
-              class="px-5 py-2.5 bg-slate-900 hover:bg-blue-600 disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1.5 w-fit shadow-md"
+              variant="secondary"
+              loading={saving}
             >
-              {#if saving}
-                <Loader2 class="w-4 h-4 animate-spin" />
-              {:else}
-                <Save class="w-4 h-4" />
+              {#if !saving}
+                <Save class="w-4 h-4 mr-1.5" />
               {/if}
               <span>Simpan Perubahan</span>
-            </button>
+            </Button>
           {/if}
         </div>
       </div>
@@ -467,75 +447,66 @@
           </div>
         {/if}
       </div>
-    </div>
+    </Card>
   {/if}
 </div>
 
 <!-- Modal Tambah / Edit Kriteria -->
-{#if showModal}
-  <div class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 animate-in zoom-in-95 duration-200">
-      <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <h3 class="text-lg font-bold text-slate-900">{isEditing ? 'Ubah Kriteria' : 'Tambah Kriteria Baru'}</h3>
-        <button on:click={closeModal} class="text-slate-400 hover:text-slate-600 transition p-1.5 rounded-lg hover:bg-white">&times;</button>
-      </div>
+<Modal
+  isOpen={showModal}
+  title={isEditing ? 'Ubah Kriteria' : 'Tambah Kriteria Baru'}
+  on:close={closeModal}
+  maxWidth="max-w-md"
+>
+  <div class="space-y-5">
+    <div>
+      <label for="inisial" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Inisial Kriteria (Otomatis)</label>
+      <input 
+        id="inisial"
+        type="text" 
+        disabled 
+        value={isEditing ? kriteriaList.find(k => k.id === currentId)?.inisial : nextInisial}
+        class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 font-bold text-sm cursor-not-allowed shadow-inner"
+      />
+    </div>
 
-      <div class="p-6 space-y-5">
-        <div>
-          <label for="inisial" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Inisial Kriteria (Otomatis)</label>
-          <input 
-            id="inisial"
-            type="text" 
-            disabled 
-            value={isEditing ? kriteriaList.find(k => k.id === currentId)?.inisial : nextInisial}
-            class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 font-bold text-sm cursor-not-allowed shadow-inner"
-          />
-        </div>
+    <div>
+      <label for="nama" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Nama Kriteria</label>
+      <input 
+        id="nama"
+        type="text" 
+        bind:value={namaKriteria}
+        placeholder="Masukkan nama kriteria..."
+        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
+      />
+    </div>
 
-        <div>
-          <label for="nama" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Nama Kriteria</label>
-          <input 
-            id="nama"
-            type="text" 
-            bind:value={namaKriteria}
-            placeholder="Masukkan nama kriteria..."
-            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
-          />
-        </div>
-
-        <div>
-          <label for="jenis" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Jenis Kriteria MOORA</label>
-          <select 
-            id="jenis"
-            bind:value={jenisKriteria}
-            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm cursor-pointer"
-          >
-            <option value="benefit">Benefit (Nilai besar lebih baik)</option>
-            <option value="cost">Cost (Nilai kecil lebih baik)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="px-6 py-5 bg-slate-50/50 flex items-center justify-end space-x-3 border-t border-slate-100">
-        <button 
-          on:click={closeModal}
-          class="px-4 py-2.5 text-slate-600 hover:text-slate-800 text-xs font-bold transition"
-        >
-          Batal
-        </button>
-        <button 
-          on:click={saveKriteria}
-          disabled={saving}
-          class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-200 inline-flex items-center space-x-2"
-        >
-          {#if saving}
-            <Loader2 class="w-3.5 h-3.5 animate-spin" />
-          {:else}
-            <Save class="w-3.5 h-3.5" />
-          {/if}
-          <span>{isEditing ? 'Perbarui Kriteria' : 'Simpan Kriteria'}</span>
-        </button>
-      </div>
+    <div>
+      <label for="jenis" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Jenis Kriteria MOORA</label>
+      <select 
+        id="jenis"
+        bind:value={jenisKriteria}
+        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm cursor-pointer"
+      >
+        <option value="benefit">Benefit (Nilai besar lebih baik)</option>
+        <option value="cost">Cost (Nilai kecil lebih baik)</option>
+      </select>
     </div>
   </div>
-{/if}
+
+  <div slot="footer">
+    <Button variant="ghost" on:click={closeModal}>
+      Batal
+    </Button>
+    <Button 
+      on:click={saveKriteria}
+      disabled={saving}
+      loading={saving}
+    >
+      {#if !saving}
+        <Save class="w-3.5 h-3.5 mr-2" />
+      {/if}
+      <span>{isEditing ? 'Perbarui Kriteria' : 'Simpan Kriteria'}</span>
+    </Button>
+  </div>
+</Modal>

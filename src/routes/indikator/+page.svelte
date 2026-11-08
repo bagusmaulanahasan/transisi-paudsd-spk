@@ -4,6 +4,12 @@
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { confirmAction } from '$lib/confirm';
+  import PageHeader from '$lib/components/ui/PageHeader.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Modal from '$lib/components/ui/Modal.svelte';
+  import LoadingState from '$lib/components/ui/LoadingState.svelte';
+  import EmptyState from '$lib/components/ui/EmptyState.svelte';
   import {
     Plus,
     Trash2,
@@ -332,23 +338,17 @@
 </svelte:head>
 
 <div class="space-y-8">
-  <!-- Header Halaman -->
-  <div>
-    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Kelola Opsi Jawaban & Indikator Pertanyaan</h1>
-    <p class="text-sm text-slate-500 mt-1 font-medium">Atur skala jawaban baku untuk semua kriteria, lalu susun pertanyaan observasi per kriteria.</p>
-  </div>
+<PageHeader 
+    title="Kelola Opsi Jawaban & Indikator Pertanyaan" 
+    subtitle="Atur skala jawaban baku untuk semua kriteria, lalu susun pertanyaan observasi per kriteria."
+  />
 
   {#if loading}
-    <div class="flex items-center justify-center p-12 bg-white rounded-2xl border border-slate-100 shadow-sm">
-      <div class="flex flex-col items-center space-y-3">
-        <Loader2 class="w-8 h-8 text-blue-600 animate-spin" />
-        <p class="text-slate-500 text-sm font-medium">Sinkronisasi data database...</p>
-      </div>
-    </div>
+    <LoadingState text="Sinkronisasi data database..." />
   {:else}
     <!-- ==================== SECTION ATAS: MASTER OPSI JAWABAN ==================== -->
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <Card className="overflow-hidden">
+      <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4 -mx-6 -mt-6 mb-6">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
             <ListChecks class="w-5 h-5 text-blue-600" />
@@ -365,13 +365,10 @@
           <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap">
             Total: {masterOpsi.length} Opsi
           </span>
-          <button
-            on:click={openAddOpsi}
-            class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center shadow-sm shadow-blue-200 whitespace-nowrap"
-          >
+          <Button on:click={openAddOpsi}>
             <Plus class="w-4 h-4 mr-1.5" />
             <span>Tambah Opsi</span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -410,20 +407,12 @@
                     </span>
                   </td>
                   <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                    <button
-                      on:click={() => openEditOpsi(opsi)}
-                      class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition inline-flex items-center"
-                      title="Ubah Opsi"
-                    >
+                    <Button variant="ghost" className="p-2" on:click={() => openEditOpsi(opsi)}>
                       <Edit2 class="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      on:click={() => deleteOpsi(opsi)}
-                      class="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition inline-flex items-center"
-                      title="Hapus Opsi"
-                    >
+                    </Button>
+                    <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteOpsi(opsi)}>
                       <Trash2 class="w-3.5 h-3.5" />
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               {/each}
@@ -431,17 +420,17 @@
           </table>
         </div>
 
-        <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
+        <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 -mx-6 -mb-6 mt-6">
           <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
             Poin dihitung otomatis 1, 2, 3, ... berdasarkan urutan opsi dan tidak dapat diubah manual.
           </p>
         </div>
       {/if}
-    </section>
+    </Card>
 
     <!-- ==================== SECTION BAWAH: KELOLA INDIKATOR PERTANYAAN ==================== -->
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <Card className="overflow-hidden">
+      <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4 -mx-6 -mt-6 mb-6">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
             <MessageSquareText class="w-5 h-5 text-blue-600" />
@@ -454,14 +443,13 @@
           </div>
         </div>
 
-        <button
+        <Button
           on:click={openAddIndikator}
           disabled={!kriteriaAktif}
-          class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-xl text-xs font-bold transition inline-flex items-center shadow-sm shadow-blue-200 whitespace-nowrap sm:shrink-0 w-fit"
         >
           <Plus class="w-4 h-4 mr-1.5" />
           <span>Tambah Indikator</span>
-        </button>
+        </Button>
       </div>
 
       <!-- Toolbar Filter Kriteria -->
@@ -518,150 +506,119 @@
                 </div>
 
                 <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
-                  <button
-                    on:click={() => openEditIndikator(item)}
-                    class="p-2 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg transition inline-flex items-center"
-                    title="Ubah Pertanyaan"
-                  >
+                  <Button variant="ghost" className="p-2 bg-white border border-slate-200" on:click={() => openEditIndikator(item)}>
                     <Edit2 class="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    on:click={() => deleteIndikator(item)}
-                    class="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition inline-flex items-center"
-                    title="Hapus Indikator"
-                  >
+                  </Button>
+                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteIndikator(item)}>
                     <Trash2 class="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             {/each}
           </div>
         {/if}
       </div>
-    </section>
+    </Card>
   {/if}
 </div>
 
 <!-- Modal Tambah / Ubah Master Opsi Jawaban -->
-{#if showOpsiModal}
-  <div class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
-      <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <h3 class="text-lg font-bold text-slate-900">{isEditingOpsi ? 'Ubah Opsi Jawaban' : 'Tambah Opsi Jawaban'}</h3>
-        <button
-          on:click={closeOpsiModal}
-          class="text-slate-400 hover:text-slate-600 transition p-1.5 rounded-lg hover:bg-white"
-          aria-label="Tutup"
-        >
-          <X class="w-5 h-5" />
-        </button>
-      </div>
+<Modal
+  isOpen={showOpsiModal}
+  title={isEditingOpsi ? 'Ubah Opsi Jawaban' : 'Tambah Opsi Jawaban'}
+  on:close={closeOpsiModal}
+  maxWidth="max-w-md"
+>
+  <div class="space-y-5">
+    <div>
+      <label for="opsi" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Teks Opsi</label>
+      <input
+        id="opsi"
+        type="text"
+        bind:value={opsiText}
+        placeholder="Contoh: Sesuai Harapan"
+        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
+      />
+    </div>
 
-      <div class="p-6 space-y-5">
-        <div>
-          <label for="opsi" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Teks Opsi</label>
-          <input
-            id="opsi"
-            type="text"
-            bind:value={opsiText}
-            placeholder="Contoh: Sesuai Harapan"
-            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
-          />
-        </div>
+    <div>
+      <label for="keterangan" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Keterangan (Opsional)</label>
+      <input
+        id="keterangan"
+        type="text"
+        bind:value={keteranganText}
+        placeholder="Contoh: Menunjukkan perkembangan sesuai tahapan usianya"
+        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
+      />
+    </div>
 
-        <div>
-          <label for="keterangan" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Keterangan (Opsional)</label>
-          <input
-            id="keterangan"
-            type="text"
-            bind:value={keteranganText}
-            placeholder="Contoh: Menunjukkan perkembangan sesuai tahapan usianya"
-            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
-          />
-        </div>
-
-        <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed">
-          Opsi ini berlaku untuk seluruh kriteria dan indikator. Poin dihitung otomatis berdasarkan urutan.
-        </div>
-      </div>
-
-      <div class="px-6 py-5 bg-slate-50/50 flex items-center justify-end gap-3 border-t border-slate-100">
-        <button on:click={closeOpsiModal} class="px-4 py-2.5 text-slate-600 hover:text-slate-800 text-xs font-bold transition">
-          Batal
-        </button>
-        <button
-          on:click={saveOpsi}
-          disabled={saving}
-          class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-200 inline-flex items-center gap-2"
-        >
-          {#if saving}
-            <Loader2 class="w-3.5 h-3.5 animate-spin" />
-          {:else}
-            <Save class="w-3.5 h-3.5" />
-          {/if}
-          <span>{isEditingOpsi ? 'Perbarui Opsi' : 'Simpan Opsi'}</span>
-        </button>
-      </div>
+    <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed">
+      Opsi ini berlaku untuk seluruh kriteria dan indikator. Poin dihitung otomatis berdasarkan urutan.
     </div>
   </div>
-{/if}
+
+  <div slot="footer">
+    <Button variant="ghost" on:click={closeOpsiModal}>
+      Batal
+    </Button>
+    <Button
+      on:click={saveOpsi}
+      disabled={saving}
+      loading={saving}
+    >
+      {#if !saving}
+        <Save class="w-3.5 h-3.5 mr-2" />
+      {/if}
+      <span>{isEditingOpsi ? 'Perbarui Opsi' : 'Simpan Opsi'}</span>
+    </Button>
+  </div>
+</Modal>
 
 <!-- Modal Tambah / Ubah Indikator -->
-{#if showIndikatorModal}
-  <div class="fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
-      <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <h3 class="text-lg font-bold text-slate-900">{isEditingIndikator ? 'Ubah Pertanyaan' : 'Tambah Indikator Baru'}</h3>
-        <button
-          on:click={closeIndikatorModal}
-          class="text-slate-400 hover:text-slate-600 transition p-1.5 rounded-lg hover:bg-white"
-          aria-label="Tutup"
-        >
-          <X class="w-5 h-5" />
-        </button>
-      </div>
+<Modal
+  isOpen={showIndikatorModal}
+  title={isEditingIndikator ? 'Ubah Pertanyaan' : 'Tambah Indikator Baru'}
+  on:close={closeIndikatorModal}
+  maxWidth="max-w-lg"
+>
 
-      <div class="p-6 space-y-5">
-        <div>
-          <span class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Kriteria Penilaian</span>
-          <div class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-sm font-semibold cursor-not-allowed">
-            {judulKriteria}
-          </div>
-        </div>
-
-        <div>
-          <label for="pertanyaan" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Teks Pertanyaan Observasi</label>
-          <textarea
-            id="pertanyaan"
-            bind:value={pertanyaan}
-            rows="3"
-            placeholder="Contoh: Anak mampu mengenali dan menyebutkan simbol huruf/angka dasar."
-            class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm resize-none"
-          ></textarea>
-        </div>
-
-        <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed">
-          Jawaban anak memakai <strong>Master Opsi Jawaban</strong> yang sudah diatur pada section atas, sehingga tidak perlu diatur ulang per pertanyaan.
+    <div class="space-y-5">
+      <div>
+        <span class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Kriteria Penilaian</span>
+        <div class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-sm font-semibold cursor-not-allowed">
+          {judulKriteria}
         </div>
       </div>
 
-      <div class="px-6 py-5 bg-slate-50/50 flex items-center justify-end gap-3 border-t border-slate-100">
-        <button on:click={closeIndikatorModal} class="px-4 py-2.5 text-slate-600 hover:text-slate-800 text-xs font-bold transition">
-          Batal
-        </button>
-        <button
-          on:click={saveIndikator}
-          disabled={saving}
-          class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-xl text-xs font-bold transition shadow-md shadow-blue-200 inline-flex items-center gap-2"
-        >
-          {#if saving}
-            <Loader2 class="w-3.5 h-3.5 animate-spin" />
-          {:else}
-            <Save class="w-3.5 h-3.5" />
-          {/if}
-          <span>{isEditingIndikator ? 'Perbarui Pertanyaan' : 'Simpan Indikator'}</span>
-        </button>
+      <div>
+        <label for="pertanyaan" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Teks Pertanyaan Observasi</label>
+        <textarea
+          id="pertanyaan"
+          bind:value={pertanyaan}
+          rows="3"
+          placeholder="Contoh: Anak mampu mengenali dan menyebutkan simbol huruf/angka dasar."
+          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm resize-none"
+        ></textarea>
+      </div>
+
+      <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed">
+        Jawaban anak memakai <strong>Master Opsi Jawaban</strong> yang sudah diatur pada section atas, sehingga tidak perlu diatur ulang per pertanyaan.
       </div>
     </div>
-  </div>
-{/if}
+
+    <div slot="footer">
+      <Button variant="ghost" on:click={closeIndikatorModal}>
+        Batal
+      </Button>
+      <Button
+        on:click={saveIndikator}
+        disabled={saving}
+        loading={saving}
+      >
+        {#if !saving}
+          <Save class="w-3.5 h-3.5 mr-2" />
+        {/if}
+        <span>{isEditingIndikator ? 'Perbarui Pertanyaan' : 'Simpan Indikator'}</span>
+      </Button>
+    </div>
+</Modal>
