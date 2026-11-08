@@ -78,7 +78,7 @@
               {#each kriteriaList as ki, i}
                 <tr>
                   <td class="p-2 border border-slate-200 text-left font-bold text-slate-800 bg-slate-50/50">
-                    C{ki.urutan || i+1} ({ki.nama_kriteria})
+                    C{ki.urutan || i+1} ({ki.nama})
                   </td>
                   {#each kriteriaList as kj, j}
                     <td class="p-2 border border-slate-200 font-medium text-slate-700">
@@ -176,7 +176,7 @@
               {#each kriteriaList as item, i}
                 <tr>
                   <td class="p-2 border border-slate-200 font-bold text-blue-600">C{item.urutan || i+1}</td>
-                  <td class="p-2 border border-slate-200 font-medium">{item.nama_kriteria}</td>
+                  <td class="p-2 border border-slate-200 font-medium">{item.nama}</td>
                   <td class="p-2 border border-slate-200 font-bold text-slate-900">
                     {(ahpDetail?.weights[i] ?? 0).toFixed(3)}
                   </td>

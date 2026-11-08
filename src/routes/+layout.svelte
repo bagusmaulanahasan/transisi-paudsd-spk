@@ -22,6 +22,7 @@
   } from 'lucide-svelte';
   import { cachedFetch } from '$lib/db/cache';
   import ToastHost from '$lib/components/ToastHost.svelte';
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 
   let user = null;
   let profile = null;
@@ -295,3 +296,4 @@
 {/if}
 
 <ToastHost />
+<ConfirmModal />

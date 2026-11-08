@@ -123,7 +123,7 @@
               {#each kriteriaList as k, j}
                 {@const rawValues = mooraDetail.lengkap.map(b => b.nilai[j])}
                 <div>
-                  <strong>C{k.urutan || j+1} ({k.nama_kriteria})</strong> = √( {rawValues.map(v => `${v}^2`).join(' + ')} ) = <strong>{(mooraDetail.pembagi[j] ?? 0).toFixed(3)}</strong>
+                  <strong>C{k.urutan || j+1} ({k.nama})</strong> = √( {rawValues.map(v => `${v}^2`).join(' + ')} ) = <strong>{(mooraDetail.pembagi[j] ?? 0).toFixed(3)}</strong>
                 </div>
               {/each}
             </div>
