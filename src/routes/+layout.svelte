@@ -21,6 +21,7 @@
     BarChart3
   } from 'lucide-svelte';
   import { cachedFetch } from '$lib/db/cache';
+  import ToastHost from '$lib/components/ToastHost.svelte';
 
   let user = null;
   let profile = null;
@@ -292,3 +293,5 @@
     </div>
   </div>
 {/if}
+
+<ToastHost />

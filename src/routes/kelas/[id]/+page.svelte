@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import { apakahNisDuplikat, normalisasiNis } from '$lib/domain/anak';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
+  import { notifyError } from '$lib/notifications';
   import {
     ArrowLeft,
     Plus,
@@ -131,7 +132,7 @@
    */
   async function saveAnak() {
     if (!namaAnak.trim()) {
-      alert('Nama lengkap anak wajib diisi.');
+      notifyError('Nama lengkap anak wajib diisi.');
       return;
     }
 
@@ -139,7 +140,7 @@
     const idYangDiubah = isEditing ? currentId : null;
 
     if (apakahNisDuplikat(anakList, nis, idYangDiubah)) {
-      alert('NIS tersebut sudah dipakai anak lain di kelas ini.');
+      notifyError('NIS tersebut sudah dipakai anak lain di kelas ini.');
       return;
     }
 
@@ -153,14 +154,14 @@
     if (isEditing) {
       const { error } = await supabase.from('anak').update(payload).eq('id', currentId);
       if (error) {
-        alert(error.code === '23505' ? 'NIS tersebut sudah dipakai anak lain di kelas ini.' : error.message);
+        notifyError(error.code === '23505' ? 'NIS tersebut sudah dipakai anak lain di kelas ini.' : error.message);
         saving = false;
         return;
       }
     } else {
       const { error } = await supabase.from('anak').insert(payload);
       if (error) {
-        alert(error.code === '23505' ? 'NIS tersebut sudah dipakai anak lain di kelas ini.' : error.message);
+        notifyError(error.code === '23505' ? 'NIS tersebut sudah dipakai anak lain di kelas ini.' : error.message);
         saving = false;
         return;
       }
@@ -180,7 +181,7 @@
 
     const { error } = await supabase.from('anak').delete().eq('id', item.id);
     if (error) {
-      alert(error.message);
+      notifyError(error.message);
       return;
     }
 

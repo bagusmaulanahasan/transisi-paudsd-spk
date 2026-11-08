@@ -2,6 +2,7 @@
   import { supabase } from '$lib/db/supabase';
   import { aturPoinOpsi } from '$lib/domain/opsi';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
+  import { notifyError } from '$lib/notifications';
   import {
     Plus,
     Trash2,
@@ -160,7 +161,7 @@
    */
   async function saveOpsi() {
     if (!opsiText.trim()) {
-      alert('Teks opsi wajib diisi.');
+      notifyError('Teks opsi wajib diisi.');
       return;
     }
 
@@ -171,14 +172,14 @@
         .from('opsi_jawaban')
         .update({ opsi: opsiText.trim(), keterangan: keteranganText.trim() || null })
         .eq('id', currentOpsiId);
-      if (error) alert(error.message);
+      if (error) notifyError(error.message);
     } else {
       const { error } = await supabase.from('opsi_jawaban').insert({
         opsi: opsiText.trim(),
         keterangan: keteranganText.trim() || null,
         poin: masterOpsi.length + 1
       });
-      if (error) alert(error.message);
+      if (error) notifyError(error.message);
     }
 
     await invalidateDataCache();
@@ -197,7 +198,7 @@
 
     const { error } = await supabase.from('opsi_jawaban').delete().eq('id', opsi.id);
     if (error) {
-      alert(error.message);
+      notifyError(error.message);
       return;
     }
 
@@ -254,7 +255,7 @@
    */
   async function saveIndikator() {
     if (!pertanyaan.trim()) {
-      alert('Teks pertanyaan wajib diisi.');
+      notifyError('Teks pertanyaan wajib diisi.');
       return;
     }
 
@@ -265,12 +266,12 @@
         .from('indikator')
         .update({ pertanyaan: pertanyaan.trim() })
         .eq('id', currentIndikatorId);
-      if (error) alert(error.message);
+      if (error) notifyError(error.message);
     } else {
       const { error } = await supabase
         .from('indikator')
         .insert({ kriteria_id: selectedKriteriaId, pertanyaan: pertanyaan.trim() });
-      if (error) alert(error.message);
+      if (error) notifyError(error.message);
     }
 
     await invalidateDataCache();
@@ -289,7 +290,7 @@
 
     const { error } = await supabase.from('indikator').delete().eq('id', item.id);
     if (error) {
-      alert(error.message);
+      notifyError(error.message);
       return;
     }
     await invalidateDataCache();

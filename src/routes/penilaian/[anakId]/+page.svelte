@@ -5,6 +5,7 @@
   import { hitungMoora } from '$lib/spk/moora';
   import { simpanHasilPerhitungan } from '$lib/services/hasil';
   import { cachedFetch, peekMemoryCache, mutateCache, invalidateCache } from '$lib/db/cache';
+  import { notifyError } from '$lib/notifications';
   import { onMount } from 'svelte';
   import {
     ArrowLeft,
@@ -178,7 +179,7 @@
     if (!anak) return;
 
     if (!navigator.onLine) {
-      alert('Perangkat sedang offline. Sambungkan internet agar jawaban dapat disimpan.');
+      notifyError('Perangkat sedang offline. Sambungkan internet agar jawaban dapat disimpan.');
       return;
     }
 
@@ -196,7 +197,7 @@
       .upsert(payload, { onConflict: 'anak_id,indikator_id' });
 
     if (error) {
-      alert('Gagal menyimpan jawaban: ' + error.message);
+      notifyError('Gagal menyimpan jawaban: ' + error.message);
       menyimpan = null;
       return;
     }

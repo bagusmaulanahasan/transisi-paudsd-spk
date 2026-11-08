@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { fetchKelasDenganJumlahAnak } from '$lib/services/kelas';
   import { peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
+  import { notifyError } from '$lib/notifications';
   import {
     Plus,
     Trash2,
@@ -106,11 +107,11 @@
    */
   async function saveKelas() {
     if (!namaKelas.trim()) {
-      alert('Nama kelas wajib diisi.');
+      notifyError('Nama kelas wajib diisi.');
       return;
     }
     if (!tahunAjaran.trim()) {
-      alert('Tahun ajaran wajib diisi.');
+      notifyError('Tahun ajaran wajib diisi.');
       return;
     }
 
@@ -123,14 +124,14 @@
     if (isEditing) {
       const { error } = await supabase.from('kelas').update(payload).eq('id', currentId);
       if (error) {
-        alert(error.message);
+        notifyError(error.message);
         saving = false;
         return;
       }
     } else {
       const { error } = await supabase.from('kelas').insert(payload);
       if (error) {
-        alert(error.message);
+        notifyError(error.message);
         saving = false;
         return;
       }
@@ -155,7 +156,7 @@
 
     const { error } = await supabase.from('kelas').delete().eq('id', item.id);
     if (error) {
-      alert(error.message);
+      notifyError(error.message);
       return;
     }
 

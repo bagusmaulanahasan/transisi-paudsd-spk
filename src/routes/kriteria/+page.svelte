@@ -2,6 +2,7 @@
   import { supabase } from '$lib/db/supabase';
   import { calculateAHP } from '$lib/spk/ahp';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
+  import { notifyError, notifySuccess } from '$lib/notifications';
   import { 
     Plus, 
     Trash2, 
@@ -144,14 +145,14 @@
         .from('kriteria')
         .update({ nama: namaKriteria, jenis: jenisKriteria })
         .eq('id', currentId);
-      if (error) alert(error.message);
+      if (error) notifyError(error.message);
     } else {
       const urutan = kriteriaList.length + 1;
       const inisial = `C${urutan}`;
       const { error } = await supabase
         .from('kriteria')
         .insert([{ inisial, nama: namaKriteria, jenis: jenisKriteria, urutan }]);
-      if (error) alert(error.message);
+      if (error) notifyError(error.message);
     }
 
     await fetchKriteria();
@@ -164,14 +165,14 @@
    */
   async function deleteKriteria(id) {
     if (kriteriaList.length <= 2) {
-      alert('Minimal harus ada 2 kriteria.');
+      notifyError('Minimal harus ada 2 kriteria.');
       return;
     }
     if (!confirm('Hapus kriteria ini? Data perbandingan AHP terkait akan ikut terpengaruh.')) return;
 
     const { error: delError } = await supabase.from('kriteria').delete().eq('id', id);
     if (delError) {
-      alert(delError.message);
+      notifyError(delError.message);
       return;
     }
 
@@ -211,12 +212,12 @@
     
     const { error } = await supabase.from('perbandingan_ahp').insert(records);
     if (error) {
-      alert('Gagal menyimpan matriks: ' + error.message);
+      notifyError('Gagal menyimpan matriks: ' + error.message);
     } else {
       // Hapus cache data agar halaman penilaian memakai bobot terbaru.
       await invalidateDataCache();
       modeEditMatriks = false;
-      alert('Matriks perbandingan dan bobot berhasil disimpan.');
+      notifySuccess('Matriks perbandingan dan bobot berhasil disimpan.');
     }
     saving = false;
   }
