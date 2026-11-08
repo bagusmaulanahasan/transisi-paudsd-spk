@@ -9,6 +9,7 @@
   import Button from '$lib/components/ui/Button.svelte';
   import Modal from '$lib/components/ui/Modal.svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
+  import Table from '$lib/components/ui/Table.svelte';
   import { 
     Plus, 
     Trash2, 
@@ -284,41 +285,41 @@
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse min-w-[700px]">
-          <thead>
-            <tr class="bg-slate-50/50">
-              <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest w-24">Inisial</th>
-              <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Nama Kriteria</th>
-              <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Jenis MOORA</th>
-              <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Bobot AHP ($w_j$)</th>
-              <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-            {#each kriteriaList as item, index}
-              <tr class="hover:bg-slate-50/30 transition">
-                <td class="px-6 py-4 text-sm font-extrabold text-blue-600">{item.inisial}</td>
-                <td class="px-6 py-4 text-sm font-bold text-slate-800">{item.nama}</td>
-                <td class="px-6 py-4">
-                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {item.jenis === 'benefit' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'} border">
-                    {item.jenis}
-                  </span>
-                </td>
-                <td class="px-6 py-4 text-sm font-extrabold text-slate-900">
-                  {ahpResult.weights[index] ? ahpResult.weights[index].toFixed(3) : '0.000'}
-                </td>
-                <td class="px-6 py-4 text-right space-x-2">
-                  <Button variant="ghost" className="p-2" on:click={() => openEditModal(item)}>
-                    <Edit2 class="w-3.5 h-3.5" />
-                  </Button>
-                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteKriteria(item.id)}>
-                    <Trash2 class="w-3.5 h-3.5" />
-                  </Button>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
+        <Table 
+          columns={[
+            { key: 'inisial', label: 'Inisial', class: 'w-24' },
+            { key: 'nama', label: 'Nama Kriteria' },
+            { key: 'jenis', label: 'Jenis MOORA' },
+            { key: 'bobot', label: 'Bobot AHP ($w_j$)' },
+            { key: 'aksi', label: 'Aksi', class: 'text-right' }
+          ]}
+          data={kriteriaList}
+        >
+          <svelte:fragment slot="inisial" let:item>
+            <span class="font-extrabold text-blue-600">{item.inisial}</span>
+          </svelte:fragment>
+          <svelte:fragment slot="nama" let:item>
+            <span class="font-bold text-slate-800">{item.nama}</span>
+          </svelte:fragment>
+          <svelte:fragment slot="jenis" let:item>
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {item.jenis === 'benefit' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'} border">
+              {item.jenis}
+            </span>
+          </svelte:fragment>
+          <svelte:fragment slot="bobot" let:item let:index>
+            <span class="font-extrabold text-slate-900">{ahpResult.weights[index] ? ahpResult.weights[index].toFixed(3) : '0.000'}</span>
+          </svelte:fragment>
+          <svelte:fragment slot="aksi" let:item>
+            <div class="space-x-2">
+              <Button variant="ghost" className="p-2" on:click={() => openEditModal(item)}>
+                <Edit2 class="w-3.5 h-3.5" />
+              </Button>
+              <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteKriteria(item.id)}>
+                <Trash2 class="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </svelte:fragment>
+        </Table>
       </div>
     </Card>
 

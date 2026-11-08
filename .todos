@@ -1,0 +1,6 @@
+---
+- [ ] Refactor src/routes/kriteria/+page.svelte to use `<Table>`
+- [ ] Refactor src/routes/indikator/+page.svelte to use `<Table>`
+- [ ] Run npm run build
+- [ ] Commit
+---

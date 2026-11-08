@@ -10,6 +10,7 @@
   import Modal from '$lib/components/ui/Modal.svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
+  import Table from '$lib/components/ui/Table.svelte';
   import {
     Plus,
     Trash2,
@@ -385,39 +386,41 @@
           <p class="md:hidden text-[11px] text-slate-400 font-medium">Geser tabel ke samping untuk melihat semua kolom.</p>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse min-w-[720px]">
-            <thead>
-              <tr class="bg-slate-50/50">
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest w-20">No.</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Teks Opsi</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest">Keterangan</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">Poin (Otomatis)</th>
-                <th class="px-6 py-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest text-right w-32">Aksi</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              {#each masterOpsi as opsi, index (opsi.id)}
-                <tr class="hover:bg-slate-50/30 transition">
-                  <td class="px-6 py-4 text-sm font-bold text-slate-500">{index + 1}</td>
-                  <td class="px-6 py-4 text-sm font-bold text-slate-800">{opsi.opsi}</td>
-                  <td class="px-6 py-4 text-xs text-slate-500 leading-relaxed">{opsi.keterangan || '—'}</td>
-                  <td class="px-6 py-4 text-center">
-                    <span class="inline-flex items-center justify-center min-w-[34px] px-2.5 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-lg">
-                      {opsi.poin}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 text-right space-x-2 whitespace-nowrap">
-                    <Button variant="ghost" className="p-2" on:click={() => openEditOpsi(opsi)}>
-                      <Edit2 class="w-3.5 h-3.5" />
-                    </Button>
-                    <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteOpsi(opsi)}>
-                      <Trash2 class="w-3.5 h-3.5" />
-                    </Button>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
+          <Table
+            columns={[
+              { key: 'no', label: 'No.', class: 'w-20' },
+              { key: 'opsi', label: 'Teks Opsi' },
+              { key: 'keterangan', label: 'Keterangan' },
+              { key: 'poin', label: 'Poin (Otomatis)', class: 'text-center whitespace-nowrap' },
+              { key: 'aksi', label: 'Aksi', class: 'text-right w-32' }
+            ]}
+            data={masterOpsi.map((o, i) => ({ ...o, no: i + 1 }))}
+          >
+            <svelte:fragment slot="no" let:item>
+              <span class="text-sm font-bold text-slate-500">{item.no}</span>
+            </svelte:fragment>
+            <svelte:fragment slot="opsi" let:item>
+              <span class="text-sm font-bold text-slate-800">{item.opsi}</span>
+            </svelte:fragment>
+            <svelte:fragment slot="keterangan" let:item>
+              <span class="text-xs text-slate-500 leading-relaxed">{item.keterangan || '—'}</span>
+            </svelte:fragment>
+            <svelte:fragment slot="poin" let:item>
+              <span class="inline-flex items-center justify-center min-w-[34px] px-2.5 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-lg">
+                {item.poin}
+              </span>
+            </svelte:fragment>
+            <svelte:fragment slot="aksi" let:item>
+              <div class="space-x-2 whitespace-nowrap">
+                <Button variant="ghost" className="p-2" on:click={() => openEditOpsi(item)}>
+                  <Edit2 class="w-3.5 h-3.5" />
+                </Button>
+                <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteOpsi(item)}>
+                  <Trash2 class="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            </svelte:fragment>
+          </Table>
         </div>
 
         <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 -mx-6 -mb-6 mt-6">
