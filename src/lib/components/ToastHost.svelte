@@ -3,11 +3,11 @@
   import { X, CheckCircle2, AlertCircle } from 'lucide-svelte';
 </script>
 
-<div class="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 w-[calc(100vw-2rem)] max-w-sm">
+<div class="fixed top-20 right-6 z-[100] flex flex-col gap-2 w-[calc(100vw-2rem)] max-w-sm pointer-events-none">
   {#each $toasts as toast (toast.id)}
     <div
       role="status"
-      class="flex items-start gap-3 rounded-xl border px-4 py-3 shadow-lg {toast.tipe === 'error'
+      class="pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 shadow-xl {toast.tipe === 'error'
         ? 'bg-red-50 border-red-200 text-red-800'
         : toast.tipe === 'success'
           ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
