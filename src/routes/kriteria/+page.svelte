@@ -230,20 +230,9 @@
 
 <div class="space-y-8">
   <!-- Header Section -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Kelola Kriteria & Pembobotan AHP</h1>
-      <p class="text-sm text-slate-500 mt-1 font-medium">Tentukan kriteria penilaian anak beserta bobot prioritas menggunakan perbandingan berpasangan AHP.</p>
-    </div>
-    <div>
-      <button 
-        on:click={openAddModal}
-        class="inline-flex items-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
-      >
-        <Plus class="w-4 h-4 mr-1.5" />
-        <span>Tambah Kriteria</span>
-      </button>
-    </div>
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Kelola Kriteria & Pembobotan AHP</h1>
+    <p class="text-sm text-slate-500 mt-1 font-medium">Tentukan kriteria penilaian anak beserta bobot prioritas menggunakan perbandingan berpasangan AHP.</p>
   </div>
 
   {#if loading}
@@ -266,9 +255,18 @@
             <p class="text-xs text-slate-500 mt-0.5">Daftar kriteria aktif yang digunakan dalam perhitungan.</p>
           </div>
         </div>
-        <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
-          Total: {kriteriaList.length} Kriteria Aktif
-        </span>
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
+            Total: {kriteriaList.length} Kriteria Aktif
+          </span>
+          <button 
+            on:click={openAddModal}
+            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200"
+          >
+            <Plus class="w-4 h-4 mr-1.5" />
+            <span>Tambah Kriteria</span>
+          </button>
+        </div>
       </div>
 
       <div class="overflow-x-auto">
