@@ -396,29 +396,29 @@
             ]}
             data={masterOpsi.map((o, i) => ({ ...o, no: i + 1 }))}
           >
-            <svelte:fragment slot="no" let:item>
-              <span class="text-sm font-bold text-slate-500">{item.no}</span>
-            </svelte:fragment>
-            <svelte:fragment slot="opsi" let:item>
-              <span class="text-sm font-bold text-slate-800">{item.opsi}</span>
-            </svelte:fragment>
-            <svelte:fragment slot="keterangan" let:item>
-              <span class="text-xs text-slate-500 leading-relaxed">{item.keterangan || '—'}</span>
-            </svelte:fragment>
-            <svelte:fragment slot="poin" let:item>
-              <span class="inline-flex items-center justify-center min-w-[34px] px-2.5 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-lg">
-                {item.poin}
-              </span>
-            </svelte:fragment>
-            <svelte:fragment slot="aksi" let:item>
-              <div class="space-x-2 whitespace-nowrap">
-                <Button variant="ghost" className="p-2" on:click={() => openEditOpsi(item)}>
-                  <Edit2 class="w-3.5 h-3.5" />
-                </Button>
-                <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteOpsi(item)}>
-                  <Trash2 class="w-3.5 h-3.5" />
-                </Button>
-              </div>
+            <svelte:fragment slot="cell" let:item let:col>
+              {#if col.key === 'no'}
+                <span class="text-sm font-bold text-slate-500">{item.no}</span>
+              {:else if col.key === 'opsi'}
+                <span class="text-sm font-bold text-slate-800">{item.opsi}</span>
+              {:else if col.key === 'keterangan'}
+                <span class="text-xs text-slate-500 leading-relaxed">{item.keterangan || '—'}</span>
+              {:else if col.key === 'poin'}
+                <span class="inline-flex items-center justify-center min-w-[34px] px-2.5 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-lg">
+                  {item.poin}
+                </span>
+              {:else if col.key === 'aksi'}
+                <div class="space-x-2 whitespace-nowrap">
+                  <Button variant="ghost" className="p-2" on:click={() => openEditOpsi(item)}>
+                    <Edit2 class="w-3.5 h-3.5" />
+                  </Button>
+                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteOpsi(item)}>
+                    <Trash2 class="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              {:else}
+                {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
+              {/if}
             </svelte:fragment>
           </Table>
         </div>
