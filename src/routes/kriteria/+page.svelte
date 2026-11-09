@@ -307,29 +307,29 @@
           ]}
           data={kriteriaList}
         >
-          <svelte:fragment slot="inisial" let:item>
-            <span class="font-extrabold text-blue-600">{item.inisial}</span>
-          </svelte:fragment>
-          <svelte:fragment slot="nama" let:item>
-            <span class="font-bold text-slate-800">{item.nama}</span>
-          </svelte:fragment>
-          <svelte:fragment slot="jenis" let:item>
-            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {item.jenis === 'benefit' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'} border">
-              {item.jenis}
-            </span>
-          </svelte:fragment>
-          <svelte:fragment slot="bobot" let:item let:index>
-            <span class="font-extrabold text-slate-900">{ahpResult.weights[index] ? ahpResult.weights[index].toFixed(3) : '0.000'}</span>
-          </svelte:fragment>
-          <svelte:fragment slot="aksi" let:item>
-            <div class="space-x-2">
-              <Button variant="ghost" className="p-2" on:click={() => openEditModal(item)}>
-                <Edit2 class="w-3.5 h-3.5" />
-              </Button>
-              <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteKriteria(item.id)}>
-                <Trash2 class="w-3.5 h-3.5" />
-              </Button>
-            </div>
+          <svelte:fragment slot="cell" let:item let:index let:col>
+            {#if col.key === 'inisial'}
+              <span class="font-extrabold text-blue-600">{item.inisial}</span>
+            {:else if col.key === 'nama'}
+              <span class="font-bold text-slate-800">{item.nama}</span>
+            {:else if col.key === 'jenis'}
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {item.jenis === 'benefit' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'} border">
+                {item.jenis}
+              </span>
+            {:else if col.key === 'bobot'}
+              <span class="font-extrabold text-slate-900">{ahpResult.weights[index] ? ahpResult.weights[index].toFixed(3) : '0.000'}</span>
+            {:else if col.key === 'aksi'}
+              <div class="space-x-2">
+                <Button variant="ghost" className="p-2" on:click={() => openEditModal(item)}>
+                  <Edit2 class="w-3.5 h-3.5" />
+                </Button>
+                <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteKriteria(item.id)}>
+                  <Trash2 class="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            {:else}
+              {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
+            {/if}
           </svelte:fragment>
         </Table>
       </div>
