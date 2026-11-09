@@ -94,7 +94,7 @@
                       step="0.01"
                       min="0.1"
                       max="9"
-                      value={pairwiseMatrix[i][j]}
+                      value={Number.isFinite(pairwiseMatrix[i][j]) ? pairwiseMatrix[i][j] : ''}
                       on:input={(e) => onNilaiChange(i, j, e.target.value)}
                       class="w-20 text-center py-1.5 px-2 bg-blue-50 border border-blue-200 rounded-lg text-xs font-bold text-blue-800 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none transition"
                     />

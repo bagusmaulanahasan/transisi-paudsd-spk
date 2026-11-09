@@ -116,8 +116,21 @@
    * @param {string} nilaiBaru
    */
   function ubahNilaiMatriks(i, j, nilaiBaru) {
-    const nilai = Number(nilaiBaru);
+    const mentah = String(nilaiBaru).trim();
     const matriks = pairwiseMatrix.map((row) => [...row]);
+
+    if (mentah === '') {
+      // Sel dikosongkan: simpan nilai tidak valid agar AHP tidak konsisten dan tombol simpan mati.
+      matriks[i][j] = undefined;
+      matriks[j][i] = NaN;
+      pairwiseMatrix = matriks;
+      recalculateAHP();
+      return;
+    }
+
+    const nilai = Number(mentah);
+    if (!Number.isFinite(nilai) || nilai <= 0) return;
+
     matriks[i][j] = nilai;
     matriks[j][i] = parseFloat((1 / nilai).toFixed(3));
     pairwiseMatrix = matriks;
@@ -281,7 +294,6 @@
   {#if loading}
     <LoadingState text="Sinkronisasi data database..." />
   {:else}
-    <!-- Table Kriteria -->
     <KriteriaListCard
       {kriteriaList}
       {ahpResult}
