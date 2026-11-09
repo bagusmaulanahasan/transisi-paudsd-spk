@@ -9,30 +9,15 @@
     AlertCircle,
     MessageSquareText
   } from 'lucide-svelte';
-  import { createEventDispatcher } from 'svelte';
 
   export let kriteriaList = [];
   export let selectedKriteriaId = null;
   export let indikatorList = [];
   export let kriteriaAktif = null;
-
-  const dispatch = createEventDispatcher();
-
-  function handleAdd() {
-    dispatch('add');
-  }
-
-  function handleEdit(item) {
-    dispatch('edit', item);
-  }
-
-  function handleDelete(item) {
-    dispatch('delete', item);
-  }
-
-  function handleChange() {
-    dispatch('change');
-  }
+  export let onKriteriaChange = () => {};
+  export let openAddIndikator = () => {};
+  export let openEditIndikator = () => {};
+  export let deleteIndikator = () => {};
 </script>
 
 <Card className="overflow-hidden">
@@ -50,7 +35,7 @@
     </div>
 
     <Button
-      on:click={handleAdd}
+      on:click={openAddIndikator}
       disabled={!kriteriaAktif}
     >
       <Plus class="w-4 h-4 mr-1.5" />
@@ -65,8 +50,8 @@
     </label>
     <select
       id="filter-kriteria"
-      bind:value={selectedKriteriaId}
-      on:change={handleChange}
+      value={selectedKriteriaId}
+      on:change={(e) => onKriteriaChange(e.target.value)}
       disabled={kriteriaList.length === 0}
       class="w-full lg:w-auto lg:min-w-[340px] px-4 py-3 bg-white border border-slate-200 rounded-xl text-blue-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-100"
     >
@@ -112,10 +97,10 @@
             </div>
 
             <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
-              <Button variant="ghost" className="p-2 bg-white border border-slate-200" title="Ubah Pertanyaan" on:click={() => handleEdit(item)}>
+              <Button variant="ghost" className="p-2 bg-white border border-slate-200" title="Ubah Pertanyaan" on:click={() => openEditIndikator(item)}>
                 <Edit2 class="w-3.5 h-3.5" />
               </Button>
-              <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Indikator" on:click={() => handleDelete(item)}>
+              <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Indikator" on:click={() => deleteIndikator(item)}>
                 <Trash2 class="w-3.5 h-3.5" />
               </Button>
             </div>
