@@ -120,6 +120,18 @@
     }
   }
 
+  function batalkanEditMatriks() {
+    modeEditMatriks = false;
+    // Kembalikan ke data asli dari cache/state awal
+    const data = dataAwal || { kriteria: kriteriaList, perbandingan: [] };
+    // Jika dataAwal null (baru fetch), kita perlu data asli yang belum dirubah. 
+    // Cara termudah: panggil ulang terapkanKriteria dengan data yang ada di memory cache.
+    const cacheData = peekMemoryCache(CACHE_KRITERIA);
+    if (cacheData) {
+      terapkanKriteria(cacheData);
+    }
+  }
+
   function openAddModal() {
     isEditing = false;
     currentId = null;
@@ -342,7 +354,7 @@
               <span>Edit Matriks</span>
             </Button>
           {:else}
-            <Button variant="ghost" on:click={() => modeEditMatriks = false}>
+            <Button variant="ghost" on:click={batalkanEditMatriks}>
               <span>Batal</span>
             </Button>
             <Button 
