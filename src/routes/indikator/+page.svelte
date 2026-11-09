@@ -118,7 +118,12 @@
    * @param {string} nilaiBaru
    */
   function onKriteriaChange(nilaiBaru) {
-    selectedKriteriaId = Number(nilaiBaru);
+    const kriteriaId = Number(nilaiBaru);
+
+    if (Number.isNaN(kriteriaId)) return;
+    if (!kriteriaList.some((k) => k.id === kriteriaId)) return;
+
+    selectedKriteriaId = kriteriaId;
     indikatorList = peekMemoryCache('indikator:list:' + selectedKriteriaId) || [];
     fetchIndikator();
   }
@@ -152,30 +157,6 @@
    */
   function closeOpsiModal() {
     showOpsiModal = false;
-  }
-
-  /**
-   * OpsiModal meneruskan event click yang sama dari kedua tombol footer (Batal & simpan).
-   * Handler ini memisahkan keduanya supaya perilaku tetap sama seperti sebelumnya.
-   * @param {MouseEvent} event
-   */
-  function handleOpsiFooterClick(event) {
-    if (adalahTombolBatal(event)) {
-      closeOpsiModal();
-      return;
-    }
-
-    saveOpsi();
-  }
-
-  /**
-   * Memeriksa apakah event click berasal dari tombol "Batal" pada footer modal.
-   * @param {MouseEvent} event
-   * @returns {boolean}
-   */
-  function adalahTombolBatal(event) {
-    const tombol = event?.currentTarget;
-    return tombol instanceof HTMLElement && tombol.textContent?.trim() === 'Batal';
   }
 
   /**
@@ -285,20 +266,6 @@
   }
 
   /**
-   * IndikatorModal meneruskan event click yang sama dari kedua tombol footer (Batal & simpan).
-   * Handler ini memisahkan keduanya supaya perilaku tetap sama seperti sebelumnya.
-   * @param {MouseEvent} event
-   */
-  function handleIndikatorFooterClick(event) {
-    if (adalahTombolBatal(event)) {
-      closeIndikatorModal();
-      return;
-    }
-
-    saveIndikator();
-  }
-
-  /**
    * Menyimpan indikator ke Supabase pada kriteria terpilih.
    */
   async function saveIndikator() {
@@ -405,7 +372,7 @@
   bind:keteranganText={keteranganText}
   {saving}
   on:close={closeOpsiModal}
-  on:click={handleOpsiFooterClick}
+  on:save={saveOpsi}
 />
 
 <!-- Modal Tambah / Ubah Indikator -->
@@ -416,6 +383,6 @@
   {judulKriteria}
   {saving}
   on:close={closeIndikatorModal}
-  on:click={handleIndikatorFooterClick}
+  on:save={saveIndikator}
 />
 

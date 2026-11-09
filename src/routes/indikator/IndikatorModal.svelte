@@ -1,7 +1,10 @@
 <script>
+  import { createEventDispatcher } from 'svelte';
   import Modal from '$lib/components/ui/Modal.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import { Save } from 'lucide-svelte';
+
+  const dispatch = createEventDispatcher();
 
   export let isOpen = false;
   export let isEditing = false;
@@ -41,11 +44,11 @@
   </div>
 
   <div slot="footer">
-    <Button variant="ghost" on:click>
+    <Button variant="ghost" on:click={() => dispatch('close')}>
       Batal
     </Button>
     <Button
-      on:click
+      on:click={() => dispatch('save')}
       disabled={saving}
       loading={saving}
     >
