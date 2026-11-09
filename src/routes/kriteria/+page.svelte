@@ -5,23 +5,10 @@
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { confirmAction } from '$lib/confirm';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
-  import Card from '$lib/components/ui/Card.svelte';
-  import Button from '$lib/components/ui/Button.svelte';
-  import Modal from '$lib/components/ui/Modal.svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
-  import Table from '$lib/components/ui/Table.svelte';
-  import { 
-    Plus, 
-    Trash2, 
-    Edit2, 
-    AlertCircle, 
-    CheckCircle2, 
-    Calculator,
-    Save,
-    Loader2,
-    ListTree,
-    Scale
-  } from 'lucide-svelte';
+  import KriteriaListCard from './KriteriaListCard.svelte';
+  import AhpMatrixCard from './AhpMatrixCard.svelte';
+  import KriteriaModal from './KriteriaModal.svelte';
   import { onMount } from 'svelte';
 
   const CACHE_KRITERIA = 'kriteria';
@@ -120,6 +107,21 @@
     if (pairwiseMatrix.length > 0) {
       ahpResult = calculateAHP(pairwiseMatrix);
     }
+  }
+
+  /**
+   * Menyimpan nilai sel matriks dan pasangannya (1/nilai), lalu menghitung ulang AHP.
+   * @param {number} i
+   * @param {number} j
+   * @param {string} nilaiBaru
+   */
+  function ubahNilaiMatriks(i, j, nilaiBaru) {
+    const nilai = Number(nilaiBaru);
+    const matriks = pairwiseMatrix.map((row) => [...row]);
+    matriks[i][j] = nilai;
+    matriks[j][i] = parseFloat((1 / nilai).toFixed(3));
+    pairwiseMatrix = matriks;
+    recalculateAHP();
   }
 
   function mulaiEditMatriks() {
@@ -261,6 +263,9 @@
   }
 
   $: nextInisial = `C${kriteriaList.length + 1}`;
+  $: inisialAktif = isEditing
+    ? kriteriaList.find((k) => k.id === currentId)?.inisial ?? ''
+    : nextInisial;
 </script>
 
 <svelte:head>
@@ -277,252 +282,37 @@
     <LoadingState text="Sinkronisasi data database..." />
   {:else}
     <!-- Table Kriteria -->
-    <Card className="flex flex-col">
-       <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4 -mx-6 -mt-6 mb-6">
-        <div class="flex items-center space-x-3">
-          <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
-            <ListTree class="w-5 h-5" />
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-slate-900 tracking-tight">Daftar Kriteria Penilaian</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Daftar kriteria aktif yang digunakan dalam perhitungan.</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg">
-            Total: {kriteriaList.length} Kriteria
-          </span>
-          <Button on:click={openAddModal}>
-            <Plus class="w-4 h-5 mr-1.5" />
-            <span>Tambah Kriteria</span>
-          </Button>
-        </div>
-      </div>
-
-      <div class="overflow-x-auto">
-        <Table 
-          columns={[
-            { key: 'inisial', label: 'Inisial', class: 'w-24' },
-            { key: 'nama', label: 'Nama Kriteria' },
-            { key: 'jenis', label: 'Jenis MOORA' },
-            { key: 'bobot', label: 'Bobot AHP ($w_j$)' },
-            { key: 'aksi', label: 'Aksi', class: 'text-right' }
-          ]}
-          data={kriteriaList}
-        >
-          <svelte:fragment slot="cell" let:item let:index let:col>
-            {#if col.key === 'inisial'}
-              <span class="font-extrabold text-blue-600">{item.inisial}</span>
-            {:else if col.key === 'nama'}
-              <span class="font-bold text-slate-800">{item.nama}</span>
-            {:else if col.key === 'jenis'}
-              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {item.jenis === 'benefit' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-700 border-red-100'} border">
-                {item.jenis}
-              </span>
-            {:else if col.key === 'bobot'}
-              <span class="font-extrabold text-slate-900">{ahpResult.weights[index] ? ahpResult.weights[index].toFixed(3) : '0.000'}</span>
-            {:else if col.key === 'aksi'}
-              <div class="space-x-2">
-                <Button variant="ghost" className="p-2" title="Edit Kriteria" on:click={() => openEditModal(item)}>
-                  <Edit2 class="w-3.5 h-3.5" />
-                </Button>
-                <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Kriteria" on:click={() => deleteKriteria(item.id)}>
-                  <Trash2 class="w-3.5 h-3.5" />
-                </Button>
-              </div>
-            {:else}
-              {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
-            {/if}
-          </svelte:fragment>
-        </Table>
-      </div>
-    </Card>
+    <KriteriaListCard
+      {kriteriaList}
+      {ahpResult}
+      {openAddModal}
+      {openEditModal}
+      {deleteKriteria}
+    />
 
     <!-- AHP Matrix Section -->
-    <Card className="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 -mx-6 -mt-6 p-6 mb-0">
-        <div class="flex items-center space-x-3">
-          <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
-            <Scale class="w-5 h-5" />
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-slate-900 tracking-tight">Matriks Perbandingan Berpasangan (AHP)</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Batas konsistensi yang diizinkan: CR ≤ 0.10. Simpan perubahan ke database setelah nilai konsisten.</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2">
-          {#if !modeEditMatriks}
-            <Button on:click={mulaiEditMatriks} className="bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200" title="Edit Matriks">
-              <Edit2 class="w-4 h-4 mr-1.5" />
-              <span>Edit Matriks</span>
-            </Button>
-          {:else}
-            <Button variant="ghost" on:click={batalkanEditMatriks}>
-              <span>Batal</span>
-            </Button>
-            <Button 
-              on:click={saveAHPToDB}
-              disabled={saving || !ahpResult.isConsistent}
-              variant="secondary"
-              loading={saving}
-            >
-              {#if !saving}
-                <Save class="w-4 h-4 mr-1.5" />
-              {/if}
-              <span>Simpan Perubahan</span>
-            </Button>
-          {/if}
-        </div>
-      </div>
-
-      <!-- Keterangan Skala Saaty -->
-      <div class="bg-blue-50/70 border border-blue-100 rounded-xl p-4 text-xs text-blue-900 space-y-2">
-        <p class="font-extrabold uppercase tracking-wide flex items-center space-x-1.5">
-          <span>Panduan Skala Perbandingan Saaty (1 - 9):</span>
-        </p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 pt-1 font-medium text-[11px]">
-          <div><strong>1</strong> : Sama penting</div>
-          <div><strong>3</strong> : Sedikit lebih penting</div>
-          <div><strong>5</strong> : Lebih penting</div>
-          <div><strong>7</strong> : Sangat lebih penting</div>
-          <div><strong>9</strong> : Mutlak lebih penting</div>
-          <div class="col-span-full"><em>Nilai 2, 4, 6, 8 adalah nilai tengah antar penilaian berdekatan.</em></div>
-        </div>
-      </div>
-
-      <!-- Matrix Table -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-center border-collapse text-xs min-w-[700px]">
-          <thead>
-            <tr class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
-              <th class="p-3 text-left border border-slate-200">Kriteria</th>
-              {#each kriteriaList as k}
-                <th class="p-3 border border-slate-200">{k.inisial}</th>
-              {/each}
-              <th class="p-3 border border-slate-200 bg-blue-50/50 text-blue-800">Bobot ($w_j$)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each kriteriaList as ki, i}
-              <tr>
-                <td class="p-3 text-left font-bold text-slate-800 border border-slate-200 bg-slate-50/50">
-                  {ki.inisial} 
-                </td>
-                {#each kriteriaList as kj, j}
-                  <td class="p-2 border border-slate-200">
-                    {#if i === j}
-                      <div class="w-20 mx-auto py-1.5 px-2 bg-slate-100 text-slate-400 font-bold rounded-lg border border-transparent">1.0</div>
-                    {:else if i < j}
-                      {#if modeEditMatriks}
-                        <input 
-                          type="number" 
-                          step="0.01" 
-                          min="0.1" 
-                          max="9"
-                          bind:value={pairwiseMatrix[i][j]} 
-                          on:input={() => {
-                            pairwiseMatrix[j][i] = parseFloat((1 / pairwiseMatrix[i][j]).toFixed(3));
-                            recalculateAHP();
-                          }}
-                          class="w-20 text-center py-1.5 px-2 bg-blue-50 border border-blue-200 rounded-lg text-xs font-bold text-blue-800 focus:bg-white focus:ring-2 focus:ring-blue-600 focus:outline-none transition"
-                        />
-                      {:else}
-                        <div class="w-20 mx-auto py-1.5 px-2 bg-slate-50 text-slate-700 font-semibold rounded-lg border border-slate-100">
-                          {pairwiseMatrix[i][j]}
-                        </div>
-                      {/if}
-                    {:else}
-                      <div class="w-20 mx-auto py-1.5 px-2 bg-slate-50 text-slate-500 font-medium rounded-lg border border-slate-100">
-                        {pairwiseMatrix[i][j]}
-                      </div>
-                    {/if}
-                  </td>
-                {/each}
-                <td class="p-3 font-extrabold text-blue-700 border border-slate-200 bg-blue-50/30">
-                  {ahpResult.weights[i] ? ahpResult.weights[i].toFixed(3) : '0.000'}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-
-      <!-- CR Status Banner -->
-      <div class={`p-4 rounded-xl border flex items-start space-x-3 transition-colors ${ahpResult.isConsistent ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'}`}>
-        {#if ahpResult.isConsistent}
-          <CheckCircle2 class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-          <div>
-            <p class="text-xs font-extrabold uppercase tracking-wide">Matriks Konsisten (CR = {ahpResult.cr.toFixed(3)})</p>
-            <p class="text-[11px] mt-0.5 opacity-90 font-medium text-emerald-700/80">Bobot kriteria sah dan dapat disimpan untuk digunakan pada perankingan MOORA.</p>
-          </div>
-        {:else}
-          <AlertCircle class="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-          <div>
-            <p class="text-xs font-extrabold uppercase tracking-wide">Belum Konsisten (CR = {ahpResult.cr.toFixed(3)})</p>
-            <p class="text-[11px] mt-0.5 opacity-90 font-medium text-red-700/80">Rasio konsistensi melebihi 0.10. Harap perbaiki perbandingan nilai antar kriteria.</p>
-          </div>
-        {/if}
-      </div>
-    </Card>
+    <AhpMatrixCard
+      {kriteriaList}
+      {pairwiseMatrix}
+      {ahpResult}
+      {modeEditMatriks}
+      {saving}
+      onStartEdit={mulaiEditMatriks}
+      onCancelEdit={batalkanEditMatriks}
+      onSave={saveAHPToDB}
+      onNilaiChange={ubahNilaiMatriks}
+    />
   {/if}
 </div>
 
 <!-- Modal Tambah / Edit Kriteria -->
-<Modal
-  isOpen={showModal}
-  title={isEditing ? 'Ubah Kriteria' : 'Tambah Kriteria Baru'}
+<KriteriaModal
+  bind:isOpen={showModal}
+  {isEditing}
+  bind:namaKriteria
+  bind:jenisKriteria
+  {saving}
+  inisial={inisialAktif}
   on:close={closeModal}
-  maxWidth="max-w-md"
->
-  <div class="space-y-5">
-    <div>
-      <label for="inisial" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Inisial Kriteria (Otomatis)</label>
-      <input 
-        id="inisial"
-        type="text" 
-        disabled 
-        value={isEditing ? kriteriaList.find(k => k.id === currentId)?.inisial : nextInisial}
-        class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-400 font-bold text-sm cursor-not-allowed shadow-inner"
-      />
-    </div>
-
-    <div>
-      <label for="nama" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Nama Kriteria</label>
-      <input 
-        id="nama"
-        type="text" 
-        bind:value={namaKriteria}
-        placeholder="Masukkan nama kriteria..."
-        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
-      />
-    </div>
-
-    <div>
-      <label for="jenis" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Jenis Kriteria MOORA</label>
-      <select 
-        id="jenis"
-        bind:value={jenisKriteria}
-        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm cursor-pointer"
-      >
-        <option value="benefit">Benefit (Nilai besar lebih baik)</option>
-        <option value="cost">Cost (Nilai kecil lebih baik)</option>
-      </select>
-    </div>
-  </div>
-
-  <div slot="footer">
-    <Button variant="ghost" on:click={closeModal}>
-      Batal
-    </Button>
-    <Button 
-      on:click={saveKriteria}
-      disabled={saving}
-      loading={saving}
-    >
-      {#if !saving}
-        <Save class="w-3.5 h-3.5 mr-2" />
-      {/if}
-      <span>{isEditing ? 'Perbarui Kriteria' : 'Simpan Kriteria'}</span>
-    </Button>
-  </div>
-</Modal>
+  on:save={saveKriteria}
+/>
