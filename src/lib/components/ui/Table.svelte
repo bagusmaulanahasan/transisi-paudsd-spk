@@ -38,6 +38,14 @@
                     <slot name="opsi" {item} {index} />
                   {:else if col.key === 'no'}
                     <slot name="no" {item} {index} />
+                  {:else if col.key === 'inisial'}
+                    <slot name="inisial" {item} {index} />
+                  {:else if col.key === 'nama'}
+                    <slot name="nama" {item} {index} />
+                  {:else if col.key === 'jenis'}
+                    <slot name="jenis" {item} {index} />
+                  {:else if col.key === 'bobot'}
+                    <slot name="bobot" {item} {index} />
                   {:else}
                     {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
                   {/if}
