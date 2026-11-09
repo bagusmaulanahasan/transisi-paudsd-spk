@@ -5,25 +5,11 @@
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { confirmAction } from '$lib/confirm';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
-  import Card from '$lib/components/ui/Card.svelte';
   import MasterOpsiCard from './MasterOpsiCard.svelte';
-  import Button from '$lib/components/ui/Button.svelte';
-  import Modal from '$lib/components/ui/Modal.svelte';
+  import IndikatorListCard from './IndikatorListCard.svelte';
+  import OpsiModal from './OpsiModal.svelte';
+  import IndikatorModal from './IndikatorModal.svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
-  import EmptyState from '$lib/components/ui/EmptyState.svelte';
-  import Table from '$lib/components/ui/Table.svelte';
-  import {
-    Plus,
-    Trash2,
-    Edit2,
-    Loader2,
-    Save,
-    X,
-    ListChecks,
-    HelpCircle,
-    AlertCircle,
-    MessageSquareText
-  } from 'lucide-svelte';
   import { onMount } from 'svelte';
 
   // ==================== SECTION 1: MASTER OPSI JAWABAN ====================
@@ -128,8 +114,11 @@
 
   /**
    * Menangani pergantian kriteria pada dropdown filter.
+   * Nilai dari elemen select berupa string, sedangkan kriteria.id berupa angka.
+   * @param {string} nilaiBaru
    */
-  function onKriteriaChange() {
+  function onKriteriaChange(nilaiBaru) {
+    selectedKriteriaId = Number(nilaiBaru);
     indikatorList = peekMemoryCache('indikator:list:' + selectedKriteriaId) || [];
     fetchIndikator();
   }
@@ -163,6 +152,30 @@
    */
   function closeOpsiModal() {
     showOpsiModal = false;
+  }
+
+  /**
+   * OpsiModal meneruskan event click yang sama dari kedua tombol footer (Batal & simpan).
+   * Handler ini memisahkan keduanya supaya perilaku tetap sama seperti sebelumnya.
+   * @param {MouseEvent} event
+   */
+  function handleOpsiFooterClick(event) {
+    if (adalahTombolBatal(event)) {
+      closeOpsiModal();
+      return;
+    }
+
+    saveOpsi();
+  }
+
+  /**
+   * Memeriksa apakah event click berasal dari tombol "Batal" pada footer modal.
+   * @param {MouseEvent} event
+   * @returns {boolean}
+   */
+  function adalahTombolBatal(event) {
+    const tombol = event?.currentTarget;
+    return tombol instanceof HTMLElement && tombol.textContent?.trim() === 'Batal';
   }
 
   /**
@@ -272,6 +285,20 @@
   }
 
   /**
+   * IndikatorModal meneruskan event click yang sama dari kedua tombol footer (Batal & simpan).
+   * Handler ini memisahkan keduanya supaya perilaku tetap sama seperti sebelumnya.
+   * @param {MouseEvent} event
+   */
+  function handleIndikatorFooterClick(event) {
+    if (adalahTombolBatal(event)) {
+      closeIndikatorModal();
+      return;
+    }
+
+    saveIndikator();
+  }
+
+  /**
    * Menyimpan indikator ke Supabase pada kriteria terpilih.
    */
   async function saveIndikator() {
@@ -357,196 +384,38 @@
     />
 
     <!-- ==================== SECTION BAWAH: KELOLA INDIKATOR PERTANYAAN ==================== -->
-    <Card className="overflow-hidden">
-      <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4 -mx-6 -mt-6 mb-6">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-            <MessageSquareText class="w-5 h-5 text-blue-600" />
-          </div>
-          <div>
-            <h2 class="text-lg font-bold text-slate-900 tracking-tight">Kelola Indikator Pertanyaan</h2>
-            <p class="text-xs text-slate-500 mt-1 leading-relaxed max-w-xl">
-              Daftar pertanyaan observasi mengikuti kriteria yang dipilih pada dropdown di bawah.
-            </p>
-          </div>
-        </div>
-
-        <Button
-          on:click={openAddIndikator}
-          disabled={!kriteriaAktif}
-        >
-          <Plus class="w-4 h-4 mr-1.5" />
-          <span>Tambah Indikator</span>
-        </Button>
-      </div>
-
-      <!-- Toolbar Filter Kriteria -->
-      <div class="px-5 md:px-6 py-4 bg-slate-50/60 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center gap-3">
-        <label for="filter-kriteria" class="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 shrink-0">
-          Pilih Kriteria Penilaian
-        </label>
-        <select
-          id="filter-kriteria"
-          bind:value={selectedKriteriaId}
-          on:change={onKriteriaChange}
-          disabled={kriteriaList.length === 0}
-          class="w-full lg:w-auto lg:min-w-[340px] px-4 py-3 bg-white border border-slate-200 rounded-xl text-blue-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition cursor-pointer disabled:cursor-not-allowed disabled:bg-slate-100"
-        >
-          {#each kriteriaList as k (k.id)}
-            <option value={k.id}>{k.inisial} — {k.nama}</option>
-          {/each}
-        </select>
-        <span class="text-xs font-semibold text-slate-500 bg-white border border-slate-200 px-3 py-1.5 rounded-lg lg:ml-auto w-fit whitespace-nowrap">
-          Total: {indikatorList.length} Indikator
-        </span>
-      </div>
-
-      <div class="p-5 md:p-6">
-        {#if kriteriaList.length === 0}
-          <div class="flex flex-col items-center justify-center p-10 text-center border border-dashed border-slate-300 rounded-xl bg-slate-50/50">
-            <AlertCircle class="w-8 h-8 text-amber-400 mb-3" />
-            <p class="text-sm font-bold text-slate-700">Belum ada kriteria penilaian</p>
-            <p class="text-xs text-slate-500 mt-1">
-              Tambahkan kriteria terlebih dahulu pada menu
-              <a href="/kriteria" class="text-blue-600 font-semibold underline">Data Kriteria & AHP</a>.
-            </p>
-          </div>
-        {:else if indikatorList.length === 0}
-          <div class="flex flex-col items-center justify-center p-10 text-center border border-dashed border-slate-300 rounded-xl bg-slate-50/50">
-            <HelpCircle class="w-8 h-8 text-slate-300 mb-3" />
-            <p class="text-sm font-bold text-slate-700">Belum ada indikator pada kriteria ini</p>
-            <p class="text-xs text-slate-500 mt-1">Klik "Tambah Indikator" untuk membuat pertanyaan observasi pertama.</p>
-          </div>
-        {:else}
-          <div class="space-y-3">
-            {#each indikatorList as item, index (item.id)}
-              <div class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:p-5 transition hover:border-blue-300 hover:bg-white hover:shadow-sm md:flex-row md:items-center md:justify-between">
-                <div class="min-w-0 space-y-2">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-100">
-                      Pertanyaan #{index + 1}
-                    </span>
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white text-slate-500 border border-slate-200">
-                      {kriteriaAktif?.inisial}
-                    </span>
-                  </div>
-                  <p class="text-sm font-medium text-slate-900 leading-relaxed break-words">{item.pertanyaan}</p>
-                </div>
-
-                <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
-                  <Button variant="ghost" className="p-2 bg-white border border-slate-200" title="Ubah Pertanyaan" on:click={() => openEditIndikator(item)}>
-                    <Edit2 class="w-3.5 h-3.5" />
-                  </Button>
-                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Indikator" on:click={() => deleteIndikator(item)}>
-                    <Trash2 class="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </div>
-    </Card>
+    <IndikatorListCard
+      {kriteriaList}
+      {selectedKriteriaId}
+      {indikatorList}
+      {kriteriaAktif}
+      {onKriteriaChange}
+      {openAddIndikator}
+      {openEditIndikator}
+      {deleteIndikator}
+    />
   {/if}
 </div>
 
 <!-- Modal Tambah / Ubah Master Opsi Jawaban -->
-<Modal
+<OpsiModal
   isOpen={showOpsiModal}
-  title={isEditingOpsi ? 'Ubah Opsi Jawaban' : 'Tambah Opsi Jawaban'}
+  isEditing={isEditingOpsi}
+  bind:opsiText={opsiText}
+  bind:keteranganText={keteranganText}
+  {saving}
   on:close={closeOpsiModal}
-  maxWidth="max-w-md"
->
-  <div class="space-y-5">
-    <div>
-      <label for="opsi" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Teks Opsi</label>
-      <input
-        id="opsi"
-        type="text"
-        bind:value={opsiText}
-        placeholder="Contoh: Sesuai Harapan"
-        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
-      />
-    </div>
-
-    <div>
-      <label for="keterangan" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Keterangan (Opsional)</label>
-      <input
-        id="keterangan"
-        type="text"
-        bind:value={keteranganText}
-        placeholder="Contoh: Menunjukkan perkembangan sesuai tahapan usianya"
-        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
-      />
-    </div>
-
-    <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed">
-      Opsi ini berlaku untuk seluruh kriteria dan indikator. Poin dihitung otomatis berdasarkan urutan.
-    </div>
-  </div>
-
-  <div slot="footer">
-    <Button variant="ghost" on:click={closeOpsiModal}>
-      Batal
-    </Button>
-    <Button
-      on:click={saveOpsi}
-      disabled={saving}
-      loading={saving}
-    >
-      {#if !saving}
-        <Save class="w-3.5 h-3.5 mr-2" />
-      {/if}
-      <span>{isEditingOpsi ? 'Perbarui Opsi' : 'Simpan Opsi'}</span>
-    </Button>
-  </div>
-</Modal>
+  on:click={handleOpsiFooterClick}
+/>
 
 <!-- Modal Tambah / Ubah Indikator -->
-<Modal
+<IndikatorModal
   isOpen={showIndikatorModal}
-  title={isEditingIndikator ? 'Ubah Pertanyaan' : 'Tambah Indikator Baru'}
+  isEditing={isEditingIndikator}
+  bind:pertanyaan={pertanyaan}
+  {judulKriteria}
+  {saving}
   on:close={closeIndikatorModal}
-  maxWidth="max-w-lg"
->
+  on:click={handleIndikatorFooterClick}
+/>
 
-    <div class="space-y-5">
-      <div>
-        <span class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Kriteria Penilaian</span>
-        <div class="w-full px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl text-slate-500 text-sm font-semibold cursor-not-allowed">
-          {judulKriteria}
-        </div>
-      </div>
-
-      <div>
-        <label for="pertanyaan" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Teks Pertanyaan Observasi</label>
-        <textarea
-          id="pertanyaan"
-          bind:value={pertanyaan}
-          rows="3"
-          placeholder="Contoh: Anak mampu mengenali dan menyebutkan simbol huruf/angka dasar."
-          class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm resize-none"
-        ></textarea>
-      </div>
-
-      <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed">
-        Jawaban anak memakai <strong>Master Opsi Jawaban</strong> yang sudah diatur pada section atas, sehingga tidak perlu diatur ulang per pertanyaan.
-      </div>
-    </div>
-
-    <div slot="footer">
-      <Button variant="ghost" on:click={closeIndikatorModal}>
-        Batal
-      </Button>
-      <Button
-        on:click={saveIndikator}
-        disabled={saving}
-        loading={saving}
-      >
-        {#if !saving}
-          <Save class="w-3.5 h-3.5 mr-2" />
-        {/if}
-        <span>{isEditingIndikator ? 'Perbarui Pertanyaan' : 'Simpan Indikator'}</span>
-      </Button>
-    </div>
-</Modal>
