@@ -17,6 +17,7 @@
 <button
   {type}
   disabled={disabled || loading}
+  {...$$restProps}
   class={`inline-flex items-center justify-center font-bold text-xs px-4 py-2 rounded-xl transition duration-150 disabled:opacity-55 disabled:cursor-not-allowed ${variants[variant] || variants.primary} ${className}`}
   on:click
   on:mouseenter

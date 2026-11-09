@@ -409,10 +409,10 @@
                 </span>
               {:else if col.key === 'aksi'}
                 <div class="space-x-2 whitespace-nowrap">
-                  <Button variant="ghost" className="p-2" on:click={() => openEditOpsi(item)}>
+                  <Button variant="ghost" className="p-2" title="Ubah Opsi" on:click={() => openEditOpsi(item)}>
                     <Edit2 class="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteOpsi(item)}>
+                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Opsi" on:click={() => deleteOpsi(item)}>
                     <Trash2 class="w-3.5 h-3.5" />
                   </Button>
                 </div>
@@ -509,10 +509,10 @@
                 </div>
 
                 <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
-                  <Button variant="ghost" className="p-2 bg-white border border-slate-200" on:click={() => openEditIndikator(item)}>
+                  <Button variant="ghost" className="p-2 bg-white border border-slate-200" title="Ubah Pertanyaan" on:click={() => openEditIndikator(item)}>
                     <Edit2 class="w-3.5 h-3.5" />
                   </Button>
-                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteIndikator(item)}>
+                  <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Indikator" on:click={() => deleteIndikator(item)}>
                     <Trash2 class="w-3.5 h-3.5" />
                   </Button>
                 </div>

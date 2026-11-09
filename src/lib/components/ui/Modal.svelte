@@ -39,6 +39,7 @@
         <h3 class="text-base font-extrabold text-slate-900 tracking-tight">{title}</h3>
         <button 
           type="button" 
+          aria-label="Tutup"
           class="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition"
           on:click={close}
         >

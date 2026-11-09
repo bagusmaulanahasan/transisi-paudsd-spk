@@ -111,6 +111,8 @@
     loading = false;
   }
 
+  let matriksSebelumEdit = null;
+
   /**
    * Menjalankan kalkulasi AHP secara lokal.
    */
@@ -120,16 +122,17 @@
     }
   }
 
+  function mulaiEditMatriks() {
+    matriksSebelumEdit = pairwiseMatrix.map((row) => [...row]);
+    modeEditMatriks = true;
+  }
+
   function batalkanEditMatriks() {
-    modeEditMatriks = false;
-    // Kembalikan ke data asli dari cache/state awal
-    const data = dataAwal || { kriteria: kriteriaList, perbandingan: [] };
-    // Jika dataAwal null (baru fetch), kita perlu data asli yang belum dirubah. 
-    // Cara termudah: panggil ulang terapkanKriteria dengan data yang ada di memory cache.
-    const cacheData = peekMemoryCache(CACHE_KRITERIA);
-    if (cacheData) {
-      terapkanKriteria(cacheData);
+    if (matriksSebelumEdit) {
+      pairwiseMatrix = matriksSebelumEdit.map((row) => [...row]);
     }
+    recalculateAHP();
+    modeEditMatriks = false;
   }
 
   function openAddModal() {
@@ -320,10 +323,10 @@
               <span class="font-extrabold text-slate-900">{ahpResult.weights[index] ? ahpResult.weights[index].toFixed(3) : '0.000'}</span>
             {:else if col.key === 'aksi'}
               <div class="space-x-2">
-                <Button variant="ghost" className="p-2" on:click={() => openEditModal(item)}>
+                <Button variant="ghost" className="p-2" title="Edit Kriteria" on:click={() => openEditModal(item)}>
                   <Edit2 class="w-3.5 h-3.5" />
                 </Button>
-                <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" on:click={() => deleteKriteria(item.id)}>
+                <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Kriteria" on:click={() => deleteKriteria(item.id)}>
                   <Trash2 class="w-3.5 h-3.5" />
                 </Button>
               </div>
@@ -349,7 +352,7 @@
         </div>
         <div class="flex items-center gap-2">
           {#if !modeEditMatriks}
-            <Button on:click={() => modeEditMatriks = true} className="bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200">
+            <Button on:click={mulaiEditMatriks} className="bg-emerald-600 hover:bg-emerald-700 shadow-emerald-200" title="Edit Matriks">
               <Edit2 class="w-4 h-4 mr-1.5" />
               <span>Edit Matriks</span>
             </Button>
