@@ -46,6 +46,8 @@
                     <slot name="jenis" {item} {index} />
                   {:else if col.key === 'bobot'}
                     <slot name="bobot" {item} {index} />
+                  {:else if col.key === 'aksi_mobile'}
+                    <slot name="aksi_mobile" {item} {index} />
                   {:else}
                     {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
                   {/if}
