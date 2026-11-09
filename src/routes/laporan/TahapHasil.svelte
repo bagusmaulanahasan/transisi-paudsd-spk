@@ -15,7 +15,7 @@
   <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
     Tahap 3: Hasil Akhir MOORA & Ranking Prioritas Stimulasi
   </h2>
-  <Table {columns} data={hasil.baris} className={baris => baris.ranking === 1 ? 'bg-blue-50/50' : ''}>
+  <Table {columns} data={hasil.baris} rowClass={(baris) => baris.ranking === 1 ? 'bg-blue-50/50' : ''}>
     <svelte:fragment slot="cell" let:item let:col>
       {#if col.key === 'no'}
         {hasil.baris.indexOf(item) + 1}

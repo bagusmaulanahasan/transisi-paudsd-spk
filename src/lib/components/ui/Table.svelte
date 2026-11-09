@@ -6,6 +6,11 @@
   export let emptyText = 'Tidak ada data';
   export let emptyDescription = 'Belum ada data yang tersedia untuk ditampilkan.';
   export let className = '';
+  export let rowClass = null; // string | (item, index) => string
+
+  function resolveRowClass(item, index) {
+    return typeof rowClass === 'function' ? rowClass(item, index) : (rowClass || '');
+  }
 </script>
 
 <div class={`overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ${className}`}>
@@ -23,7 +28,7 @@
       <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-700">
         {#if data && data.length > 0}
           {#each data as item, index}
-            <tr class="hover:bg-slate-50/60 transition-colors">
+            <tr class={`hover:bg-slate-50/60 transition-colors ${resolveRowClass(item, index)}`}>
               {#each columns as col, colIndex}
                 <td class={`px-6 py-4 whitespace-nowrap ${col.class || ''}`}>
                   <slot name="cell" {item} {index} {col} {colIndex}>
