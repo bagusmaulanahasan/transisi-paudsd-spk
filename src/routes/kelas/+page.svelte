@@ -249,42 +249,43 @@
           ]}
           data={kelasList.map((k, i) => ({ ...k, no: i + 1, jumlah_anak: jumlahAnakMap[k.id] || 0 }))}
         >
-          <svelte:fragment slot="nama_kelas" let:item>
-            <a
-              href={`/kelas/${item.id}`}
-              class="text-sm font-bold text-slate-800 hover:text-blue-600 transition"
-            >
-              {item.nama_kelas}
-            </a>
-          </svelte:fragment>
-          <svelte:fragment slot="tahun_ajaran" let:item>
-            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-              {item.tahun_ajaran}
-            </span>
-          </svelte:fragment>
-          <svelte:fragment slot="jumlah_anak" let:item>
-            <span class="inline-flex items-center gap-1.5 text-sm font-bold text-slate-700">
-              <Users class="w-3.5 h-3.5 text-slate-400" />
-              {item.jumlah_anak}
-            </span>
-          </svelte:fragment>
-          <svelte:fragment slot="aksi" let:item>
-            <div class="flex justify-end gap-2">
+          <svelte:fragment slot="cell" let:item let:col>
+            {#if col.key === 'nama_kelas'}
               <a
                 href={`/kelas/${item.id}`}
-                class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition"
-                title="Kelola Anak"
+                class="text-sm font-bold text-slate-800 hover:text-blue-600 transition"
               >
-                <Users class="w-3.5 h-3.5" />
-                <span>Kelola Anak</span>
+                {item.nama_kelas}
               </a>
-              <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Kelas">
-                <Edit2 class="w-3.5 h-3.5" />
-              </Button>
-              <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteKelas(item)} title="Hapus Kelas">
-                <Trash2 class="w-3.5 h-3.5" />
-              </Button>
-            </div>
+            {:else if col.key === 'tahun_ajaran'}
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
+                {item.tahun_ajaran}
+              </span>
+            {:else if col.key === 'jumlah_anak'}
+              <span class="inline-flex items-center gap-1.5 text-sm font-bold text-slate-700">
+                <Users class="w-3.5 h-3.5 text-slate-400" />
+                {item.jumlah_anak}
+              </span>
+            {:else if col.key === 'aksi'}
+              <div class="flex justify-end gap-2">
+                <a
+                  href={`/kelas/${item.id}`}
+                  class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[11px] font-bold transition"
+                  title="Kelola Anak"
+                >
+                  <Users class="w-3.5 h-3.5" />
+                  <span>Kelola Anak</span>
+                </a>
+                <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Kelas">
+                  <Edit2 class="w-3.5 h-3.5" />
+                </Button>
+                <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteKelas(item)} title="Hapus Kelas">
+                  <Trash2 class="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            {:else}
+              {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
+            {/if}
           </svelte:fragment>
         </Table>
 
