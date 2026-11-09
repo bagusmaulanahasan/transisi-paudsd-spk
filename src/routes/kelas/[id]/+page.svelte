@@ -289,38 +289,40 @@
             ]}
             data={anakList.map((item, index) => ({ ...item, no: index + 1 }))}
           >
-            <svelte:fragment slot="nis" let:item>
-              {#if item.nis}
-                <span class="text-sm font-semibold text-slate-700">{item.nis}</span>
-              {:else}
-                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
-                  Belum diisi
-                </span>
-              {/if}
-            </svelte:fragment>
-            <svelte:fragment slot="nama" let:item>
-              <span class="text-sm font-bold text-slate-800">{item.nama}</span>
-            </svelte:fragment>
-            <svelte:fragment slot="aksi" let:item>
-              <div class="text-right whitespace-nowrap space-x-2">
-                {#if !item.nis}
-                  <Button
-                    variant="outline"
-                    className="bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-100 gap-1.5 px-3 py-2 h-auto text-[11px]"
-                    on:click={() => openEditModal(item)}
-                    title="Isi NIS"
-                  >
-                    <PencilLine class="w-3.5 h-3.5" />
-                    <span>Isi NIS</span>
-                  </Button>
+            <svelte:fragment slot="cell" let:item let:col>
+              {#if col.key === 'nis'}
+                {#if item.nis}
+                  <span class="text-sm font-semibold text-slate-700">{item.nis}</span>
+                {:else}
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
+                    Belum diisi
+                  </span>
                 {/if}
-                <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Data Anak">
-                  <Edit2 class="w-3.5 h-3.5" />
-                </Button>
-                <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteAnak(item)} title="Hapus Data Anak">
-                  <Trash2 class="w-3.5 h-3.5" />
-                </Button>
-              </div>
+              {:else if col.key === 'nama'}
+                <span class="text-sm font-bold text-slate-800">{item.nama}</span>
+              {:else if col.key === 'aksi'}
+                <div class="text-right whitespace-nowrap space-x-2">
+                  {#if !item.nis}
+                    <Button
+                      variant="outline"
+                      className="bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-100 gap-1.5 px-3 py-2 h-auto text-[11px]"
+                      on:click={() => openEditModal(item)}
+                      title="Isi NIS"
+                    >
+                      <PencilLine class="w-3.5 h-3.5" />
+                      <span>Isi NIS</span>
+                    </Button>
+                  {/if}
+                  <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Data Anak">
+                    <Edit2 class="w-3.5 h-3.5" />
+                  </Button>
+                  <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteAnak(item)} title="Hapus Data Anak">
+                    <Trash2 class="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              {:else}
+                {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
+              {/if}
             </svelte:fragment>
           </Table>
         </div>
