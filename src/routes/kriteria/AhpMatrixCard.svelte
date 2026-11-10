@@ -74,7 +74,7 @@
           {#each kriteriaList as k}
             <th class="p-3 border border-slate-200">{k.inisial}</th>
           {/each}
-          <th class="p-3 border border-slate-200 bg-blue-50/50 text-blue-800">Bobot ($w_j$)</th>
+          <th class="p-3 border border-slate-200 bg-blue-50/50">Bobot ($w_j$)</th>
         </tr>
       </thead>
       <tbody>
@@ -110,7 +110,7 @@
                 {/if}
               </td>
             {/each}
-            <td class="p-3 font-extrabold text-blue-700 border border-slate-200 bg-blue-50/30">
+            <td class="p-3 font-extrabold border border-slate-200 bg-blue-50/30">
               {ahpResult.weights[i] ? ahpResult.weights[i].toFixed(3) : '0.000'}
             </td>
           </tr>
