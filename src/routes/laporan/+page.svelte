@@ -12,6 +12,8 @@
   import TahapMatriks from './TahapMatriks.svelte';
   import TahapHasil from './TahapHasil.svelte';
   import { FileText, Loader2, School, Printer } from 'lucide-svelte';
+  import OfflineNotice from '$lib/components/ui/OfflineNotice.svelte';
+  import { online } from '$lib/stores/koneksi';
 
   const kelasAwal = peekMemoryCache('master:kelas');
   const kriteriaAwal = peekMemoryCache('master:kriteria');
@@ -160,7 +162,7 @@
       id="pilih-kelas-laporan"
       bind:value={selectedKelasId}
       on:change={fetchKelasData}
-      class="w-full md:w-80 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none print:hidden"
+      class="w-full md:w-80 px-4 py-2.5 rounded-xl border bg-white border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none print:hidden"
     >
       {#each kelasList as item}
         <option value={item.id}>{item.nama_kelas} — {item.tahun_ajaran}</option>
@@ -168,7 +170,9 @@
     </select>
   </div>
 
-  {#if loadingMaster || loadingKelas}
+  {#if !$online}
+    <OfflineNotice />
+  {:else if loadingMaster || loadingKelas}
     <div class="flex items-center justify-center p-12 bg-white rounded-2xl border border-slate-100 shadow-sm print:hidden">
       <div class="flex flex-col items-center space-y-3">
         <Loader2 class="w-8 h-8 text-blue-600 animate-spin" />

@@ -6,6 +6,8 @@
   import { confirmAction } from '$lib/confirm';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
+  import OfflineNotice from '$lib/components/ui/OfflineNotice.svelte';
+  import { online } from '$lib/stores/koneksi';
   import KriteriaListCard from './KriteriaListCard.svelte';
   import AhpMatrixCard from './AhpMatrixCard.svelte';
   import KriteriaModal from './KriteriaModal.svelte';
@@ -291,7 +293,9 @@
     subtitle="Tentukan kriteria penilaian anak beserta bobot prioritas menggunakan perbandingan berpasangan AHP."
   />
 
-  {#if loading}
+  {#if !$online}
+    <OfflineNotice />
+  {:else if loading}
     <LoadingState text="Sinkronisasi data database..." />
   {:else}
     <KriteriaListCard

@@ -1,6 +1,6 @@
 <script>
   import Card from '$lib/components/ui/Card.svelte';
-  import { Loader2, CheckCircle2, AlertCircle, ClipboardList } from 'lucide-svelte';
+  import { Loader2, CheckCircle2, AlertCircle, ClipboardList, CloudOff } from 'lucide-svelte';
 
   export let kriteriaList = [];
   export let indikatorPerKriteria = [];
@@ -12,6 +12,7 @@
   export let opsiMap = {};
   export let terjawabAnak = 0;
   export let jumlahIndikator = 0;
+  export let statusLokal = {};
   export let onPilihJawaban = () => {};
 </script>
 
@@ -118,6 +119,16 @@
                 {:else}
                   <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
                     <AlertCircle class="w-3 h-3" /> Belum dijawab
+                  </span>
+                {/if}
+
+                {#if statusLokal[indikator.id] === 'menunggu_sinkronisasi'}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
+                    <CloudOff class="w-3 h-3" /> Tersimpan di perangkat, menunggu sinkronisasi
+                  </span>
+                {:else if statusLokal[indikator.id] === 'tersinkron'}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <CheckCircle2 class="w-3 h-3" /> Tersinkron
                   </span>
                 {/if}
               </div>

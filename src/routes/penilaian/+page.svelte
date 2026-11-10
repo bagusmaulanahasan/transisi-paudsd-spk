@@ -14,6 +14,8 @@
   import Button from '$lib/components/ui/Button.svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
+  import OfflineNotice from '$lib/components/ui/OfflineNotice.svelte';
+  import { online } from '$lib/stores/koneksi';
   import PenilaianFilterCard from './PenilaianFilterCard.svelte';
   import MooraResultCard from './MooraResultCard.svelte';
 
@@ -198,7 +200,9 @@
     </svelte:fragment>
   </PageHeader>
 
-  {#if loadingMaster}
+  {#if !$online}
+    <OfflineNotice />
+  {:else if loadingMaster}
     <LoadingState text="Menyiapkan data penilaian..." />
   {:else if kelasList.length === 0}
     <EmptyState

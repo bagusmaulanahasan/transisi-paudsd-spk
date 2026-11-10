@@ -5,8 +5,8 @@
   import { hitungMoora } from '$lib/spk/moora';
   import { simpanHasilPerhitungan } from '$lib/services/hasil';
   import { cachedFetch, peekMemoryCache, mutateCache, invalidateCache } from '$lib/db/cache';
+  import { simpanPenilaianOffline, ambilPenilaianOffline, hapusPenilaianOffline } from '$lib/db/indexeddb';
   import { notifyError, notifySuccess } from '$lib/notifications';
-  import { confirmAction } from '$lib/confirm';
   import { onMount } from 'svelte';
   import { ArrowLeft, AlertCircle, ArrowRight, School } from 'lucide-svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
@@ -44,6 +44,10 @@
   let statusSimpanHasil = '';
   let waktuPerhitungan = null;
 
+  // indikator_id -> 'menunggu_sinkronisasi' | 'tersinkron'.
+  let statusLokal = {};
+  let menyinkronkan = false;
+
   if (dataAwal) terapkanData(dataAwal);
 
   onMount(async () => {
@@ -55,8 +59,84 @@
     if (data && data !== dataAwal) terapkanData(data);
     else if (!data && !anak) notFound = true;
 
+    await muatStatusLokal();
+    await sinkronkanPenilaian();
+
     loading = false;
   });
+
+  // Sinkronkan antrean lokal begitu koneksi kembali.
+  onMount(() => {
+    window.addEventListener('online', sinkronkanPenilaian);
+    return () => window.removeEventListener('online', sinkronkanPenilaian);
+  });
+
+  /**
+   * Mengirim seluruh jawaban yang tersimpan di perangkat ke tabel detail_penilaian.
+   * Kombinasi anak_id + indikator_id yang sama akan ditimpa oleh data terbaru.
+   */
+  async function sinkronkanPenilaian() {
+    if (!navigator.onLine || menyinkronkan) return;
+
+    menyinkronkan = true;
+    try {
+      const daftar = await ambilPenilaianOffline();
+      if (daftar.length === 0) return;
+
+      let adaPerubahan = false;
+
+      for (const item of daftar) {
+        const payload = {
+          anak_id: item.anak_id,
+          indikator_id: item.indikator_id,
+          opsi_jawaban_id: item.opsi_jawaban_id,
+          poin: item.poin
+        };
+
+        const { error } = await supabase
+          .from('detail_penilaian')
+          .upsert(payload, { onConflict: 'anak_id,indikator_id' });
+
+        if (error) {
+          console.warn('Gagal menyinkronkan penilaian:', error.message);
+          continue;
+        }
+
+        await hapusPenilaianOffline(item.id);
+        adaPerubahan = true;
+
+        if (item.anak_id === anakId) {
+          statusLokal = { ...statusLokal, [item.indikator_id]: 'tersinkron' };
+        }
+      }
+
+      if (adaPerubahan) {
+        notifySuccess('Penilaian offline berhasil disinkronkan.');
+        invalidateCache('dashboard');
+      }
+    } catch (error) {
+      console.warn('Gagal menjalankan sinkronisasi penilaian:', error);
+    } finally {
+      menyinkronkan = false;
+    }
+  }
+
+  /**
+   * Menandai indikator yang jawabannya masih menunggu sinkronisasi di perangkat.
+   */
+  async function muatStatusLokal() {
+    try {
+      const daftar = await ambilPenilaianOffline();
+      const milikAnak = daftar.filter((item) => item.anak_id === anakId);
+      if (milikAnak.length === 0) return;
+
+      const peta = {};
+      for (const item of milikAnak) peta[item.indikator_id] = 'menunggu_sinkronisasi';
+      statusLokal = peta;
+    } catch (error) {
+      console.warn('Gagal membaca penilaian offline:', error);
+    }
+  }
 
   /**
    * Mengambil data anak, kelas, master penilaian, dan jawaban seluruh anak sekelas.
@@ -161,6 +241,9 @@
    * Menyimpan hasil MOORA terakhir ke tabel hasil_perhitungan (best effort).
    */
   async function simpanHasil(data) {
+    // Saat offline, hasil perhitungan tidak boleh ditulis ke server.
+    if (!navigator.onLine) return;
+
     const status = await simpanHasilPerhitungan(supabase, kelas.id, kriteriaList, data);
     statusSimpanHasil = status.pesan;
     if (status.ok) waktuPerhitungan = new Date();
@@ -168,16 +251,10 @@
 
   /**
    * Menyimpan jawaban indikator yang dipilih lalu menghitung ulang MOORA.
+   * Saat offline, jawaban disimpan ke perangkat dan menunggu sinkronisasi.
    */
   async function pilihJawaban(indikator, opsi) {
     if (!anak) return;
-
-    if (!navigator.onLine) {
-      notifyError('Perangkat sedang offline. Sambungkan internet agar jawaban dapat disimpan.');
-      return;
-    }
-
-    menyimpan = indikator.id;
 
     const payload = {
       anak_id: anak.id,
@@ -185,6 +262,13 @@
       opsi_jawaban_id: opsi.id,
       poin: opsi.poin
     };
+
+    if (!navigator.onLine) {
+      await simpanJawabanOffline(indikator, payload);
+      return;
+    }
+
+    menyimpan = indikator.id;
 
     const { error } = await supabase
       .from('detail_penilaian')
@@ -198,8 +282,35 @@
 
     notifySuccess('Berhasil menyimpan penilaian.');
 
+    catatJawabanLokal(payload);
+
+    menyimpan = null;
+  }
+
+  /**
+   * Menyimpan jawaban ke IndexedDB saat offline dan menandainya belum tersinkron.
+   * @param {Object} indikator - Indikator yang dijawab.
+   * @param {Object} payload - Data jawaban yang akan dikirim ke Supabase saat online.
+   */
+  async function simpanJawabanOffline(indikator, payload) {
+    try {
+      await simpanPenilaianOffline(payload);
+    } catch (error) {
+      notifyError('Gagal menyimpan jawaban di perangkat: ' + (error?.message || 'penyimpanan lokal tidak tersedia'));
+      return;
+    }
+
+    catatJawabanLokal(payload);
+    statusLokal = { ...statusLokal, [indikator.id]: 'menunggu_sinkronisasi' };
+  }
+
+  /**
+   * Mencatat jawaban ke state dan cache lokal, lalu menghitung ulang tanpa menyentuh jaringan.
+   * @param {Object} payload - Data jawaban.
+   */
+  function catatJawabanLokal(payload) {
     const index = jawabanList.findIndex(
-      (jawaban) => jawaban.anak_id === anak.id && jawaban.indikator_id === indikator.id
+      (jawaban) => jawaban.anak_id === payload.anak_id && jawaban.indikator_id === payload.indikator_id
     );
 
     if (index >= 0) {
@@ -216,7 +327,7 @@
       ...lama,
       jawaban: [
         ...lama.jawaban.filter(
-          (jawaban) => !(jawaban.anak_id === anak.id && jawaban.indikator_id === indikator.id)
+          (jawaban) => !(jawaban.anak_id === payload.anak_id && jawaban.indikator_id === payload.indikator_id)
         ),
         payload
       ]
@@ -225,7 +336,6 @@
     // Status penilaian di dashboard berubah, jadi cache dashboard dibuang.
     invalidateCache('dashboard');
 
-    menyimpan = null;
     hitungUlang();
   }
 
@@ -370,6 +480,7 @@
       {opsiMap}
       {terjawabAnak}
       jumlahIndikator={indikatorList.length}
+      {statusLokal}
       onPilihJawaban={pilihJawaban}
     />
 

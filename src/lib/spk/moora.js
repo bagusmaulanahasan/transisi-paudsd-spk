@@ -28,10 +28,12 @@ export function susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jaw
   return anakList.map((anak) => {
     const nilai = kriteriaList.map((kriteria) => {
       const indikatorKriteria = indikatorList.filter((indikator) => indikator.kriteria_id === kriteria.id);
-      return indikatorKriteria.reduce((total, indikator) => {
+      if (indikatorKriteria.length === 0) return 0;
+      const totalPoin = indikatorKriteria.reduce((total, indikator) => {
         const jawaban = jawabanMap.get(`${anak.id}-${indikator.id}`);
         return total + (jawaban ? Number(jawaban.poin) : 0);
       }, 0);
+      return bulat3(totalPoin / indikatorKriteria.length);
     });
 
     const terjawab = indikatorList.filter((indikator) =>
