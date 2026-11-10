@@ -136,10 +136,9 @@
             <LayoutDashboard class="w-6 h-6 text-blue-600" />
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-slate-50 flex items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+        <!-- <div class="mt-4 pt-4 border-t border-slate-50 flex items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
           <TrendingUp class="w-3 h-3 mr-1.5 text-emerald-500" />
-          <span>Real-time Supabase</span>
-        </div>
+        </div> -->
       </div>
 
       <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-200 shadow-sm transition hover:shadow-md">
@@ -152,10 +151,9 @@
             <Users class="w-6 h-6 text-emerald-600" />
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-slate-50 flex items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+        <!-- <div class="mt-4 pt-4 border-t border-slate-50 flex items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
           <TrendingUp class="w-3 h-3 mr-1.5 text-emerald-500" />
-          <span>Real-time Supabase</span>
-        </div>
+        </div> -->
       </div>
 
       <div class="bg-white p-5 md:p-6 rounded-2xl border border-slate-200 shadow-sm transition hover:shadow-md">
@@ -168,10 +166,9 @@
             <Scale class="w-6 h-6" />
           </div>
         </div>
-        <div class="mt-4 pt-4 border-t border-slate-50 flex items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+        <!-- <div class="mt-4 pt-4 border-t border-slate-50 flex items-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
           <TrendingUp class="w-3 h-3 mr-1.5 text-emerald-500" />
-          <span>Real-time Supabase</span>
-        </div>
+        </div> -->
       </div>
     </div>
 
