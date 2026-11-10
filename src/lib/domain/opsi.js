@@ -1,5 +1,5 @@
 /**
- * Modul aturan poin otomatis untuk opsi jawaban indikator.
+ * Modul aturan poin skor kebutuhan otomatis untuk opsi jawaban indikator.
  */
 
 /**

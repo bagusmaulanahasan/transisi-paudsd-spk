@@ -17,9 +17,9 @@
         <ListChecks class="w-5 h-5 text-blue-600" />
       </div>
       <div>
-        <h2 class="text-lg font-bold text-slate-900 tracking-tight">Master Opsi Jawaban</h2>
+        <h2 class="text-lg font-bold text-slate-900 tracking-tight">Opsi Jawaban</h2>
         <p class="text-xs text-slate-500 mt-1 leading-relaxed max-w-xl">
-          Skala penilaian baku yang berlaku untuk <strong>semua kriteria & indikator</strong>. Poin diisi otomatis sesuai urutan.
+          Skala penilaian baku yang berlaku untuk <strong>semua kriteria & indikator</strong>.
         </p>
       </div>
     </div>
@@ -53,7 +53,7 @@
           { key: 'no', label: 'No.', class: 'w-20' },
           { key: 'opsi', label: 'Teks Opsi' },
           { key: 'keterangan', label: 'Keterangan' },
-          { key: 'poin', label: 'Poin Penilaian', class: 'text-center whitespace-nowrap' },
+          { key: 'poin', label: 'Poin Penilaian (skor kebutuhan)', class: 'text-center whitespace-nowrap' },
           // { key: 'aksi', label: 'Aksi', class: 'text-right w-32' }
         ]}
         data={masterOpsi.map((o, i) => ({ ...o, no: i + 1 }))}
@@ -85,10 +85,10 @@
       </Table>
     </div>
 
-    <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 -mx-6 -mb-6 mt-6">
+    <!-- <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 -mx-6 -mb-6 mt-6">
       <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
         Poin dihitung otomatis 1, 2, 3, ... berdasarkan urutan opsi dan tidak dapat diubah manual.
       </p>
-    </div>
+    </div> -->
   {/if}
 </Card>
