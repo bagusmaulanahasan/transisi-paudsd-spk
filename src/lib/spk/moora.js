@@ -12,6 +12,63 @@ function bulat3(nilai) {
 }
 
 /**
+ * Menentukan kategori nilai (Rendah, Sedang, Tinggi) beserta kelas warna Tailwind.
+ * Skala dibagi rata menjadi 3 rentang:
+ * - Rendah = Hijau
+ * - Sedang = Kuning
+ * - Tinggi = Merah
+ * @param {number} nilai - Nilai rata-rata poin kriteria.
+ * @param {number} [minPoin=1] - Poin terkecil skala.
+ * @param {number} [maxPoin=3] - Poin terbesar skala.
+ * @returns {{ label: string, warna: string, bgClass: string, textClass: string, borderClass: string, badgeClass: string }}
+ */
+export function getKategoriNilai(nilai, minPoin = 1, maxPoin = 3) {
+  if (nilai === null || nilai === undefined || isNaN(nilai) || nilai === 0) {
+    return {
+      label: '—',
+      warna: 'slate',
+      bgClass: 'bg-slate-100',
+      textClass: 'text-slate-500',
+      borderClass: 'border-slate-200',
+      badgeClass: 'bg-slate-100 text-slate-500 border-slate-200'
+    };
+  }
+
+  const rentang = (maxPoin - minPoin) / 3;
+  const batasRendah = minPoin + rentang;
+  const batasSedang = minPoin + 2 * rentang;
+
+  if (nilai <= batasRendah) {
+    return {
+      label: 'Rendah',
+      warna: 'hijau',
+      bgClass: 'bg-emerald-50',
+      textClass: 'text-emerald-700',
+      borderClass: 'border-emerald-200',
+      badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+    };
+  } else if (nilai <= batasSedang) {
+    return {
+      label: 'Sedang',
+      warna: 'kuning',
+      bgClass: 'bg-amber-50',
+      textClass: 'text-amber-700',
+      borderClass: 'border-amber-200',
+      badgeClass: 'bg-amber-50 text-amber-700 border-amber-200'
+    };
+  } else {
+    return {
+      label: 'Tinggi',
+      warna: 'merah',
+      bgClass: 'bg-rose-50',
+      textClass: 'text-rose-700',
+      borderClass: 'border-rose-200',
+      badgeClass: 'bg-rose-50 text-rose-700 border-rose-200'
+    };
+  }
+}
+
+/**
  * Menyusun matriks keputusan X: total poin jawaban anak pada setiap kriteria.
  * @param {Array} anakList - Daftar anak (alternatif).
  * @param {Array} kriteriaList - Daftar kriteria (kolom matriks).

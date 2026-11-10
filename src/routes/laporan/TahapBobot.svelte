@@ -26,7 +26,7 @@
       <tbody class="divide-y divide-slate-100 text-slate-700">
         {#each kriteriaList as item, i}
           <tr>
-            <td class="p-3 font-bold text-blue-600">C{item.urutan || i + 1}</td>
+            <td class="p-3 font-bold">C{item.urutan || i + 1}</td>
             <td class="p-3 font-medium">{item.nama}</td>
             <td class="p-3 font-semibold uppercase text-slate-500">{item.jenis}</td>
             <td class="p-3 font-bold text-slate-900">{(bobot[i] ?? 0).toFixed(3)}</td>

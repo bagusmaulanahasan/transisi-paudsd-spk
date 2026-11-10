@@ -44,7 +44,7 @@
       </div>
     </div>
   {:else}
-    <div class="px-5 md:px-6 pt-4 md:pt-0">
+    <div class="py-5 md:px-6 pt-4 md:pt-0">
       <p class="md:hidden text-[11px] text-slate-400 font-medium">Geser tabel ke samping untuk melihat semua kolom.</p>
     </div>
     <div class="overflow-x-auto">

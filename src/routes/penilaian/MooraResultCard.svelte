@@ -3,6 +3,7 @@
   import Table from '$lib/components/ui/Table.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
   import { Trophy, Users, Eye, AlertCircle } from 'lucide-svelte';
+  import { getKategoriNilai } from '$lib/spk/moora';
 
   export let kriteriaList = [];
   export let bobot = [];
@@ -14,7 +15,7 @@
 </script>
 
 <Card className="overflow-hidden p-0">
-  <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+  <div class="pb-4 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
         <Trophy class="w-5 h-5 text-blue-600" />
@@ -38,7 +39,21 @@
     </div>
   </div>
 
-  <div class="p-5 md:p-6 space-y-4">
+  <div class="mt-4 md:p-6 space-y-4">
+    <!-- Kategori Warna Matriks Keputusan -->
+    <div class="flex flex-wrap items-center gap-3 text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl">
+      <span class="font-bold text-slate-700">Kategori Skala Nilai:</span>
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        Rendah (1 – 1.67)
+      </span>
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
+        Sedang (1.68 – 2.34)
+      </span>
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
+        Tinggi (2.35 – 3)
+      </span>
+    </div>
+
     <!-- Bobot AHP yang dipakai -->
     <div class="flex flex-wrap sm:columns-2 gap-2">
       {#each kriteriaList as kriteria, index (kriteria.id)}
@@ -88,7 +103,7 @@
               {#if item.nis}
                 <span class="text-sm font-semibold text-slate-700">{item.nis}</span>
               {:else}
-                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-slate-700 border border-slate-300 whitespace-nowrap">
                   Belum diisi
                 </span>
               {/if}
@@ -104,7 +119,12 @@
                 Lihat
               </a>
             {:else if col.key.startsWith('k_')}
-              <span class="text-sm font-semibold text-slate-700 text-center">{item[col.key]}</span>
+              {@const kat = getKategoriNilai(item[col.key])}
+              <div class="flex items-center justify-center">
+                <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {item[col.key]} ({kat.label})">
+                  {item[col.key]}
+                </span>
+              </div>
             {:else if col.key === 'yi'}
               <span class="text-sm font-extrabold text-slate-900 text-center">
                 {item.yi !== null ? item.yi.toFixed(3) : '—'}
@@ -117,7 +137,7 @@
               {:else if !ahpSiap}
                 <span class="text-xs font-bold text-slate-400">—</span>
               {:else}
-                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider text-slate-700 border border-slate-300 whitespace-nowrap">
                   Belum lengkap
                 </span>
               {/if}
