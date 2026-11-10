@@ -60,7 +60,7 @@
             {#if item.nis}
               <span class="text-sm font-semibold text-slate-700">{item.nis}</span>
             {:else}
-              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider text-slate-700 border border-slate-300">
                 Belum diisi
               </span>
             {/if}
@@ -68,7 +68,7 @@
             <span class="text-sm font-bold text-slate-800">{item.nama}</span>
           {:else if col.key === 'aksi'}
             <div class="text-right whitespace-nowrap space-x-2">
-              {#if !item.nis}
+              <!-- {#if !item.nis}
                 <Button
                   variant="outline"
                   className="bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-100 gap-1.5 px-3 py-2 h-auto text-[11px]"
@@ -78,7 +78,7 @@
                   <PencilLine class="w-3.5 h-3.5" />
                   <span>Isi NIS</span>
                 </Button>
-              {/if}
+              {/if} -->
               <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Data Anak">
                 <Edit2 class="w-3.5 h-3.5" />
               </Button>

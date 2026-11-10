@@ -262,7 +262,6 @@
             </div>
             <div class="text-left">
               <p class="text-xs font-bold text-slate-800">{profile?.nama_lengkap || 'Tim Pendidik'}</p>
-              <p class="text-[10px] text-emerald-600 font-medium">● Online</p>
             </div>
           </button>
 

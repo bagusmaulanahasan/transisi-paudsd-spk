@@ -44,7 +44,7 @@
   </div>
 
   <!-- Toolbar Filter Kriteria -->
-  <div class="px-5 md:px-6 py-4 bg-slate-50/60 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center gap-3">
+  <div class="md:px-6 py-4 bg-slate-50/60 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center gap-3">
     <label for="filter-kriteria" class="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 shrink-0">
       Pilih Kriteria Penilaian
     </label>
@@ -64,7 +64,7 @@
     </span>
   </div>
 
-  <div class="p-5 md:p-6">
+  <div class="md:p-6">
     {#if kriteriaList.length === 0}
       <div class="flex flex-col items-center justify-center p-10 text-center border border-dashed border-slate-300 rounded-xl bg-slate-50/50">
         <AlertCircle class="w-8 h-8 text-amber-400 mb-3" />

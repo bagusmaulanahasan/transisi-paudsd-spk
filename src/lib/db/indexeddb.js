@@ -1,9 +1,9 @@
 /**
- * Helper IndexedDB untuk menyimpan cache lokal dan antrean sinkronisasi (sync_queue) ketika offline.
+ * Helper IndexedDB untuk cache lokal dan penyimpanan penilaian saat offline.
  */
 
 const DB_NAME = "spk_paud_sd_db";
-const DB_VERSION = 1;
+const DB_VERSION = 3;
 
 /**
  * Membuka atau menginisialisasi database IndexedDB lokal.
@@ -23,78 +23,30 @@ export function openDB() {
     };
 
     request.onsuccess = (event) => {
-      resolve(event.target.result);
+      const db = event.target.result;
+      // Tutup koneksi lama saat versi naik agar upgrade berikutnya tidak tertahan.
+      db.onversionchange = () => db.close();
+      resolve(db);
+    };
+
+    // Terjadi bila tab lain masih memegang koneksi versi lama.
+    request.onblocked = () => {
+      console.warn("Upgrade IndexedDB tertahan oleh koneksi lain. Tutup tab aplikasi lain lalu muat ulang halaman.");
     };
 
     request.onupgradeneeded = (event) => {
       const db = event.target.result;
 
-      // Store untuk antrean perubahan offline
-      if (!db.objectStoreNames.contains("sync_queue")) {
-        db.createObjectStore("sync_queue", {
-          keyPath: "id",
-          autoIncrement: true,
-        });
-      }
-
       // Store cache data aplikasi
       if (!db.objectStoreNames.contains("cache")) {
         db.createObjectStore("cache", { keyPath: "key" });
       }
+
+      // Store penilaian yang disimpan saat offline (menunggu sinkronisasi)
+      if (!db.objectStoreNames.contains("offline_penilaian")) {
+        db.createObjectStore("offline_penilaian", { keyPath: "id" });
+      }
     };
-  });
-}
-
-/**
- * Menyimpan item ke dalam antrean sinkronisasi offline.
- * @param {Object} actionData - Data aksi (misal: { table, action, payload, timestamp })
- * @returns {Promise<number>}
- */
-export async function addToSyncQueue(actionData) {
-  const db = await openDB();
-  if (!db) return null;
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("sync_queue", "readwrite");
-    const store = tx.objectStore("sync_queue");
-    const request = store.add({
-      ...actionData,
-      created_at: new Date().toISOString(),
-    });
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-/**
- * Mengambil seluruh daftar antrean sinkronisasi offline.
- * @returns {Promise<Array>}
- */
-export async function getSyncQueue() {
-  const db = await openDB();
-  if (!db) return [];
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("sync_queue", "readonly");
-    const store = tx.objectStore("sync_queue");
-    const request = store.getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-/**
- * Menghapus item dari antrean sinkronisasi berdasarkan ID.
- * @param {number} id
- * @returns {Promise<void>}
- */
-export async function removeFromSyncQueue(id) {
-  const db = await openDB();
-  if (!db) return;
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("sync_queue", "readwrite");
-    const store = tx.objectStore("sync_queue");
-    const request = store.delete(id);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
   });
 }
 
@@ -182,5 +134,88 @@ export async function clearCacheByPrefix(prefix) {
     for (const key of keyCocok) store.delete(key);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
+  });
+}
+
+// ==================== PENILAIAN OFFLINE ====================
+
+/**
+ * Kunci unik penilaian offline: satu baris per kombinasi anak + indikator,
+ * sehingga jawaban terbaru menimpa jawaban lama (setara onConflict di Supabase).
+ * @param {number|string} anakId
+ * @param {number|string} indikatorId
+ * @returns {string}
+ */
+export function idPenilaianOffline(anakId, indikatorId) {
+  return `${anakId}_${indikatorId}`;
+}
+
+/**
+ * Menyimpan (upsert) satu jawaban penilaian ke perangkat saat offline.
+ * @param {{ anak_id: number, indikator_id: number, opsi_jawaban_id: number, poin: number }} payload
+ * @returns {Promise<string|null>} id baris yang disimpan.
+ */
+export async function simpanPenilaianOffline(payload) {
+  const db = await openDB();
+  if (!db) return null;
+  if (!db.objectStoreNames.contains("offline_penilaian")) {
+    db.close();
+    throw new Error("Penyimpanan offline belum siap. Muat ulang halaman sekali.");
+  }
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("offline_penilaian", "readwrite");
+    const store = tx.objectStore("offline_penilaian");
+    const id = idPenilaianOffline(payload.anak_id, payload.indikator_id);
+    const request = store.put({
+      id,
+      anak_id: payload.anak_id,
+      indikator_id: payload.indikator_id,
+      opsi_jawaban_id: payload.opsi_jawaban_id,
+      poin: payload.poin,
+      status: "menunggu_sinkronisasi",
+      updated_at: new Date().toISOString(),
+    });
+    request.onsuccess = () => resolve(id);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/**
+ * Mengambil seluruh jawaban yang masih tersimpan di perangkat.
+ * @returns {Promise<Array>}
+ */
+export async function ambilPenilaianOffline() {
+  const db = await openDB();
+  if (!db) return [];
+  if (!db.objectStoreNames.contains("offline_penilaian")) {
+    db.close();
+    return [];
+  }
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("offline_penilaian", "readonly");
+    const store = tx.objectStore("offline_penilaian");
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/**
+ * Menghapus satu jawaban dari perangkat setelah berhasil disinkronkan.
+ * @param {string} id - Hasil idPenilaianOffline(anak_id, indikator_id).
+ * @returns {Promise<void>}
+ */
+export async function hapusPenilaianOffline(id) {
+  const db = await openDB();
+  if (!db) return;
+
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("offline_penilaian", "readwrite");
+    const store = tx.objectStore("offline_penilaian");
+    const request = store.delete(id);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
   });
 }

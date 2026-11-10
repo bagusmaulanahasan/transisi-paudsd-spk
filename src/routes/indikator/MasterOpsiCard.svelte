@@ -28,10 +28,10 @@
       <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap">
         Total: {masterOpsi.length} Opsi
       </span>
-      <Button on:click={openAddOpsi}>
+      <!-- <Button on:click={openAddOpsi}>
         <Plus class="w-4 h-4 mr-1.5" />
         <span>Tambah Opsi</span>
-      </Button>
+      </Button> -->
     </div>
   </div>
 
@@ -44,7 +44,7 @@
       </div>
     </div>
   {:else}
-    <div class="px-5 md:px-6 pt-4 md:pt-0">
+    <div class="py-5 md:px-6 pt-4 md:pt-0">
       <p class="md:hidden text-[11px] text-slate-400 font-medium">Geser tabel ke samping untuk melihat semua kolom.</p>
     </div>
     <div class="overflow-x-auto">
@@ -53,8 +53,8 @@
           { key: 'no', label: 'No.', class: 'w-20' },
           { key: 'opsi', label: 'Teks Opsi' },
           { key: 'keterangan', label: 'Keterangan' },
-          { key: 'poin', label: 'Poin (Otomatis)', class: 'text-center whitespace-nowrap' },
-          { key: 'aksi', label: 'Aksi', class: 'text-right w-32' }
+          { key: 'poin', label: 'Poin Penilaian', class: 'text-center whitespace-nowrap' },
+          // { key: 'aksi', label: 'Aksi', class: 'text-right w-32' }
         ]}
         data={masterOpsi.map((o, i) => ({ ...o, no: i + 1 }))}
       >
@@ -69,7 +69,7 @@
             <span class="inline-flex items-center justify-center min-w-[34px] px-2.5 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-lg">
               {item.poin}
             </span>
-          {:else if col.key === 'aksi'}
+          <!-- {:else if col.key === 'aksi'}
             <div class="space-x-2 whitespace-nowrap">
               <Button variant="ghost" className="p-2" title="Ubah Opsi" on:click={() => openEditOpsi(item)}>
                 <Edit2 class="w-3.5 h-3.5" />
@@ -77,7 +77,7 @@
               <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Opsi" on:click={() => deleteOpsi(item)}>
                 <Trash2 class="w-3.5 h-3.5" />
               </Button>
-            </div>
+            </div> -->
           {:else}
             {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
           {/if}

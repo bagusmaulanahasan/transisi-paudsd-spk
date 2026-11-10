@@ -175,7 +175,7 @@
             <tbody>
               {#each kriteriaList as item, i}
                 <tr>
-                  <td class="p-2 border border-slate-200 font-bold text-blue-600">C{item.urutan || i+1}</td>
+                  <td class="p-2 border border-slate-200 font-bold ">C{item.urutan || i+1}</td>
                   <td class="p-2 border border-slate-200 font-medium">{item.nama}</td>
                   <td class="p-2 border border-slate-200 font-bold text-slate-900">
                     {(ahpDetail?.weights[i] ?? 0).toFixed(3)}

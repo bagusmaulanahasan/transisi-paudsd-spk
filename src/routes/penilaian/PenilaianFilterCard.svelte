@@ -13,7 +13,7 @@
       id="pilih-kelas"
       bind:value={selectedKelasId}
       on:change={onGantiKelas}
-      class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition cursor-pointer"
+      class="w-full md:w-80 px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition cursor-pointer"
     >
       {#each kelasList as kelas (kelas.id)}
         <option value={kelas.id}>{kelas.nama_kelas} — {kelas.tahun_ajaran}</option>

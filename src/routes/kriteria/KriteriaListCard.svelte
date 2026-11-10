@@ -46,7 +46,7 @@
     >
       <svelte:fragment slot="cell" let:item let:index let:col>
         {#if col.key === 'inisial'}
-          <span class="font-extrabold text-blue-600">{item.inisial}</span>
+          <span class="font-extrabold ">{item.inisial}</span>
         {:else if col.key === 'nama'}
           <span class="font-bold text-slate-800">{item.nama}</span>
         {:else if col.key === 'jenis'}

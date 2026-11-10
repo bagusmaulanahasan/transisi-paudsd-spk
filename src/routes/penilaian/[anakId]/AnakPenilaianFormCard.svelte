@@ -1,6 +1,6 @@
 <script>
   import Card from '$lib/components/ui/Card.svelte';
-  import { Loader2, CheckCircle2, AlertCircle, ClipboardList } from 'lucide-svelte';
+  import { Loader2, CheckCircle2, AlertCircle, ClipboardList, CloudOff } from 'lucide-svelte';
 
   export let kriteriaList = [];
   export let indikatorPerKriteria = [];
@@ -12,11 +12,12 @@
   export let opsiMap = {};
   export let terjawabAnak = 0;
   export let jumlahIndikator = 0;
+  export let statusLokal = {};
   export let onPilihJawaban = () => {};
 </script>
 
 <Card className="overflow-hidden p-0">
-  <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+  <div class="pb-4 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
         <ClipboardList class="w-5 h-5 text-blue-600" />
@@ -47,7 +48,7 @@
     </div>
   </div>
 
-  <div class="p-5 md:p-6 space-y-6">
+  <div class="mt-4 md:p-6 space-y-6">
     {#if kriteriaList.length === 0}
       <p class="text-sm text-slate-500">Belum ada kriteria penilaian.</p>
     {:else}
@@ -118,6 +119,16 @@
                 {:else}
                   <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
                     <AlertCircle class="w-3 h-3" /> Belum dijawab
+                  </span>
+                {/if}
+
+                {#if statusLokal[indikator.id] === 'menunggu_sinkronisasi'}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
+                    <CloudOff class="w-3 h-3" /> Tersimpan di perangkat, menunggu sinkronisasi
+                  </span>
+                {:else if statusLokal[indikator.id] === 'tersinkron'}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <CheckCircle2 class="w-3 h-3" /> Tersinkron
                   </span>
                 {/if}
               </div>
