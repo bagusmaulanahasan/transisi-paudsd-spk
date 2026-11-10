@@ -177,12 +177,6 @@
     title="Kelola Kelas & Data Anak"
     subtitle="Buat kelas terlebih dahulu, lalu tambahkan data anak di dalamnya sebagai alternatif yang dinilai pada perhitungan MOORA."
   >
-    <div slot="action">
-      <Button on:click={openAddModal}>
-        <Plus class="w-4 h-4 mr-1.5" />
-        <span>Tambah Kelas</span>
-      </Button>
-    </div>
   </PageHeader>
 
   {#if loading}
