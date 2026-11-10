@@ -1,5 +1,13 @@
 <script>
+  import Table from '$lib/components/ui/Table.svelte';
   export let hasil = { baris: [] };
+
+  $: columns = [
+    { key: 'no', label: 'No.' },
+    { key: 'nama', label: 'Nama Anak' },
+    { key: 'yi', label: 'Nilai Optimasi (Yᵢ)' },
+    { key: 'ranking', label: 'Ranking' }
+  ];
 </script>
 
 <!-- TAHAP 3: HASIL MOORA & RANKING -->
@@ -7,36 +15,25 @@
   <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
     Tahap 3: Hasil Akhir MOORA & Ranking Prioritas Stimulasi
   </h2>
-  <div class="overflow-x-auto">
-    <table class="w-full text-left text-xs">
-      <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
-        <tr>
-          <th class="p-3">No.</th>
-          <th class="p-3">Nama Anak</th>
-          <th class="p-3">Nilai Optimasi (Yᵢ)</th>
-          <th class="p-3">Ranking</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100 text-slate-700">
-        {#each hasil.baris as baris, idx}
-          <tr class={baris.ranking === 1 ? 'bg-blue-50/50 font-bold' : ''}>
-            <td class="p-3">{idx + 1}</td>
-            <td class="p-3 font-bold">{baris.nama}</td>
-            <td class="p-3 font-bold text-slate-900">
-              {baris.yi !== null ? baris.yi.toFixed(3) : '—'}
-            </td>
-            <td class="p-3">
-              {#if baris.ranking !== null}
-                <span class={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${baris.ranking === 1 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                  {baris.ranking}
-                </span>
-              {:else}
-                <span class="text-slate-400">—</span>
-              {/if}
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
+  <Table {columns} data={hasil.baris} rowClass={(baris) => baris.ranking === 1 ? 'bg-blue-50/50' : ''}>
+    <svelte:fragment slot="cell" let:item let:col>
+      {#if col.key === 'no'}
+        {hasil.baris.indexOf(item) + 1}
+      {:else if col.key === 'nama'}
+        <span class="font-bold">{item.nama}</span>
+      {:else if col.key === 'yi'}
+        <span class="font-bold text-slate-900">
+          {item.yi !== null ? item.yi.toFixed(3) : '—'}
+        </span>
+      {:else if col.key === 'ranking'}
+        {#if item.ranking !== null}
+          <span class={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${item.ranking === 1 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
+            {item.ranking}
+          </span>
+        {:else}
+          <span class="text-slate-400">—</span>
+        {/if}
+      {/if}
+    </svelte:fragment>
+  </Table>
 </div>

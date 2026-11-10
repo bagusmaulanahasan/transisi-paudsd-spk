@@ -1,6 +1,24 @@
 <script>
+  import Table from '$lib/components/ui/Table.svelte';
   export let kriteriaList = [];
   export let hasil = { baris: [] };
+
+  $: columns = [
+    { key: 'no', label: 'No.' },
+    { key: 'nama', label: 'Nama Anak' },
+    ...kriteriaList.map((k, i) => ({
+      key: `c${i}`,
+      label: `C${k.urutan || i + 1}`
+    })),
+    { key: 'status', label: 'Status' }
+  ];
+
+  $: tableData = hasil.baris.map((baris, idx) => ({
+    no: idx + 1,
+    nama: baris.nama,
+    ...baris.nilai.reduce((acc, val, i) => ({ ...acc, [`c${i}`]: val }), {}),
+    status: baris
+  }));
 </script>
 
 <!-- TAHAP 2: MATRIKS KEPUSATAN -->
@@ -8,36 +26,23 @@
   <h2 class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
     Tahap 2: Matriks Keputusan (X) — Total Poin per Kriteria
   </h2>
-  <div class="overflow-x-auto">
-    <table class="w-full text-left text-xs">
-      <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
-        <tr>
-          <th class="p-3">No.</th>
-          <th class="p-3">Nama Anak</th>
-          {#each kriteriaList as k, i}
-            <th class="p-3">C{k.urutan || i + 1}</th>
-          {/each}
-          <th class="p-3">Status</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-slate-100 text-slate-700">
-        {#each hasil.baris as baris, idx}
-          <tr>
-            <td class="p-3">{idx + 1}</td>
-            <td class="p-3 font-bold">{baris.nama}</td>
-            {#each baris.nilai as val}
-              <td class="p-3 font-medium">{val}</td>
-            {/each}
-            <td class="p-3 font-semibold">
-              {#if baris.lengkap}
-                <span class="text-emerald-600">Lengkap</span>
-              {:else}
-                <span class="text-amber-600">Belum Lengkap ({baris.terjawab}/{baris.total})</span>
-              {/if}
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
+  <Table {columns} data={tableData}>
+    <svelte:fragment slot="cell" let:item let:col>
+      {#if col.key === 'nama'}
+        <span class="font-bold text-slate-900">{item.nama}</span>
+      {:else if col.key === 'status'}
+        <span class={`font-semibold ${item.status.lengkap ? 'text-emerald-600' : 'text-amber-600'}`}>
+          {#if item.status.lengkap}
+            Lengkap
+          {:else}
+            Belum Lengkap ({item.status.terjawab}/{item.status.total})
+          {/if}
+        </span>
+      {:else if col.key !== 'no'}
+        <span class="font-medium">{item[col.key]}</span>
+      {:else}
+        {item.no}
+      {/if}
+    </svelte:fragment>
+  </Table>
 </div>
