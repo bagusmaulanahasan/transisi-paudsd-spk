@@ -270,12 +270,19 @@
 
     menyimpan = indikator.id;
 
-    const { error } = await supabase
+    const { error, status } = await supabase
       .from('detail_penilaian')
       .upsert(payload, { onConflict: 'anak_id,indikator_id' });
 
     if (error) {
-      notifyError('Gagal menyimpan jawaban: ' + error.message);
+      // navigator.onLine bisa tetap true walau internet tidak terjangkau.
+      // Bila kegagalannya di level jaringan, simpan ke perangkat agar tidak hilang.
+      if (gagalKarenaJaringan(error, status)) {
+        await simpanJawabanOffline(indikator, payload);
+      } else {
+        notifyError('Gagal menyimpan jawaban: ' + error.message);
+      }
+
       menyimpan = null;
       return;
     }
@@ -285,6 +292,22 @@
     catatJawabanLokal(payload);
 
     menyimpan = null;
+  }
+
+  /**
+   * Mendeteksi error Supabase yang berasal dari jaringan putus, bukan dari server.
+   * postgrest-js membungkus kegagalan fetch dengan status 0 dan pesan seperti
+   * "TypeError: Failed to fetch" (Chrome) atau "TypeError: Load failed" (Safari).
+   * @param {any} error
+   * @param {number} [status] - Status respons Supabase (0 bila tidak ada respons).
+   * @returns {boolean}
+   */
+  function gagalKarenaJaringan(error, status) {
+    if (!error) return false;
+    if (status === 0 || error.status === 0 || error.code === 'NETWORK_ERROR') return true;
+
+    const pesan = String(error.message || '');
+    return /failed to fetch|load failed|networkerror|network error|fetch failed/i.test(pesan);
   }
 
   /**

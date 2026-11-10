@@ -52,6 +52,13 @@ async function networkFirst(request) {
     const cached = await cache.match(request);
     if (cached) return cached;
 
+    // Navigasi dengan query berbeda (mis. ?kelas=3) tetap bisa dibuka jika
+    // URL tanpa query pernah dimuat saat online.
+    if (request.mode === "navigate") {
+      const tanpaQuery = await cache.match(request, { ignoreSearch: true });
+      if (tanpaQuery) return tanpaQuery;
+    }
+
     // Navigasi ke halaman yang belum pernah dibuka: tidak ada fallback,
     // biarkan browser menampilkan halaman offline-nya sendiri.
     throw error;

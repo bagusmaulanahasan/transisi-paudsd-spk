@@ -1,11 +1,11 @@
 <script>
   import { supabase } from '$lib/db/supabase';
   import { hitungBobotAhp } from '$lib/spk/ahp';
-  import { hitungMoora } from '$lib/spk/moora';
+  import { hitungMoora, susunMatriksKeputusan } from '$lib/spk/moora';
   import { simpanHasilPerhitungan } from '$lib/services/hasil';
   import { fetchMasterData } from '$lib/services/masterData';
   import { fetchKelasPenilaian } from '$lib/services/penilaian';
-  import { peekMemoryCache } from '$lib/db/cache';
+  import { peekMemoryCache, cachedFetch } from '$lib/db/cache';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
@@ -14,7 +14,6 @@
   import Button from '$lib/components/ui/Button.svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
-  import OfflineNotice from '$lib/components/ui/OfflineNotice.svelte';
   import { online } from '$lib/stores/koneksi';
   import PenilaianFilterCard from './PenilaianFilterCard.svelte';
   import MooraResultCard from './MooraResultCard.svelte';
@@ -51,6 +50,7 @@
   let hasil = { baris: [], jumlahLengkap: 0, jumlahAnak: 0 };
   let statusSimpanHasil = '';
   let waktuPerhitungan = null;
+  let prefetchBerjalan = false;
 
   // Hitung hasil lebih awal dari cache agar angka langsung tampil tanpa loading.
   if (kelasDataAwal && !loadingMaster) hitungUlang();
@@ -58,6 +58,20 @@
   onMount(async () => {
     await fetchMaster();
     loadingMaster = false;
+
+    // Siapkan cache offline untuk semua kelas dan anak (tanpa menahan render).
+    prefetchOffline();
+  });
+
+  // Saat koneksi kembali: siapkan cache dan hitung ulang peringkat.
+  onMount(() => {
+    const saatOnline = () => {
+      prefetchOffline();
+      hitungUlang();
+    };
+
+    window.addEventListener('online', saatOnline);
+    return () => window.removeEventListener('online', saatOnline);
   });
 
   /**
@@ -86,6 +100,46 @@
       // Pilihan dari URL dipertahankan agar tidak reset saat kembali dari halaman penilaian anak.
       if (!selectedKelasId) selectedKelasId = pilihKelas(kelasList);
       await fetchKelasData();
+    }
+  }
+
+  /**
+   * Menyiapkan cache offline untuk semua kelas, daftar anak, dan detail tiap anak.
+   * Detail memakai key yang sama dengan halaman /penilaian/[anakId] agar halaman itu
+   * bisa dibuka saat offline setelah pernah dimuat online.
+   */
+  async function prefetchOffline() {
+    if (!navigator.onLine || prefetchBerjalan) return;
+
+    prefetchBerjalan = true;
+    try {
+      const opsiList = await cachedFetch('master:opsi', () =>
+        supabase.from('opsi_jawaban').select('*').order('poin', { ascending: true })
+      );
+
+      for (const kelas of kelasList) {
+        const dataKelas = await fetchKelasPenilaian(kelas.id);
+        if (!dataKelas) continue;
+
+        for (const anak of dataKelas.anak) {
+          const detail = {
+            anak,
+            kelas,
+            kriteria: kriteriaList,
+            indikator: indikatorList,
+            opsi: opsiList || [],
+            perbandingan: perbandinganList,
+            anakList: dataKelas.anak,
+            jawaban: dataKelas.jawaban
+          };
+
+          await cachedFetch('penilaian:detail:' + anak.id, async () => detail);
+        }
+      }
+    } catch (error) {
+      console.warn('Gagal menyiapkan cache offline penilaian:', error);
+    } finally {
+      prefetchBerjalan = false;
     }
   }
 
@@ -134,6 +188,21 @@
     ahpSiap = hasilAhp.ahpSiap;
     pesanAhp = hasilAhp.pesan;
 
+    // Saat offline: susun baris untuk ditampilkan, tetapi jangan hitung Yi/ranking
+    // dan jangan menulis ke hasil_perhitungan.
+    if (!navigator.onLine) {
+      const baris = susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jawabanList)
+        .map((item) => ({ ...item, yi: null, ranking: null }));
+
+      hasil = {
+        baris,
+        jumlahLengkap: baris.filter((item) => item.lengkap).length,
+        jumlahAnak: baris.length
+      };
+      statusSimpanHasil = '';
+      return;
+    }
+
     hasil = hitungMoora({
       anakList,
       kriteriaList,
@@ -154,6 +223,9 @@
    * Menyimpan hasil MOORA terakhir ke tabel hasil_perhitungan (best effort).
    */
   async function simpanHasil(data) {
+    // Saat offline, hasil peringkat tidak boleh ditulis ke server.
+    if (!navigator.onLine) return;
+
     const status = await simpanHasilPerhitungan(
       supabase,
       selectedKelasId,
@@ -200,9 +272,7 @@
     </svelte:fragment>
   </PageHeader>
 
-  {#if !$online}
-    <OfflineNotice />
-  {:else if loadingMaster}
+  {#if loadingMaster}
     <LoadingState text="Menyiapkan data penilaian..." />
   {:else if kelasList.length === 0}
     <EmptyState
@@ -275,12 +345,20 @@
         </div>
       {/if}
 
+      <!-- Peringatan peringkat saat offline -->
+      {#if !$online}
+        <div class="p-3.5 bg-amber-50 border border-amber-100 rounded-xl text-[11px] font-medium text-amber-800 leading-relaxed flex items-start gap-2">
+          <AlertCircle class="w-4 h-4 shrink-0 mt-0.5" />
+          <p>Peringkat memerlukan koneksi internet.</p>
+        </div>
+      {/if}
+
       <!-- Tabel Hasil MOORA -->
       <MooraResultCard
         {kriteriaList}
         {bobot}
         {hasil}
-        {ahpSiap}
+        ahpSiap={ahpSiap && $online}
         {selectedKelasId}
         {waktuPerhitungan}
         {statusSimpanHasil}
