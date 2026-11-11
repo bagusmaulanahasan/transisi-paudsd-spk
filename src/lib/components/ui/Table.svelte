@@ -20,7 +20,7 @@
         <tr class="border-b border-slate-200 bg-slate-50/75 text-slate-600 font-bold text-xs uppercase tracking-wider">
           {#each columns as col}
             <th class={`px-6 py-4 font-extrabold ${col.class || ''}`}>
-              {col.label}
+              <slot name="header" {col}>{col.label}</slot>
             </th>
           {/each}
         </tr>

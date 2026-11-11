@@ -1,6 +1,10 @@
 <script>
   import Table from '$lib/components/ui/Table.svelte';
+  import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
+  import { nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
   export let hasil = { baris: [] };
+
+  $: jenisTampilan = $tampilanNamaAktif;
 
   $: columns = [
     { key: 'no', label: 'No.' },
@@ -16,11 +20,19 @@
     Tahap 3: Hasil Akhir MOORA & Ranking Prioritas Stimulasi
   </h2>
   <Table {columns} data={hasil.baris} rowClass={(baris) => baris.ranking === 1 ? 'bg-blue-50/50' : ''}>
+    <svelte:fragment slot="header" let:col>
+      {#if col.key === 'nama'}
+        <FilterTampilanNama variant="header" />
+      {:else}
+        {col.label}
+      {/if}
+    </svelte:fragment>
+
     <svelte:fragment slot="cell" let:item let:col>
       {#if col.key === 'no'}
         {hasil.baris.indexOf(item) + 1}
       {:else if col.key === 'nama'}
-        <span class="font-bold">{item.nama}</span>
+        <span class="font-bold">{nilaiNama(item, jenisTampilan) || '—'}</span>
       {:else if col.key === 'yi'}
         <span class="font-bold text-slate-900">
           {item.yi !== null ? item.yi.toFixed(3) : '—'}

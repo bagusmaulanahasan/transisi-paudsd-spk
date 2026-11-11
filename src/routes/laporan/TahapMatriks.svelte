@@ -1,8 +1,12 @@
 <script>
   import Table from '$lib/components/ui/Table.svelte';
+  import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
+  import { nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
   export let kriteriaList = [];
   export let hasil = { baris: [] };
+
+  $: jenisTampilan = $tampilanNamaAktif;
 
   $: columns = [
     { key: 'no', label: 'No.' },
@@ -18,6 +22,8 @@
   $: tableData = hasil.baris.map((baris, idx) => ({
     no: idx + 1,
     nama: baris.nama,
+    nama_panggilan: baris.nama_panggilan ?? null,
+    kode_anak: baris.kode_anak ?? null,
     ...baris.nilai.reduce((acc, val, i) => ({ ...acc, [`c${i}`]: val }), {}),
     status: baris
   }));
@@ -44,9 +50,17 @@
   </div>
 
   <Table {columns} data={tableData}>
+    <svelte:fragment slot="header" let:col>
+      {#if col.key === 'nama'}
+        <FilterTampilanNama variant="header" />
+      {:else}
+        {col.label}
+      {/if}
+    </svelte:fragment>
+
     <svelte:fragment slot="cell" let:item let:col>
       {#if col.key === 'nama'}
-        <span class="font-bold text-slate-900">{item.nama}</span>
+        <span class="font-bold text-slate-900">{nilaiNama(item, jenisTampilan) || '—'}</span>
       {:else if col.key === 'status'}
         <span class={`font-semibold ${item.status.lengkap ? 'text-emerald-600' : 'p-1 rounded-md text-slate-700 border border-slate-300'}`}>
           {#if item.status.lengkap}

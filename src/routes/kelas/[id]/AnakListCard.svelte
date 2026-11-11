@@ -17,7 +17,7 @@
   $: labelIdentitas = labelKolomNama(jenisTampilan);
 </script>
 
-<Card padding="p-0">
+<Card padding="px-5 py-4">
   <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
     <div class="flex items-start gap-3">
       <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
@@ -31,10 +31,7 @@
       </div>
     </div>
     <div class="flex flex-wrap items-end gap-3">
-      <FilterTampilanNama className="w-44" />
-      <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap w-fit h-fit mb-0.5">
-        Total: {anakList.length} Anak
-      </span>
+      <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap w-fit">Total: {anakList.length} Anak</span>
     </div>
   </div>
 
@@ -63,6 +60,14 @@
         ]}
         data={anakList.map((item, index) => ({ ...item, no: index + 1 }))}
       >
+        <svelte:fragment slot="header" let:col>
+          {#if col.key === 'identitas'}
+            <FilterTampilanNama variant="header" />
+          {:else}
+            {col.label}
+          {/if}
+        </svelte:fragment>
+
         <svelte:fragment slot="cell" let:item let:col>
           {#if col.key === 'identitas'}
             {@const nilai = nilaiNama(item, jenisTampilan)}

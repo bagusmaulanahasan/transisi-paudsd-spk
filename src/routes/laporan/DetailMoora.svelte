@@ -5,15 +5,14 @@
   } from 'lucide-svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
   import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
-  import { labelKolomNama, nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
+  import { nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
 
   export let kriteriaList = [];
   export let mooraDetail = null;
   export let bobot = [];
 
-  /** Kolom identitas anak pada tabel ranking mengikuti filter tampilan nama. */
+  /** Kolom identitas anak pada tabel mengikuti filter tampilan nama. */
   $: jenisTampilan = $tampilanNamaAktif;
-  $: labelIdentitas = labelKolomNama(jenisTampilan);
 
   let openSteps = {
     B1: false,
@@ -86,7 +85,9 @@
               <table class="w-full text-center border-collapse border border-slate-200">
                 <thead>
                   <tr class="bg-slate-50 text-slate-600 font-bold">
-                    <th class="p-2 border border-slate-200 text-left">Alternatif (Anak)</th>
+                    <th class="p-2 border border-slate-200 text-left">
+                      <FilterTampilanNama variant="header" />
+                    </th>
                     {#each kriteriaList as k, i}
                       <th class="p-2 border border-slate-200">
                         C{k.urutan || i+1}<br/>
@@ -99,7 +100,7 @@
                   {#each mooraDetail.lengkap as baris}
                     <tr>
                       <td class="p-2 border border-slate-200 text-left font-bold text-slate-800 bg-slate-50/50">
-                        {baris.nama}
+                        {nilaiNama(baris, jenisTampilan) || '—'}
                       </td>
                       {#each baris.nilai as val}
                         {@const kat = getKategoriNilai(val)}
@@ -181,7 +182,9 @@
               <table class="w-full text-center border-collapse border border-slate-200">
                 <thead>
                   <tr class="bg-slate-50 text-slate-600 font-bold">
-                    <th class="p-2 border border-slate-200 text-left">Alternatif</th>
+                    <th class="p-2 border border-slate-200 text-left">
+                      <FilterTampilanNama variant="header" />
+                    </th>
                     {#each kriteriaList as k, i}
                       <th class="p-2 border border-slate-200">C{k.urutan || i+1}</th>
                     {/each}
@@ -191,7 +194,7 @@
                   {#each mooraDetail.lengkap as baris, idx}
                     <tr>
                       <td class="p-2 border border-slate-200 text-left font-bold text-slate-800 bg-slate-50/50">
-                        {baris.nama}
+                        {nilaiNama(baris, jenisTampilan) || '—'}
                       </td>
                       {#each (mooraDetail.normalisasi[idx] || []) as val}
                         <td class="p-2 border border-slate-200 font-medium text-slate-700">{val.toFixed(3)}</td>
@@ -234,7 +237,9 @@
                     {/each}
                   </tr>
                   <tr class="bg-slate-50 text-slate-600 font-bold">
-                    <th class="p-2 border border-slate-200 text-left">Alternatif</th>
+                    <th class="p-2 border border-slate-200 text-left">
+                      <FilterTampilanNama variant="header" />
+                    </th>
                     {#each kriteriaList as k, i}
                       <th class="p-2 border border-slate-200">C{k.urutan || i+1}</th>
                     {/each}
@@ -244,7 +249,7 @@
                   {#each mooraDetail.lengkap as baris, idx}
                     <tr>
                       <td class="p-2 border border-slate-200 text-left font-bold text-slate-800 bg-slate-50/50">
-                        {baris.nama}
+                        {nilaiNama(baris, jenisTampilan) || '—'}
                       </td>
                       {#each (mooraDetail.berbobot[idx] || []) as val}
                         <td class="p-2 border border-slate-200 font-medium text-slate-700">{val.toFixed(3)}</td>
@@ -303,16 +308,15 @@
 
         {#if openSteps.B6}
           <div class="p-4 space-y-4 bg-white border-t border-slate-200 text-xs">
-            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-              <p class="text-slate-600">Diurutkan dari nilai Yᵢ terbesar ke terkecil. Nilai sama mendapat peringkat yang sama.</p>
-              <FilterTampilanNama className="w-44 shrink-0" />
-            </div>
+            <p class="text-slate-600">Diurutkan dari nilai Yᵢ terbesar ke terkecil. Nilai sama mendapat peringkat yang sama.</p>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse border border-slate-200">
                 <thead>
                   <tr class="bg-slate-50 text-slate-600 font-bold uppercase">
                     <th class="p-2.5 border border-slate-200 w-16 text-center">Ranking</th>
-                    <th class="p-2.5 border border-slate-200">{labelIdentitas}</th>
+                    <th class="p-2.5 border border-slate-200">
+                      <FilterTampilanNama variant="header" />
+                    </th>
                     <th class="p-2.5 border border-slate-200 w-32 text-right">Nilai Optimasi (Yᵢ)</th>
                   </tr>
                 </thead>

@@ -34,7 +34,6 @@
       </div>
     </div>
     <div class="flex flex-col items-start lg:items-end gap-2">
-      <FilterTampilanNama className="w-44" />
       <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap">
         Lengkap {hasil.jumlahLengkap}/{hasil.jumlahAnak} Anak
       </span>
@@ -104,6 +103,14 @@
           })}
           className=""
         >
+          <svelte:fragment slot="header" let:col>
+            {#if col.key === 'identitas'}
+              <FilterTampilanNama variant="header" />
+            {:else}
+              {col.label}
+            {/if}
+          </svelte:fragment>
+
           <svelte:fragment slot="cell" let:item let:col>
             {#if col.key === 'identitas'}
               {@const nilai = nilaiNama(item, jenisTampilan)}
