@@ -157,7 +157,9 @@
           <div class="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-lg border border-slate-200 py-3 px-4 z-50">
             <div class="border-b border-slate-100 pb-3 mb-2">
               <p class="font-semibold text-slate-900 text-sm">{profile?.nama_lengkap || 'Tim Pendidik'}</p>
-              <p class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mt-0.5">{profile?.role === 'kepsek' ? 'Kepala Sekolah' : 'Tim Pendidik'}</p>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase mt-1 {profile?.role === 'kepsek' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                {profile?.role === 'kepsek' ? 'Kepala Sekolah' : 'Tim Pendidik'}
+              </span>
               <p class="text-xs text-slate-500 truncate mt-1">{user?.email}</p>
             </div>
             <a href="/profil" class="flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
@@ -317,7 +319,9 @@
             <div class="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 py-3 px-4 z-50">
               <div class="border-b border-slate-100 pb-3 mb-2">
                 <p class="font-bold text-slate-900 text-sm">{profile?.nama_lengkap || 'Tim Pendidik'}</p>
-                <p class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mt-0.5">{profile?.role === 'kepsek' ? 'Kepala Sekolah' : 'Tim Pendidik'}</p>
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase mt-1 {profile?.role === 'kepsek' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                  {profile?.role === 'kepsek' ? 'Kepala Sekolah' : 'Tim Pendidik'}
+                </span>
                 <p class="text-xs text-slate-500 truncate mt-1">{user?.email}</p>
               </div>
               <a href="/profil" class="flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
