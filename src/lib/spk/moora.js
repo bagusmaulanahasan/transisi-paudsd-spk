@@ -100,8 +100,9 @@ export function susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jaw
 
     return {
       anak_id: anak.id,
-      nis: anak.nis ?? null,
       nama: anak.nama,
+      nama_panggilan: anak.nama_panggilan ?? null,
+      kode_anak: anak.kode_anak ?? null,
       nilai,
       terjawab,
       total,

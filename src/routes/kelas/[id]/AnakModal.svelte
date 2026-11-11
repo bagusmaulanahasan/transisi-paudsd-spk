@@ -9,7 +9,7 @@
   export let namaKelas = '';
   export let tahunAjaran = '';
   export let namaAnak = '';
-  export let nisAnak = '';
+  export let namaPanggilan = '';
   export let saving = false;
 
   const dispatch = createEventDispatcher();
@@ -37,24 +37,27 @@
     </div>
 
     <div>
-      <label for="nis-anak" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">
-        NIS <span class="text-slate-400 normal-case tracking-normal font-semibold">(Opsional)</span>
+      <label for="nama-panggilan" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">
+        Nama Panggilan <span class="text-slate-400 normal-case tracking-normal font-semibold">(Opsional, harus unik di kelas ini)</span>
       </label>
       <input
-        id="nis-anak"
+        id="nama-panggilan"
         type="text"
-        bind:value={nisAnak}
-        placeholder="Contoh: 2026001"
+        bind:value={namaPanggilan}
+        placeholder="Contoh: Aisyah"
         class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
       />
       <p class="text-[11px] text-slate-400 font-medium mt-2 leading-relaxed">
-        Boleh dikosongkan sekarang. NIS dapat diisi kapan saja melalui tombol <strong>Ubah Data Anak</strong>.
+        Boleh dikosongkan sekarang dan diisi kapan saja melalui tombol <strong>Ubah Data Anak</strong>.
       </p>
     </div>
 
     <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed flex items-start gap-2">
       <AlertCircle class="w-4 h-4 shrink-0 mt-0.5" />
-      <span>NIS harus unik di dalam kelas ini. Anak tanpa NIS tetap dapat dinilai pada perhitungan MOORA.</span>
+      <span>
+        Nama panggilan harus unik di dalam kelas ini. <strong>Kode anak</strong> dibuat otomatis
+        oleh sistem setelah data disimpan, sehingga tidak perlu diisi manual.
+      </span>
     </div>
   </div>
 

@@ -4,10 +4,16 @@
     ChevronUp 
   } from 'lucide-svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
+  import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
+  import { labelKolomNama, nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
 
   export let kriteriaList = [];
   export let mooraDetail = null;
   export let bobot = [];
+
+  /** Kolom identitas anak pada tabel ranking mengikuti filter tampilan nama. */
+  $: jenisTampilan = $tampilanNamaAktif;
+  $: labelIdentitas = labelKolomNama(jenisTampilan);
 
   let openSteps = {
     B1: false,
@@ -297,19 +303,22 @@
 
         {#if openSteps.B6}
           <div class="p-4 space-y-4 bg-white border-t border-slate-200 text-xs">
-            <p class="text-slate-600">Diurutkan dari nilai Yᵢ terbesar ke terkecil. Nilai sama mendapat peringkat yang sama.</p>
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+              <p class="text-slate-600">Diurutkan dari nilai Yᵢ terbesar ke terkecil. Nilai sama mendapat peringkat yang sama.</p>
+              <FilterTampilanNama className="w-44 shrink-0" />
+            </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left border-collapse border border-slate-200">
                 <thead>
                   <tr class="bg-slate-50 text-slate-600 font-bold uppercase">
                     <th class="p-2.5 border border-slate-200 w-16 text-center">Ranking</th>
-                    <th class="p-2.5 border border-slate-200">Nama Anak</th>
-                    <th class="p-2.5 border border-slate-200 w-28">NIS</th>
+                    <th class="p-2.5 border border-slate-200">{labelIdentitas}</th>
                     <th class="p-2.5 border border-slate-200 w-32 text-right">Nilai Optimasi (Yᵢ)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {#each mooraDetail.hasilAkhir as baris}
+                    {@const nilaiIdentitas = nilaiNama(baris, jenisTampilan)}
                     <tr class={baris.ranking === 1 ? 'bg-blue-50/50 font-bold' : ''}>
                       <td class="p-2.5 border border-slate-200 text-center">
                         {#if baris.ranking !== null}
@@ -320,8 +329,17 @@
                           <span class="text-slate-400">—</span>
                         {/if}
                       </td>
-                      <td class="p-2.5 border border-slate-200 font-bold text-slate-800">{baris.nama}</td>
-                      <td class="p-2.5 border border-slate-200 font-mono text-slate-600">{baris.nis || '—'}</td>
+                      <td class="p-2.5 border border-slate-200 font-bold text-slate-800">
+                        {#if nilaiIdentitas}
+                          {#if jenisTampilan === 'kode_anak'}
+                            <span class="font-mono">{nilaiIdentitas}</span>
+                          {:else}
+                            {nilaiIdentitas}
+                          {/if}
+                        {:else}
+                          <span class="text-slate-400 italic">Belum diisi</span>
+                        {/if}
+                      </td>
                       <td class="p-2.5 border border-slate-200 text-right font-extrabold text-slate-900">
                         {baris.yi !== null ? baris.yi.toFixed(3) : '—'}
                       </td>

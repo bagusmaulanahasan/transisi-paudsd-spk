@@ -4,6 +4,8 @@
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
   import { Trophy, Users, Eye, AlertCircle } from 'lucide-svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
+  import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
+  import { labelKolomNama, nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
 
   export let kriteriaList = [];
   export let bobot = [];
@@ -12,6 +14,10 @@
   export let selectedKelasId = null;
   export let waktuPerhitungan = null;
   export let statusSimpanHasil = '';
+
+  /** Kolom identitas anak mengikuti pilihan pada filter tampilan nama. */
+  $: jenisTampilan = $tampilanNamaAktif;
+  $: labelIdentitas = labelKolomNama(jenisTampilan);
 </script>
 
 <Card className="overflow-hidden p-0">
@@ -27,7 +33,8 @@
         </p>
       </div>
     </div>
-    <div class="flex flex-col items-start lg:items-end gap-1">
+    <div class="flex flex-col items-start lg:items-end gap-2">
+      <FilterTampilanNama className="w-44" />
       <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap">
         Lengkap {hasil.jumlahLengkap}/{hasil.jumlahAnak} Anak
       </span>
@@ -76,8 +83,7 @@
         <Table
           columns={[
             { key: 'no', label: 'No.', class: 'w-12 sm:w-16' },
-            { key: 'nis', label: 'NIS', class: 'w-20 lg:w-32 hidden lg:table-cell' },
-            { key: 'nama', label: 'Nama Anak', class: 'w-[130px] lg:w-auto' },
+            { key: 'identitas', label: labelIdentitas, class: 'w-24 lg:w-40' },
             { key: 'aksi_mobile', label: 'Aksi', class: 'text-center whitespace-nowrap lg:hidden' },
             ...kriteriaList.map(k => ({ key: 'k_' + k.id, label: k.inisial, class: 'text-center' })),
             { key: 'yi', label: 'Nilai Yi', class: 'text-center whitespace-nowrap' },
@@ -99,16 +105,21 @@
           className=""
         >
           <svelte:fragment slot="cell" let:item let:col>
-            {#if col.key === 'nis'}
-              {#if item.nis}
-                <span class="text-sm font-semibold text-slate-700">{item.nis}</span>
+            {#if col.key === 'identitas'}
+              {@const nilai = nilaiNama(item, jenisTampilan)}
+              {#if nilai}
+                {#if jenisTampilan === 'kode_anak'}
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold font-mono bg-slate-100 text-slate-700 border border-slate-200">
+                    {nilai}
+                  </span>
+                {:else}
+                  <span class="text-sm font-bold text-slate-800 leading-snug">{nilai}</span>
+                {/if}
               {:else}
                 <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider text-slate-700 border border-slate-300 whitespace-nowrap">
                   Belum diisi
                 </span>
               {/if}
-            {:else if col.key === 'nama'}
-              <span class="text-sm font-bold text-slate-800 leading-snug">{item.nama}</span>
             {:else if col.key === 'aksi_mobile'}
               <a
                 href={`/penilaian/${item.anak_id}?kelas=${selectedKelasId}`}

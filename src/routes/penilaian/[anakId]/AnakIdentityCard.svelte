@@ -23,13 +23,14 @@
         </p>
         <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">{anak.nama}</h1>
         <div class="flex flex-wrap items-center gap-2 mt-2">
-          {#if anak.nis}
-            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-              NIS {anak.nis}
+          {#if anak.kode_anak}
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200 font-mono">
+              Kode: {anak.kode_anak}
             </span>
-          {:else}
-            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
-              NIS belum diisi
+          {/if}
+          {#if anak.nama_panggilan}
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
+              Panggilan: {anak.nama_panggilan}
             </span>
           {/if}
           <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {modeEdit ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-blue-50 text-blue-700 border border-blue-100'}">

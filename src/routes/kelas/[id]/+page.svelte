@@ -2,7 +2,8 @@
   import { supabase } from '$lib/db/supabase';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
-  import { apakahNisDuplikat, normalisasiNis } from '$lib/domain/anak';
+  import { apakahNamaPanggilanDuplikat, normalisasiNamaPanggilan } from '$lib/domain/anak';
+  import { buatKodeAnak, inisialKelas, nomorUrutBerikutnya } from '$lib/utils/kodeAnak';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { confirmAction } from '$lib/confirm';
@@ -35,7 +36,7 @@
   let isEditing = false;
   let currentId = null;
   let namaAnak = '';
-  let nisAnak = '';
+  let namaPanggilan = '';
 
   onMount(async () => {
     const data = await cachedFetch(CACHE_KEY, ambilDetail, terapkanDetail);
@@ -99,18 +100,18 @@
     isEditing = false;
     currentId = null;
     namaAnak = '';
-    nisAnak = '';
+    namaPanggilan = '';
     showModal = true;
   }
 
   /**
-   * Membuka modal ubah anak, termasuk untuk mengisi NIS yang sebelumnya kosong.
+   * Membuka modal ubah anak, termasuk untuk mengisi nama panggilan yang sebelumnya kosong.
    */
   function openEditModal(item) {
     isEditing = true;
     currentId = item.id;
     namaAnak = item.nama;
-    nisAnak = item.nis || '';
+    namaPanggilan = item.nama_panggilan || '';
     showModal = true;
   }
 
@@ -123,7 +124,8 @@
 
   /**
    * Menyimpan anak baru atau perubahan data anak ke Supabase.
-   * NIS boleh kosong; bila diisi, NIS harus unik di dalam kelas ini.
+   * Nama panggilan boleh kosong; bila diisi, harus unik di dalam kelas ini.
+   * Kode anak dibuat otomatis dan tidak diubah saat data diperbarui.
    */
   async function saveAnak() {
     if (!namaAnak.trim()) {
@@ -131,42 +133,94 @@
       return;
     }
 
-    const nis = normalisasiNis(nisAnak);
+    const panggilan = normalisasiNamaPanggilan(namaPanggilan);
     const idYangDiubah = isEditing ? currentId : null;
 
-    if (apakahNisDuplikat(anakList, nis, idYangDiubah)) {
-      notifyError('NIS tersebut sudah dipakai anak lain di kelas ini.');
+    if (apakahNamaPanggilanDuplikat(anakList, panggilan, idYangDiubah)) {
+      notifyError('Nama panggilan tersebut sudah dipakai anak lain di kelas ini.');
       return;
     }
 
     saving = true;
-    const payload = {
-      kelas_id: kelasId,
-      nama: namaAnak.trim(),
-      nis
-    };
+    try {
+      if (isEditing) {
+        const { error } = await supabase
+          .from('anak')
+          .update({ nama: namaAnak.trim(), nama_panggilan: panggilan })
+          .eq('id', currentId);
 
-    if (isEditing) {
-      const { error } = await supabase.from('anak').update(payload).eq('id', currentId);
-      if (error) {
-        notifyError(error.code === '23505' ? 'NIS tersebut sudah dipakai anak lain di kelas ini.' : error.message);
-        saving = false;
-        return;
+        if (error) {
+          notifyError(pesanKesalahanAnak(error));
+          return;
+        }
+        notifySuccess('Berhasil memperbarui data anak.');
+      } else {
+        const berhasil = await tambahAnakBaru(namaAnak.trim(), panggilan);
+        if (!berhasil) return;
+        notifySuccess('Berhasil menambah anak baru.');
       }
-      notifySuccess('Berhasil memperbarui data anak.');
-    } else {
-      const { error } = await supabase.from('anak').insert(payload);
-      if (error) {
-        notifyError(error.code === '23505' ? 'NIS tersebut sudah dipakai anak lain di kelas ini.' : error.message);
-        saving = false;
-        return;
-      }
-      notifySuccess('Berhasil menambah anak baru.');
+
+      await fetchDetail();
+      closeModal();
+    } finally {
+      saving = false;
+    }
+  }
+
+  /**
+   * Menyisipkan anak baru lengkap dengan kode anak otomatis.
+   * Bila kode bentrok karena dua pengguna menambah bersamaan, coba nomor berikutnya.
+   *
+   * @param {string} nama - Nama lengkap anak.
+   * @param {string|null} panggilan - Nama panggilan yang sudah dinormalisasi.
+   * @returns {Promise<boolean>} true bila berhasil disimpan.
+   */
+  async function tambahAnakBaru(nama, panggilan) {
+    const inisial = inisialKelas(kelas?.nama_kelas ?? '');
+    const nomorAwal = nomorUrutBerikutnya(anakList);
+
+    for (let percobaan = 0; percobaan < 3; percobaan++) {
+      const kode_anak = buatKodeAnak(inisial, nomorAwal + percobaan);
+
+      const { error } = await supabase.from('anak').insert({
+        kelas_id: kelasId,
+        nama,
+        nama_panggilan: panggilan,
+        kode_anak
+      });
+
+      if (!error) return true;
+      if (adalahBentrokKodeAnak(error)) continue;
+
+      notifyError(pesanKesalahanAnak(error));
+      return false;
     }
 
-    await fetchDetail();
-    saving = false;
-    closeModal();
+    notifyError('Kode anak bentrok terus. Muat ulang halaman lalu coba lagi.');
+    return false;
+  }
+
+  /**
+   * Mendeteksi pelanggaran unique index pada kolom kode_anak.
+   * @param {Object} error - Error dari Supabase.
+   * @returns {boolean}
+   */
+  function adalahBentrokKodeAnak(error) {
+    return error?.code === '23505' && /kode_anak/i.test(error?.message ?? '');
+  }
+
+  /**
+   * Menyusun pesan kesalahan yang ramah untuk constraint unik tabel anak.
+   * @param {Object} error - Error dari Supabase.
+   * @returns {string}
+   */
+  function pesanKesalahanAnak(error) {
+    if (error?.code === '23505') {
+      return adalahBentrokKodeAnak(error)
+        ? 'Kode anak bentrok. Silakan simpan ulang.'
+        : 'Nama panggilan tersebut sudah dipakai anak lain di kelas ini.';
+    }
+    return error?.message ?? 'Gagal menyimpan data anak.';
   }
 
   /**
@@ -250,7 +304,7 @@
   namaKelas={kelas?.nama_kelas ?? ''}
   tahunAjaran={kelas?.tahun_ajaran ?? ''}
   bind:namaAnak
-  bind:nisAnak
+  bind:namaPanggilan
   {saving}
   on:close={closeModal}
   on:save={saveAnak}
