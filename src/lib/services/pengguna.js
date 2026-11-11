@@ -1,5 +1,7 @@
 import { supabase } from '$lib/db/supabase';
 
+const PESAN_KONEKSI = 'Gagal menghubungi server. Periksa koneksi Anda.';
+
 /**
  * Mengambil access token sesi aktif untuk dikirim ke API server.
  * @returns {Promise<Object>} Header Authorization siap pakai.
@@ -11,12 +13,33 @@ async function headerOtorisasi() {
 }
 
 /**
+ * Menjalankan fetch dan membaca respons JSON dengan penanganan kegagalan jaringan
+ * maupun respons yang bukan JSON.
+ * @param {string} url
+ * @param {RequestInit} [options]
+ * @returns {Promise<{ res: Response, data: any }>}
+ */
+async function mintaJson(url, options) {
+  let res;
+  try {
+    res = await fetch(url, options);
+  } catch {
+    throw new Error(PESAN_KONEKSI);
+  }
+
+  try {
+    return { res, data: await res.json() };
+  } catch {
+    throw new Error(PESAN_KONEKSI);
+  }
+}
+
+/**
  * Mengambil daftar pengguna (khusus kepsek).
  * @returns {Promise<Array<Object>>} Daftar profil pengguna.
  */
 export async function ambilDaftarPengguna() {
-  const res = await fetch('/api/pengguna', { headers: await headerOtorisasi() });
-  const data = await res.json();
+  const { res, data } = await mintaJson('/api/pengguna', { headers: await headerOtorisasi() });
   if (!res.ok) throw new Error(data.error || 'Gagal memuat daftar pengguna.');
   return data.users || [];
 }
@@ -27,12 +50,11 @@ export async function ambilDaftarPengguna() {
  * @returns {Promise<Object>} Data user yang dibuat.
  */
 export async function buatAkunTimPendidik(payload) {
-  const res = await fetch('/api/pengguna', {
+  const { res, data } = await mintaJson('/api/pengguna', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await headerOtorisasi()) },
     body: JSON.stringify(payload)
   });
-  const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Gagal membuat akun tim pendidik.');
   return data.user;
 }
@@ -43,12 +65,11 @@ export async function buatAkunTimPendidik(payload) {
  * @returns {Promise<string>} Pesan sukses dari server.
  */
 export async function resetPasswordPengguna(userId) {
-  const res = await fetch('/api/pengguna/reset-password', {
+  const { res, data } = await mintaJson('/api/pengguna/reset-password', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await headerOtorisasi()) },
-    body: JSON.stringify({ userId, newPassword: '123123' })
+    body: JSON.stringify({ userId })
   });
-  const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Gagal mereset password.');
   return data.message;
 }

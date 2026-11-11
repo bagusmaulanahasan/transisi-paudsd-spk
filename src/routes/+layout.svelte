@@ -75,22 +75,21 @@
     const data = await cachedFetch(
       'user_profile_' + userId,
       () => supabase.from('profiles').select('nama_lengkap, email, role').eq('id', userId).single(),
-      (profilBaru) => { profile = profilBaru; },
-      { prefix: '' }
+      (profilBaru) => { profile = profilBaru; }
     );
     if (data) profile = data;
   }
 
   function checkRouteGuard(userProfile, path) {
-    if (!userProfile || !userProfile.role) return;
-    const role = userProfile.role;
+    // Role kosong/tidak dikenal diperlakukan sebagai tim_pendidik (default aman).
+    const role = userProfile?.role === 'kepsek' ? 'kepsek' : 'tim_pendidik';
     if (role === 'tim_pendidik') {
       if (path.startsWith('/kriteria') || path.startsWith('/indikator') || path.startsWith('/pengguna')) {
-        goto('/');
+        goto('/', { replaceState: true });
       }
     } else if (role === 'kepsek') {
       if (path.startsWith('/penilaian')) {
-        goto('/');
+        goto('/', { replaceState: true });
       }
     }
   }

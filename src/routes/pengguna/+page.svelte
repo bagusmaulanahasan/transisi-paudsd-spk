@@ -10,7 +10,7 @@
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
   import Modal from '$lib/components/ui/Modal.svelte';
   import Input from '$lib/components/ui/Input.svelte';
-  import { Plus, UserCheck, Key, Shield, UserPlus } from 'lucide-svelte';
+  import { UserCheck, Key, Shield, UserPlus } from 'lucide-svelte';
   import { ambilDaftarPengguna, buatAkunTimPendidik, resetPasswordPengguna } from '$lib/services/pengguna';
 
   let users = [];
@@ -86,7 +86,7 @@
     try {
       await resetPasswordPengguna(user.id);
 
-      notifySuccess(`Password ${user.nama_lengkap} berhasil di-reset ke 123123.`);
+      notifySuccess(`Password ${user.nama_lengkap || user.email} berhasil di-reset ke 123123.`);
     } catch (err) {
       notifyError(err.message);
     } finally {
@@ -96,16 +96,13 @@
 
   function formatDate(isoString) {
     if (!isoString) return '-';
-    try {
-      const date = new Date(isoString);
-      return date.toLocaleDateString('id-ID', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      });
-    } catch {
-      return isoString;
-    }
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return isoString;
+    return date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
   }
 </script>
 
@@ -200,16 +197,20 @@
               </span>
             {:else if col.key === 'aksi'}
               <div class="flex justify-end">
-                <Button
-                  variant="outline"
-                  className="px-3 py-2 h-auto text-[11px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border-amber-200 shadow-none"
-                  loading={resettingId === item.id}
-                  on:click={() => resetPassword(item)}
-                  title="Reset Password ke 123123"
-                >
-                  <Key class="w-3.5 h-3.5 mr-1 text-amber-600" />
-                  <span>Reset Password</span>
-                </Button>
+                {#if item.role !== 'kepsek'}
+                  <Button
+                    variant="outline"
+                    className="px-3 py-2 h-auto text-[11px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border-amber-200 shadow-none"
+                    loading={resettingId === item.id}
+                    on:click={() => resetPassword(item)}
+                    title="Reset Password ke 123123"
+                  >
+                    <Key class="w-3.5 h-3.5 mr-1 text-amber-600" />
+                    <span>Reset Password</span>
+                  </Button>
+                {:else}
+                  <span class="text-[11px] font-medium text-slate-400">-</span>
+                {/if}
               </div>
             {:else}
               {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}

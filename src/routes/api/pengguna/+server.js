@@ -47,7 +47,17 @@ export async function POST({ request }) {
     role: 'tim_pendidik'
   });
 
-  if (profileError) return json({ error: profileError.message }, { status: 400 });
+  if (profileError) {
+    console.error('Gagal menyimpan profil pengguna baru:', profileError);
+
+    // Bersihkan user yang sudah terlanjur dibuat agar tidak ada akun tanpa profil.
+    const { error: hapusError } = await admin.auth.admin.deleteUser(authUser.user.id);
+    if (hapusError) {
+      console.error('Gagal menghapus user yang batal dibuat:', hapusError);
+    }
+
+    return json({ error: 'Terjadi kesalahan pada server.' }, { status: 500 });
+  }
 
   return json({ success: true, user: { id: authUser.user.id, email: authUser.user.email } });
 }

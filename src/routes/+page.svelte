@@ -36,8 +36,7 @@
       const dataProfil = await cachedFetch(
         'user_profile_' + session.user.id,
         () => supabase.from('profiles').select('nama_lengkap, email, role').eq('id', session.user.id).single(),
-        (p) => { if (p) userRole = p.role; },
-        { prefix: '' }
+        (p) => { if (p) userRole = p.role; }
       );
       if (dataProfil) userRole = dataProfil.role;
     }
@@ -240,7 +239,7 @@
                       <a href={`/laporan?kelas=${kelas.id}`} class="inline-flex px-4 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-100 rounded-xl text-[11px] font-bold transition shadow-sm">
                         Lihat Laporan
                       </a>
-                    {:else if userRole !== 'kepsek'}
+                    {:else if userRole === 'tim_pendidik'}
                       <a href={`/penilaian?kelas=${kelas.id}`} class="inline-flex px-4 py-1.5 bg-slate-900 text-white hover:bg-blue-600 rounded-xl text-[11px] font-bold transition shadow-sm">
                         Mulai Penilaian
                       </a>
