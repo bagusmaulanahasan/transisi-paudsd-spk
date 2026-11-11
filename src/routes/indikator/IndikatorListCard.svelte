@@ -98,10 +98,12 @@
 
             <div class="flex items-center gap-2 shrink-0 self-end md:self-center">
               <Button variant="ghost" className="p-2 bg-white border border-slate-200" title="Ubah Pertanyaan" on:click={() => openEditIndikator(item)}>
-                <Edit2 class="w-3.5 h-3.5" />
+                <Edit2 class="w-3.5 h-3.5 mr-1 " />
+                <span>Edit</span>
               </Button>
               <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Indikator" on:click={() => deleteIndikator(item)}>
-                <Trash2 class="w-3.5 h-3.5" />
+                <Trash2 class="w-3.5 h-3.5 mr-1 " />
+                  <span>Hapus</span>
               </Button>
             </div>
           </div>

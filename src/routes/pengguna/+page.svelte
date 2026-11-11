@@ -236,7 +236,7 @@
                     on:click={() => hapusAkun(item)}
                     title="Hapus Akun"
                   >
-                    <Trash2 class="w-3.5 h-3.5 mr-1 text-red-500" />
+                    <Trash2 class="w-3.5 h-3.5 mr-1 " />
                     <span>Hapus</span>
                   </Button>
                 {:else}

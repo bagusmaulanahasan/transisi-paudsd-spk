@@ -98,10 +98,12 @@
             </a>
             {#if bolehKelola}
               <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Kelas">
-                <Edit2 class="w-3.5 h-3.5" />
+                <Edit2 class="w-3.5 h-3.5 mr-1" />
+                <span>Edit</span>
               </Button>
               <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteKelas(item)} title="Hapus Kelas">
-                <Trash2 class="w-3.5 h-3.5" />
+                <Trash2 class="w-3.5 h-3.5 mr-1" />
+                <span>Hapus</span>
               </Button>
             {/if}
           </div>

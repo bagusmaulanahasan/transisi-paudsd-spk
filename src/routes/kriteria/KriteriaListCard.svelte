@@ -58,10 +58,12 @@
         {:else if col.key === 'aksi'}
           <div class="space-x-2">
             <Button variant="ghost" className="p-2" title="Edit Kriteria" on:click={() => openEditModal(item)}>
-              <Edit2 class="w-3.5 h-3.5" />
+              <Edit2 class="w-3.5 h-3.5 mr-1" />
+              <span>Edit</span>
             </Button>
             <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Kriteria" on:click={() => deleteKriteria(item.id)}>
-              <Trash2 class="w-3.5 h-3.5" />
+              <Trash2 class="w-3.5 h-3.5 mr-1" />
+              <span>Hapus</span>
             </Button>
           </div>
         {:else}
