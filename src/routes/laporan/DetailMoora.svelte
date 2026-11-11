@@ -66,13 +66,13 @@
             <div class="flex flex-wrap items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
               <span class="font-bold text-slate-700">Kategori Skala Nilai:</span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Rendah (1.000 – 1.667)
+                Rendah (1 – 1.66)
               </span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
-                Sedang (1.668 – 2.333)
+                Sedang (1.67 – 2.33)
               </span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
-                Tinggi (2.334 – 3.000)
+                Tinggi (2.34 – 3)
               </span>
             </div>
 
@@ -143,7 +143,7 @@
             <div class="space-y-2 font-mono text-[11px] bg-slate-50 p-3 rounded-lg border border-slate-100">
               {#each kriteriaList as k, j}
                 {@const rawValues = mooraDetail.lengkap.map(b => b.nilai[j])}
-                <div>
+                <div class="pb-1.5 border-b border-slate-200/60 last:border-0">
                   <strong>C{k.urutan || j+1} ({k.nama})</strong> = √( {rawValues.map(v => `${v}^2`).join(' + ')} ) = <strong>{(mooraDetail.pembagi[j] ?? 0).toFixed(3)}</strong>
                 </div>
               {/each}

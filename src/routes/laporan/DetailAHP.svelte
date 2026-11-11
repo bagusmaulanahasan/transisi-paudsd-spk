@@ -218,9 +218,9 @@
         <!-- Konsistensi per Baris -->
         <div class="space-y-2">
           <p class="font-bold text-slate-700 border-b border-slate-100 pb-1">1. Vektor Bobot Konsistensi (A × w)</p>
-          <div class="space-y-1.5 font-mono text-[10px] text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">
+            <div class="space-y-2 font-mono text-[11px] bg-slate-50 p-3 rounded-lg border border-slate-100">
             {#each kriteriaList as item, i}
-              <div>
+              <div class="pb-1.5 border-b border-slate-200/60 last:border-0">
                 C{item.urutan || i+1}: ({kriteriaList.map((k, j) => `${getPairwiseValue(item.id, k.id).toFixed(2)} × ${(ahpDetail?.weights[j] ?? 0).toFixed(3)}`).join(' + ')}) = <strong>{(ahpDetail?.awVector[i] ?? 0).toFixed(3)}</strong>
               </div>
             {/each}
