@@ -26,10 +26,22 @@
   let statusAhp = 'Memuat...';
   let ahpWarna = 'text-slate-600 bg-slate-50';
   let kelasList = [];
+  let userRole = null;
 
   if (dataAwal) terapkanDashboard(dataAwal);
 
   onMount(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      const dataProfil = await cachedFetch(
+        'user_profile_' + session.user.id,
+        () => supabase.from('profiles').select('nama_lengkap, email, role').eq('id', session.user.id).single(),
+        (p) => { if (p) userRole = p.role; },
+        { prefix: '' }
+      );
+      if (dataProfil) userRole = dataProfil.role;
+    }
+
     const data = await cachedFetch(CACHE_DASHBOARD, ambilDashboard, terapkanDashboard);
     if (data) terapkanDashboard(data);
     loading = false;
@@ -228,7 +240,7 @@
                       <a href={`/laporan?kelas=${kelas.id}`} class="inline-flex px-4 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white border border-blue-100 rounded-xl text-[11px] font-bold transition shadow-sm">
                         Lihat Laporan
                       </a>
-                    {:else}
+                    {:else if userRole !== 'kepsek'}
                       <a href={`/penilaian?kelas=${kelas.id}`} class="inline-flex px-4 py-1.5 bg-slate-900 text-white hover:bg-blue-600 rounded-xl text-[11px] font-bold transition shadow-sm">
                         Mulai Penilaian
                       </a>

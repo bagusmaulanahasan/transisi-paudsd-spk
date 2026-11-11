@@ -18,7 +18,8 @@
     Settings, 
     Wifi, 
     WifiOff,
-    BarChart3
+    BarChart3,
+    UserCheck
   } from 'lucide-svelte';
   import { cachedFetch } from '$lib/db/cache';
   import ToastHost from '$lib/components/ToastHost.svelte';
@@ -73,11 +74,29 @@
   async function muatProfil(userId) {
     const data = await cachedFetch(
       'user_profile_' + userId,
-      () => supabase.from('profiles').select('nama_lengkap, email').eq('id', userId).single(),
+      () => supabase.from('profiles').select('nama_lengkap, email, role').eq('id', userId).single(),
       (profilBaru) => { profile = profilBaru; },
       { prefix: '' }
     );
     if (data) profile = data;
+  }
+
+  function checkRouteGuard(userProfile, path) {
+    if (!userProfile || !userProfile.role) return;
+    const role = userProfile.role;
+    if (role === 'tim_pendidik') {
+      if (path.startsWith('/kriteria') || path.startsWith('/indikator') || path.startsWith('/pengguna')) {
+        goto('/');
+      }
+    } else if (role === 'kepsek') {
+      if (path.startsWith('/penilaian')) {
+        goto('/');
+      }
+    }
+  }
+
+  $: if (profile && $page.url.pathname) {
+    checkRouteGuard(profile, $page.url.pathname);
   }
 
   async function handleLogout() {
@@ -186,46 +205,75 @@
           <LayoutDashboard class="w-5 h-5 shrink-0" />
           <span>Dashboard</span>
         </a>
-        <a 
-          href="/kriteria" 
-          on:click={() => mobileMenuOpen = false}
-          class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/kriteria') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
-        >
-          <Scale class="w-5 h-5 shrink-0" />
-          <span>Data Kriteria & AHP</span>
-        </a>
-        <a 
-          href="/indikator" 
-          on:click={() => mobileMenuOpen = false}
-          class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/indikator') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
-        >
-          <HelpCircle class="w-5 h-5 shrink-0" />
-          <span>Indikator Pertanyaan</span>
-        </a>
-        <a 
-          href="/kelas" 
-          on:click={() => mobileMenuOpen = false}
-          class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/kelas') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
-        >
-          <Users class="w-5 h-5 shrink-0" />
-          <span>Kelas & Anak</span>
-        </a>
-        <a 
-          href="/penilaian" 
-          on:click={() => mobileMenuOpen = false}
-          class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/penilaian') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
-        >
-          <Calculator class="w-5 h-5 shrink-0" />
-          <span>Penilaian & MOORA</span>
-        </a>
-        <a 
-          href="/laporan" 
-          on:click={() => mobileMenuOpen = false}
-          class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/laporan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
-        >
-          <FileText class="w-5 h-5 shrink-0" />
-          <span>Laporan Perhitungan</span>
-        </a>
+
+        {#if profile?.role === 'kepsek'}
+          <a 
+            href="/kriteria" 
+            on:click={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/kriteria') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
+          >
+            <Scale class="w-5 h-5 shrink-0" />
+            <span>Kriteria & AHP</span>
+          </a>
+          <a 
+            href="/kelas" 
+            on:click={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/kelas') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
+          >
+            <Users class="w-5 h-5 shrink-0" />
+            <span>Kelas & Anak</span>
+          </a>
+          <a 
+            href="/indikator" 
+            on:click={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/indikator') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
+          >
+            <HelpCircle class="w-5 h-5 shrink-0" />
+            <span>Indikator Pertanyaan</span>
+          </a>
+          <a 
+            href="/laporan" 
+            on:click={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/laporan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
+          >
+            <FileText class="w-5 h-5 shrink-0" />
+            <span>Laporan Perhitungan</span>
+          </a>
+          <a 
+            href="/pengguna" 
+            on:click={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/pengguna') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
+          >
+            <UserCheck class="w-5 h-5 shrink-0" />
+            <span>Kelola Pengguna</span>
+          </a>
+        {:else}
+          <!-- Default / tim_pendidik role -->
+          <a 
+            href="/kelas" 
+            on:click={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/kelas') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
+          >
+            <Users class="w-5 h-5 shrink-0" />
+            <span>Kelas & Anak</span>
+          </a>
+          <a 
+            href="/penilaian" 
+            on:click={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/penilaian') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
+          >
+            <Calculator class="w-5 h-5 shrink-0" />
+            <span>Penilaian</span>
+          </a>
+          <a 
+            href="/laporan" 
+            on:click={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/laporan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
+          >
+            <FileText class="w-5 h-5 shrink-0" />
+            <span>Laporan Perhitungan</span>
+          </a>
+        {/if}
       </nav>
 
       <!-- Status Jaringan di Sidebar Bawah -->
