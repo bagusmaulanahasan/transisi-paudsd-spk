@@ -343,7 +343,7 @@
             </div>
             <div class="text-left">
               <p class="text-xs font-bold text-slate-800">{profile?.nama_lengkap || 'Tim Pendidik'}</p>
-                              <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase mt-1 {profile?.role === 'kepsek' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase mt-1 {profile?.role === 'kepsek' ? 'bg-purple-100 text-purple-800 border border-purple-200' : 'bg-blue-100 text-blue-800 border border-blue-200'}">
                   {profile?.role === 'kepsek' ? 'Kepala Sekolah' : 'Tim Pendidik'}
                 </span>
             </div>
@@ -354,7 +354,7 @@
               <div class="border-b border-slate-100 pb-3 mb-2">
                 <p class="font-bold text-slate-900 text-sm">{profile?.nama_lengkap || 'Tim Pendidik'}</p>
                 <p class="text-xs text-slate-500 truncate mt-1">{user?.email}</p>
-                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase mt-1 {profile?.role === 'kepsek' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                <span class="inline-flex items-center px-1.5 py-1 rounded text-[9px] font-extrabold uppercase mt-1 {profile?.role === 'kepsek' ? 'bg-purple-100 text-purple-800 border border-purple-200' : 'bg-blue-100 text-blue-800 border border-blue-200'}">
                   {profile?.role === 'kepsek' ? 'Kepala Sekolah' : 'Tim Pendidik'}
                 </span>
               </div>
