@@ -9,7 +9,8 @@
     { key: 'nama', label: 'Nama Anak' },
     ...kriteriaList.map((k, i) => ({
       key: `c${i}`,
-      label: `C${k.urutan || i + 1}`
+      label: `C${k.urutan || i + 1}`,
+      class: 'text-center',
     })),
     { key: 'status', label: 'Status' }
   ];
