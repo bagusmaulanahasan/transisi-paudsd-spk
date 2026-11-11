@@ -10,13 +10,14 @@
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
   import Modal from '$lib/components/ui/Modal.svelte';
   import Input from '$lib/components/ui/Input.svelte';
-  import { UserCheck, Key, Shield, UserPlus } from 'lucide-svelte';
-  import { ambilDaftarPengguna, buatAkunTimPendidik, resetPasswordPengguna } from '$lib/services/pengguna';
+  import { UserCheck, Key, Shield, UserPlus, Trash2 } from 'lucide-svelte';
+  import { ambilDaftarPengguna, buatAkunTimPendidik, resetPasswordPengguna, hapusAkunPengguna } from '$lib/services/pengguna';
 
   let users = [];
   let loading = true;
   let saving = false;
   let resettingId = null;
+  let menghapusId = null;
 
   // Modal tambah user
   let showModal = false;
@@ -94,6 +95,26 @@
     }
   }
 
+  async function hapusAkun(user) {
+    const confirmed = await confirmAction({
+      title: `Hapus akun "${user.nama_lengkap || user.email}"?`,
+      message: 'Akun beserta akses login-nya akan dihapus permanen dan tidak bisa dikembalikan.'
+    });
+
+    if (!confirmed) return;
+
+    menghapusId = user.id;
+    try {
+      await hapusAkunPengguna(user.id);
+      notifySuccess(`Akun ${user.nama_lengkap || user.email} berhasil dihapus.`);
+      await fetchUsers();
+    } catch (err) {
+      notifyError(err.message);
+    } finally {
+      menghapusId = null;
+    }
+  }
+
   function formatDate(isoString) {
     if (!isoString) return '-';
     const date = new Date(isoString);
@@ -166,7 +187,7 @@
             { key: 'email', label: 'Email' },
             { key: 'role', label: 'Role' },
             { key: 'created_at', label: 'Tanggal Dibuat' },
-            { key: 'aksi', label: 'Aksi', class: 'text-right w-48' }
+            { key: 'aksi', label: 'Aksi', class: 'text-right w-72' }
           ]}
           data={users.map((u, i) => ({ ...u, no: i + 1 }))}
         >
@@ -196,7 +217,7 @@
                 {formatDate(item.created_at)}
               </span>
             {:else if col.key === 'aksi'}
-              <div class="flex justify-end">
+              <div class="flex justify-end gap-2">
                 {#if item.role !== 'kepsek'}
                   <Button
                     variant="outline"
@@ -207,6 +228,16 @@
                   >
                     <Key class="w-3.5 h-3.5 mr-1 text-amber-600" />
                     <span>Reset Password</span>
+                  </Button>
+                  <Button
+                    variant="danger"
+                    className="px-3 py-2 h-auto text-[11px] font-bold bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none"
+                    loading={menghapusId === item.id}
+                    on:click={() => hapusAkun(item)}
+                    title="Hapus Akun"
+                  >
+                    <Trash2 class="w-3.5 h-3.5 mr-1 text-red-500" />
+                    <span>Hapus</span>
                   </Button>
                 {:else}
                   <span class="text-[11px] font-medium text-slate-400">-</span>
@@ -220,7 +251,7 @@
 
         <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
           <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
-            Tombol <strong>Reset Password</strong> akan mengubah sandi akun pengguna bersangkutan menjadi <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800 font-mono">123123</code> seketika tanpa mengganggu sesi Anda.
+            Tombol <strong>Reset Password</strong> akan mengubah sandi akun pengguna bersangkutan menjadi <code class="bg-slate-200 px-1 py-0.5 rounded text-slate-800 font-mono">123123</code> seketika tanpa mengganggu sesi Anda. Tombol <strong>Hapus</strong> akan menghapus akun tersebut secara permanen.
           </p>
         </div>
       {/if}

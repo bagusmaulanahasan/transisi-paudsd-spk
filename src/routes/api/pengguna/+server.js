@@ -61,3 +61,40 @@ export async function POST({ request }) {
 
   return json({ success: true, user: { id: authUser.user.id, email: authUser.user.email } });
 }
+
+/**
+ * Menghapus akun pengguna (khusus kepsek).
+ */
+export async function DELETE({ request }) {
+  const { admin, user: pemanggil, error } = await pastikanKepsek(request);
+  if (error) return error;
+
+  const { userId } = await request.json();
+
+  if (!userId) {
+    return json({ error: 'User ID wajib disertakan.' }, { status: 400 });
+  }
+
+  if (userId === pemanggil.id) {
+    return json({ error: 'Anda tidak dapat menghapus akun Anda sendiri.' }, { status: 400 });
+  }
+
+  const { data: targetProfil } = await admin
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .single();
+
+  if (targetProfil?.role === 'kepsek') {
+    return json({ error: 'Akun Kepala Sekolah tidak dapat dihapus.' }, { status: 403 });
+  }
+
+  const { error: deleteAuthError } = await admin.auth.admin.deleteUser(userId);
+  if (deleteAuthError) {
+    return json({ error: deleteAuthError.message }, { status: 400 });
+  }
+
+  await admin.from('profiles').delete().eq('id', userId);
+
+  return json({ success: true, message: 'Akun berhasil dihapus.' });
+}

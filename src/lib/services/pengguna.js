@@ -59,11 +59,6 @@ export async function buatAkunTimPendidik(payload) {
   return data.user;
 }
 
-/**
- * Mereset password akun ke default '123123' (khusus kepsek).
- * @param {string} userId - ID user yang akan direset.
- * @returns {Promise<string>} Pesan sukses dari server.
- */
 export async function resetPasswordPengguna(userId) {
   const { res, data } = await mintaJson('/api/pengguna/reset-password', {
     method: 'POST',
@@ -71,5 +66,20 @@ export async function resetPasswordPengguna(userId) {
     body: JSON.stringify({ userId })
   });
   if (!res.ok) throw new Error(data.error || 'Gagal mereset password.');
+  return data.message;
+}
+
+/**
+ * Menghapus akun pengguna (khusus kepsek).
+ * @param {string} userId - ID user yang akan dihapus.
+ * @returns {Promise<string>} Pesan sukses dari server.
+ */
+export async function hapusAkunPengguna(userId) {
+  const { res, data } = await mintaJson('/api/pengguna', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', ...(await headerOtorisasi()) },
+    body: JSON.stringify({ userId })
+  });
+  if (!res.ok) throw new Error(data.error || 'Gagal menghapus akun.');
   return data.message;
 }
