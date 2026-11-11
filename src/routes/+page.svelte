@@ -190,10 +190,12 @@
           <h2 class="text-lg font-bold text-slate-900 tracking-tight">Daftar Kelas & Status MOORA</h2>
           <p class="text-xs text-slate-500 mt-0.5">Pantau progres penilaian transisi PAUD ke SD per kelas.</p>
         </div>
-        <a href="/penilaian" class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 w-fit">
-          <span>Buka Penilaian</span>
-          <ArrowRight class="w-3.5 h-3.5" />
-        </a>
+        {#if userRole !== 'kepsek'}
+          <a href="/penilaian" class="text-xs font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 w-fit">
+            <span>Buka Penilaian</span>
+            <ArrowRight class="w-3.5 h-3.5" />
+          </a>
+        {/if}
       </div>
 
       <div class="overflow-x-auto overflow-y-hidden">
