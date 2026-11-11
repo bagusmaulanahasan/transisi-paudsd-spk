@@ -32,10 +32,22 @@
   let mobileMenuOpen = false;
   let profileDropdownOpen = false;
 
+  /**
+   * Sinkronkan nama di header ketika halaman Kelola Akun menyimpan perubahan
+   * tanpa perlu memuat ulang aplikasi.
+   * @param {CustomEvent<{ nama_lengkap?: string }>} event
+   */
+  function tanganiProfilDiubah(event) {
+    const namaBaru = event.detail?.nama_lengkap;
+    if (!namaBaru) return;
+    profile = { ...(profile || {}), nama_lengkap: namaBaru };
+  }
+
   onMount(async () => {
     onlineStatus = navigator.onLine;
     window.addEventListener('online', () => onlineStatus = true);
     window.addEventListener('offline', () => onlineStatus = false);
+    window.addEventListener('profil-diubah', tanganiProfilDiubah);
 
     const { data: { session } } = await supabase.auth.getSession();
     user = session?.user || null;
