@@ -7,6 +7,7 @@
   export let opsiList = [];
   export let bobot = [];
   export let modeEdit = false;
+  export let readOnly = false;
   export let menyimpan = null;
   export let jawabanAnakMap = {};
   export let opsiMap = {};
@@ -25,9 +26,13 @@
       <div>
         <h2 class="text-lg font-bold text-slate-900 tracking-tight">Jawaban Penilaian</h2>
         <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-          {modeEdit
-            ? 'Mode edit — setiap jawaban yang dipilih langsung tersimpan otomatis.'
-            : 'Mode lihat — tekan Edit Penilaian untuk mengubah jawaban.'}
+          {#if readOnly}
+            Mode hanya baca — Kepala Sekolah dapat melihat jawaban tanpa mengubahnya.
+          {:else if modeEdit}
+            Mode edit — setiap jawaban yang dipilih langsung tersimpan otomatis.
+          {:else}
+            Mode lihat — tekan Edit Penilaian untuk mengubah jawaban.
+          {/if}
         </p>
       </div>
     </div>
@@ -141,9 +146,13 @@
 
   <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
     <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
-      {modeEdit
-        ? 'Jawaban disimpan otomatis setiap kali dipilih. Nilai Yi dan ranking seluruh anak di kelas ini ikut diperbarui.'
-        : 'Tampilan ini hanya untuk melihat hasil. Tekan tombol Edit Penilaian di atas untuk mengubah jawaban.'}
+      {#if readOnly}
+        Tampilan hanya baca untuk Kepala Sekolah. Jawaban hanya dapat diubah oleh Tim Pendidik.
+      {:else if modeEdit}
+        Jawaban disimpan otomatis setiap kali dipilih. Nilai Yi dan ranking seluruh anak di kelas ini ikut diperbarui.
+      {:else}
+        Tampilan ini hanya untuk melihat hasil. Tekan tombol Edit Penilaian di atas untuk mengubah jawaban.
+      {/if}
     </p>
   </div>
 </Card>

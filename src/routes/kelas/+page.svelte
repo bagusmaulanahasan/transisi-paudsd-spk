@@ -9,10 +9,14 @@
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import { Plus } from 'lucide-svelte';
+  import { userProfile } from '$lib/stores/user';
   import KelasListCard from './KelasListCard.svelte';
   import KelasModal from './KelasModal.svelte';
 
   const CACHE_KELAS = 'kelas-list';
+
+  // Hanya Kepala Sekolah yang boleh menambah, mengubah, dan menghapus kelas.
+  $: bolehKelola = $userProfile?.role === 'kepsek';
 
   // Data cache dipakai lebih dulu agar daftar kelas tampil seketika.
   const dataAwal = peekMemoryCache(CACHE_KELAS);
@@ -186,6 +190,7 @@
     <KelasListCard
       {kelasList}
       {jumlahAnakMap}
+      {bolehKelola}
       {openAddModal}
       {openEditModal}
       {deleteKelas}

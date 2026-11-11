@@ -8,7 +8,8 @@
   import { simpanPenilaianOffline, ambilPenilaianOffline, hapusPenilaianOffline } from '$lib/db/indexeddb';
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { onMount } from 'svelte';
-  import { ArrowLeft, AlertCircle, ArrowRight, School } from 'lucide-svelte';
+  import { userProfile } from '$lib/stores/user';
+  import { ArrowLeft, AlertCircle, ArrowRight, School, Eye } from 'lucide-svelte';
   import LoadingState from '$lib/components/ui/LoadingState.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
   import AnakIdentityCard from './AnakIdentityCard.svelte';
@@ -379,6 +380,9 @@
   // Baris hasil MOORA milik anak yang sedang dibuka.
   $: barisSaya = hasil.baris.find((baris) => baris.anak_id === anakId) || null;
 
+  // 3. Halaman Penilaian Read-Only untuk `kepsek`
+  $: isKepsek = $userProfile?.role === 'kepsek';
+
   // Indikator dikelompokkan per kriteria agar mudah dibaca.
   $: indikatorPerKriteria = kriteriaList.map((kriteria) => ({
     ...kriteria,
@@ -438,10 +442,20 @@
     <AnakIdentityCard
       {anak}
       {kelas}
-      {modeEdit}
+      modeEdit={modeEdit && !isKepsek}
+      readOnly={isKepsek}
       onMulaiEdit={mulaiEdit}
       onSelesaiEdit={selesaiEdit}
     />
+    
+    {#if isKepsek}
+      <div class="p-4 bg-sky-50 border border-sky-200 rounded-2xl flex items-center gap-3">
+        <Eye class="w-5 h-5 text-sky-600" />
+        <p class="text-sm font-medium text-sky-800">
+            Halaman ini ditampilkan dalam mode <strong>Read-Only (Kepala Sekolah)</strong>.
+        </p>
+      </div>
+    {/if}
 
     <!-- Ringkasan Yi & Ranking -->
     <AnakScoreSummaryCard
@@ -497,7 +511,8 @@
       {indikatorPerKriteria}
       {opsiList}
       {bobot}
-      {modeEdit}
+      modeEdit={modeEdit && !isKepsek}
+      readOnly={isKepsek}
       {menyimpan}
       {jawabanAnakMap}
       {opsiMap}

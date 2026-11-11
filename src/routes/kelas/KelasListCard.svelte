@@ -7,6 +7,7 @@
 
   export let kelasList = [];
   export let jumlahAnakMap = {};
+  export let bolehKelola = false;
   export let openAddModal = () => {};
   export let openEditModal = () => {};
   export let deleteKelas = () => {};
@@ -29,10 +30,12 @@
       <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap w-fit">
         Total: {kelasList.length} Kelas
       </span>
-      <Button on:click={openAddModal}>
-        <Plus class="w-4 h-4 mr-1.5" />
-        <span>Tambah Kelas</span>
-      </Button>
+      {#if bolehKelola}
+        <Button on:click={openAddModal}>
+          <Plus class="w-4 h-4 mr-1.5" />
+          <span>Tambah Kelas</span>
+        </Button>
+      {/if}
     </div>
   </div>
 
@@ -40,14 +43,18 @@
     <div class="p-5 md:p-6">
       <EmptyState
         title="Belum ada kelas"
-        description="Tambahkan kelas pertama, misalnya 'Kelas A' untuk tahun ajaran berjalan."
+        description={bolehKelola
+          ? "Tambahkan kelas pertama, misalnya 'Kelas A' untuk tahun ajaran berjalan."
+          : 'Belum ada kelas yang tersedia. Hubungi Kepala Sekolah untuk menambahkan kelas.'}
         icon={School}
       >
         <div slot="action">
-          <Button on:click={openAddModal}>
-            <Plus class="w-4 h-4 mr-1.5" />
-            <span>Tambah Kelas</span>
-          </Button>
+          {#if bolehKelola}
+            <Button on:click={openAddModal}>
+              <Plus class="w-4 h-4 mr-1.5" />
+              <span>Tambah Kelas</span>
+            </Button>
+          {/if}
         </div>
       </EmptyState>
     </div>
@@ -89,12 +96,14 @@
               <Users class="w-3.5 h-3.5" />
               <span>Kelola Anak</span>
             </a>
-            <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Kelas">
-              <Edit2 class="w-3.5 h-3.5" />
-            </Button>
-            <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteKelas(item)} title="Hapus Kelas">
-              <Trash2 class="w-3.5 h-3.5" />
-            </Button>
+            {#if bolehKelola}
+              <Button variant="outline" className="p-2 h-auto" on:click={() => openEditModal(item)} title="Ubah Kelas">
+                <Edit2 class="w-3.5 h-3.5" />
+              </Button>
+              <Button variant="danger" className="p-2 h-auto bg-red-50 hover:bg-red-100 text-red-600 border-red-100 shadow-none" on:click={() => deleteKelas(item)} title="Hapus Kelas">
+                <Trash2 class="w-3.5 h-3.5" />
+              </Button>
+            {/if}
           </div>
         {:else}
           {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
@@ -104,7 +113,11 @@
 
     <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100">
       <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
-        Menghapus kelas akan menghapus seluruh data anak dan penilaian di dalamnya. Pastikan data sudah tidak dibutuhkan.
+        {#if bolehKelola}
+          Menghapus kelas akan menghapus seluruh data anak dan penilaian di dalamnya. Pastikan data sudah tidak dibutuhkan.
+        {:else}
+          Anda dapat menambah dan mengelola data anak melalui tombol <strong>Kelola Anak</strong>. Penambahan, perubahan, dan penghapusan kelas hanya dapat dilakukan Kepala Sekolah.
+        {/if}
       </p>
     </div>
   {/if}

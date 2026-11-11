@@ -6,6 +6,7 @@
   export let anak = null;
   export let kelas = null;
   export let modeEdit = false;
+  export let readOnly = false;
   export let onMulaiEdit = () => {};
   export let onSelesaiEdit = () => {};
 </script>
@@ -39,7 +40,11 @@
     </div>
 
     <div class="flex items-center gap-2">
-      {#if modeEdit}
+      {#if readOnly}
+        <span class="inline-flex items-center gap-1.5 px-3 py-2 bg-sky-50 border border-sky-100 text-sky-700 rounded-xl text-[11px] font-bold">
+          Hanya baca
+        </span>
+      {:else if modeEdit}
         <Button variant="primary" on:click={onSelesaiEdit} className="shadow-sm shadow-emerald-200">
           <CheckCircle2 class="w-4 h-4 mr-1.5" />
           Selesai

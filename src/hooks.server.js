@@ -7,11 +7,10 @@ const PREFIX_DILEWATI = ['/login', '/api', '/icons', '/assets', '/favicon'];
 
 // Path yang dibatasi per role. Hanya path ini yang memicu query ke database
 // agar request lain (aset, halaman umum) tetap ringan.
-const PATH_DIBATASI = ['/kriteria', '/indikator', '/pengguna', '/penilaian'];
+const PATH_DIBATASI = ['/kriteria', '/indikator', '/pengguna'];
 
-// Path yang hanya boleh dibuka tim_pendidik / kepsek.
+// Path yang hanya boleh dibuka kepsek.
 const PATH_KHUSUS_KEPSEK = ['/kriteria', '/indikator', '/pengguna'];
-const PATH_KHUSUS_TIM_PENDIDIK = ['/penilaian'];
 
 /**
  * @param {string} pathname
@@ -69,10 +68,6 @@ export async function handle({ event, resolve }) {
   const role = profil?.role === 'kepsek' ? 'kepsek' : 'tim_pendidik';
 
   if (role === 'tim_pendidik' && cocokPath(pathname, PATH_KHUSUS_KEPSEK)) {
-    redirect(303, '/');
-  }
-
-  if (role === 'kepsek' && cocokPath(pathname, PATH_KHUSUS_TIM_PENDIDIK)) {
     redirect(303, '/');
   }
 
