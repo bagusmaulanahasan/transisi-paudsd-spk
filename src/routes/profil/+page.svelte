@@ -82,46 +82,36 @@
   }
 </script>
 
-<div class="max-w-3xl mx-auto space-y-6">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-slate-900">Kelola Akun</h1>
-    <a href="/" class="inline-flex items-center text-sm text-slate-600 hover:text-blue-600">
-      <ArrowLeft class="w-4 h-4 mr-1" /> Kembali ke Dashboard
-    </a>
-  </div>
+<div class="max-w-5xl mx-auto space-y-6">
+  <a href="/" class="inline-flex items-center text-sm font-semibold text-slate-600 hover:text-blue-600 transition mb-2">
+    <ArrowLeft class="w-4 h-4 mr-1.5" /> Kembali ke Dashboard
+  </a>
+  
+  <h1 class="text-2xl font-bold text-slate-900">Kelola Akun</h1>
 
   {#if loadingProfile}
     <p>Memuat...</p>
   {:else}
-    <Card className="space-y-6">
-      <div>
-        <h2 class="text-lg font-bold text-slate-900">Ubah Nama Lengkap</h2>
-        <div class="flex items-end gap-4 mt-4">
-          <Input label="Nama Lengkap" bind:value={namaLengkap} className="flex-1" error={errorNama} />
-          <Button on:click={updateNama} loading={loadingNama}>Simpan</Button>
+    <div class="grid md:grid-cols-2 gap-6">
+      <Card className="space-y-6 h-fit">
+        <h2 class="text-lg font-bold text-slate-900">Informasi Profil</h2>
+        <div class="space-y-4">
+          <Input label="Nama Lengkap" bind:value={namaLengkap} error={errorNama} />
+          <Button on:click={updateNama} loading={loadingNama} className="w-full">Simpan Nama</Button>
+          
+          <Input label="Email" type="email" bind:value={email} error={errorEmail} />
+          <Button on:click={updateEmail} loading={loadingEmail} variant="outline" className="w-full">Update Email</Button>
         </div>
-      </div>
-    </Card>
+      </Card>
 
-    <Card className="space-y-6">
-      <div>
-        <h2 class="text-lg font-bold text-slate-900">Ubah Email</h2>
-        <div class="flex items-end gap-4 mt-4">
-          <Input label="Email" type="email" bind:value={email} className="flex-1" error={errorEmail} />
-          <Button on:click={updateEmail} loading={loadingEmail} variant="outline">Update Email</Button>
-        </div>
-      </div>
-    </Card>
-
-    <Card className="space-y-6">
-      <div>
-        <h2 class="text-lg font-bold text-slate-900">Ubah Password</h2>
-        <div class="grid gap-4 mt-4">
+      <Card className="space-y-6 h-fit">
+        <h2 class="text-lg font-bold text-slate-900">Keamanan</h2>
+        <div class="space-y-4">
           <Input label="Password Baru" type="password" bind:value={newPassword} />
           <Input label="Konfirmasi Password" type="password" bind:value={confirmPassword} error={errorPassword} />
-          <Button on:click={updatePassword} loading={loadingPassword} variant="danger">Update Password</Button>
+          <Button on:click={updatePassword} loading={loadingPassword} variant="danger" className="w-full">Update Password</Button>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
   {/if}
 </div>

@@ -114,7 +114,21 @@
   }
 
   $: isLoginPage = $page.url.pathname === '/login';
+
+  /**
+   * Menutup dropdown profil saat pengguna mengklik area mana pun di luar dropdown.
+   * @param {MouseEvent} event
+   */
+  function tutupDropdownDiLuar(event) {
+    if (!profileDropdownOpen) return;
+    const target = /** @type {HTMLElement | null} */ (event.target);
+    if (!target?.closest('.profile-dropdown-trigger')) {
+      profileDropdownOpen = false;
+    }
+  }
 </script>
+
+<svelte:window on:click={tutupDropdownDiLuar} />
 
 {#if loading}
   <div class="min-h-screen flex items-center justify-center bg-slate-50">
@@ -143,12 +157,12 @@
       </div>
 
       <!-- Profile Dropdown Mobile -->
-      <div class="relative">
+      <div class="relative profile-dropdown-trigger">
         <button 
           on:click={() => profileDropdownOpen = !profileDropdownOpen}
           class="flex items-center space-x-2 focus:outline-none"
         >
-          <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-xs shadow-sm">
+          <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-xs shadow-sm profile-dropdown-trigger">
             {getInitials(profile?.nama_lengkap, user?.email)}
           </div>
         </button>
@@ -162,12 +176,16 @@
               </span>
               <p class="text-xs text-slate-500 truncate mt-1">{user?.email}</p>
             </div>
-            <a href="/profil" class="flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
+            <a 
+              href="/profil" 
+              on:click={() => profileDropdownOpen = false}
+              class="flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
+            >
               <Settings class="w-4 h-4 text-slate-500" />
               <span>Kelola Akun</span>
             </a>
             <button 
-              on:click={handleLogout}
+              on:click={() => { handleLogout(); profileDropdownOpen = false; }}
               class="w-full flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-50 transition mt-1"
             >
               <LogOut class="w-4 h-4 text-red-500" />
@@ -302,7 +320,7 @@
           <span>Sistem Penunjang Keputusan Prioritas Stimulasi Anak (PAUD–SD)</span>
         </div>
 
-        <div class="relative">
+        <div class="relative profile-dropdown-trigger">
           <button 
             on:click={() => profileDropdownOpen = !profileDropdownOpen}
             class="flex items-center space-x-3 focus:outline-none p-1.5 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200"
@@ -327,12 +345,16 @@
                   {profile?.role === 'kepsek' ? 'Kepala Sekolah' : 'Tim Pendidik'}
                 </span>
               </div>
-              <a href="/profil" class="flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition">
+              <a 
+                href="/profil" 
+                on:click={() => profileDropdownOpen = false}
+                class="flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
+              >
                 <Settings class="w-4 h-4 text-slate-500" />
                 <span>Kelola Akun</span>
               </a>
               <button 
-                on:click={handleLogout}
+                on:click={() => { handleLogout(); profileDropdownOpen = false; }}
                 class="w-full flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-red-600 hover:bg-red-50 transition mt-1"
               >
                 <LogOut class="w-4 h-4 text-red-500" />
