@@ -239,6 +239,9 @@
         </a>
 
         {#if profile?.role === 'kepsek'}
+          <div class="pt-4 pb-1 px-3">
+            <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Menu Manajemen Kepsek</p>
+          </div>
           <a 
             href="/kriteria" 
             on:click={() => mobileMenuOpen = false}
@@ -281,6 +284,9 @@
           </a>
         {:else}
           <!-- Default / tim_pendidik role -->
+          <div class="pt-4 pb-1 px-3">
+            <p class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Menu Tim Pendidik</p>
+          </div>
           <a 
             href="/kelas" 
             on:click={() => mobileMenuOpen = false}
