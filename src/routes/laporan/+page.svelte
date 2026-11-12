@@ -122,10 +122,6 @@
       ahpSiap
     });
   }
-
-  function cetakLaporan() {
-    window.print();
-  }
 </script>
 
 
@@ -141,15 +137,6 @@
       <p class="text-slate-500 text-sm mt-1">
         Laporan transparan read-only menampilkan seluruh tahapan AHP hingga perankingan MOORA.
       </p>
-    </div>
-    <div class="flex items-center gap-2">
-      <button
-        on:click={cetakLaporan}
-        class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm"
-      >
-        <Printer class="w-4 h-4" />
-        <span>Cetak Laporan</span>
-      </button>
     </div>
   </div>
 

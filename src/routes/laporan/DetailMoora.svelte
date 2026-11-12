@@ -316,26 +316,18 @@
               <table class="w-full text-left border-collapse border border-slate-200">
                 <thead>
                   <tr class="bg-slate-50 text-slate-600 font-bold uppercase">
-                    <th class="p-2.5 border border-slate-200 w-16 text-center">Ranking</th>
                     <th class="p-2.5 border border-slate-200">
                       <FilterTampilanNama variant="header" />
                     </th>
-                    <th class="p-2.5 border border-slate-200 w-32 text-right">Nilai Optimasi (Yᵢ)</th>
+                    <th class="p-2.5 border border-slate-200 w-44 text-right">Nilai Optimasi (Yᵢ)</th>
+                    <th class="p-2.5 border border-slate-200 w-44 text-center">Ranking</th>
                   </tr>
                 </thead>
                 <tbody>
                   {#each mooraDetail.hasilAkhir as baris}
                     {@const nilaiIdentitas = nilaiNama(baris, jenisTampilan)}
                     <tr class={baris.ranking === 1 ? 'bg-blue-50/50 font-bold' : ''}>
-                      <td class="p-2.5 border border-slate-200 text-center">
-                        {#if baris.ranking !== null}
-                          <span class={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${baris.ranking === 1 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
-                            {baris.ranking}
-                          </span>
-                        {:else}
-                          <span class="text-slate-400">—</span>
-                        {/if}
-                      </td>
+
                       <td class="p-2.5 border border-slate-200 font-bold text-slate-800">
                         {#if nilaiIdentitas}
                           {#if jenisTampilan === 'kode_anak'}
@@ -349,6 +341,15 @@
                       </td>
                       <td class="p-2.5 border border-slate-200 text-right font-extrabold text-slate-900">
                         {baris.yi !== null ? baris.yi.toFixed(3) : '—'}
+                      </td>
+                                            <td class="p-2.5 border border-slate-200 text-center">
+                        {#if baris.ranking !== null}
+                          <span class={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${baris.ranking === 1 ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-700'}`}>
+                            {baris.ranking}
+                          </span>
+                        {:else}
+                          <span class="text-slate-400">—</span>
+                        {/if}
                       </td>
                     </tr>
                   {/each}
