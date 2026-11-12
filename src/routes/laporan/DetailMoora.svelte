@@ -281,11 +281,14 @@
           <div class="p-4 space-y-3 bg-white border-t border-slate-200 text-xs">
             <p class="text-slate-600">Rumus: Yᵢ = Σ (Benefit) − Σ (Cost). Berikut rincian substitusi per anak:</p>
             <div class="space-y-2 font-mono text-[11px] bg-slate-50 p-3 rounded-lg border border-slate-100">
-              {#each mooraDetail.hasilAkhir.filter(b => b.lengkap) as baris}
-                <div class="pb-1.5 border-b border-slate-200/60 last:border-0">
-                  <strong>{baris.nama}</strong>: 
-                  Benefit ({baris.benefitSum.toFixed(3)}) - Cost ({baris.costSum.toFixed(3)}) = <strong class="text-blue-700">Yi = {baris.yi.toFixed(3)}</strong>
-                </div>
+              {#each mooraDetail.lengkap as baris, idx}
+                {@const item = mooraDetail.hasilAkhir.find(h => h.anak_id === baris.anak_id)}
+                {#if item}
+                  <div class="pb-1.5 border-b border-slate-200/60 last:border-0">
+                    <strong>{nilaiNama(baris, jenisTampilan) || '—'}</strong>: 
+                    Benefit ({item.benefitSum.toFixed(3)}) - Cost ({item.costSum.toFixed(3)}) = <strong class="text-blue-700">Yi = {item.yi.toFixed(3)}</strong>
+                  </div>
+                {/if}
               {/each}
             </div>
           </div>
