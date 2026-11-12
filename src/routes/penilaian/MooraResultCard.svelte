@@ -2,10 +2,12 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Table from '$lib/components/ui/Table.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
-  import { Trophy, Users, Eye, AlertCircle } from 'lucide-svelte';
+  import { Trophy, Users, Eye, AlertCircle, Search, ArrowUpDown } from 'lucide-svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
   import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
-  import { labelKolomNama, nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
+  import Input from '$lib/components/ui/Input.svelte';
+  import Select from '$lib/components/ui/Select.svelte';
+  import { nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
 
   export let kriteriaList = [];
   export let bobot = [];
@@ -17,7 +19,31 @@
 
   /** Kolom identitas anak mengikuti pilihan pada filter tampilan nama. */
   $: jenisTampilan = $tampilanNamaAktif;
-  $: labelIdentitas = labelKolomNama(jenisTampilan);
+
+  // Search & Sort State
+  let searchQuery = '';
+  let sortBy = 'ranking'; // 'ranking' | 'nama'
+
+  // Reactive filtering and sorting
+  $: processedData = hasil.baris
+    .filter(baris => {
+      const term = searchQuery.toLowerCase();
+      // Search in nama, nama_panggilan, and kode_anak
+      return baris.nama.toLowerCase().includes(term) ||
+             (baris.nama_panggilan?.toLowerCase().includes(term)) ||
+             (baris.kode_anak?.toLowerCase().includes(term));
+    })
+    .sort((a, b) => {
+      if (sortBy === 'nama') return a.nama.localeCompare(b.nama);
+      // Sort by ranking (ASC, nulls last)
+      const rA = a.ranking ?? Infinity;
+      const rB = b.ranking ?? Infinity;
+      return rA - rB;
+    })
+    .map((baris, index) => ({
+      ...baris,
+      no: index + 1
+    }));
 </script>
 
 <Card className="overflow-hidden p-0">
@@ -33,7 +59,24 @@
         </p>
       </div>
     </div>
-    <div class="flex flex-col items-start lg:items-end gap-2">
+    <div class="flex flex-col items-start lg:items-end gap-2 w-full lg:w-auto">
+      <div class="flex items-center gap-2 w-full lg:w-auto">
+        <Input 
+          type="text" 
+          placeholder="Cari anak..." 
+          bind:value={searchQuery} 
+          className="w-full lg:w-48"
+        />
+        <Select
+          value={sortBy}
+          on:change={(e) => sortBy = e.target.value}
+          options={[
+            { value: 'ranking', label: 'Urut: Ranking' },
+            { value: 'nama', label: 'Urut: Nama A-Z' }
+          ]}
+          className="w-40"
+        />
+      </div>
       <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap">
         Lengkap {hasil.jumlahLengkap}/{hasil.jumlahAnak} Anak
       </span>
@@ -89,10 +132,9 @@
             { key: 'ranking', label: 'Ranking', class: 'text-center whitespace-nowrap' },
             { key: 'aksi', label: 'Aksi', class: 'text-center whitespace-nowrap hidden lg:table-cell' }
           ]}
-          data={hasil.baris.map((baris, index) => {
+          data={processedData.map((baris) => {
             let mapped = {
-              ...baris,
-              no: index + 1
+              ...baris
             };
             baris.nilai.forEach((val, idx) => {
               if (kriteriaList[idx]) {
