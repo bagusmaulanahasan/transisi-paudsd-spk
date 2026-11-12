@@ -2,12 +2,12 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Table from '$lib/components/ui/Table.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
-  import { Trophy, Users, Eye, AlertCircle, Search, ArrowUpDown } from 'lucide-svelte';
+  import { Trophy, Users, Eye, AlertCircle } from 'lucide-svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
   import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Select from '$lib/components/ui/Select.svelte';
-  import { nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
+  import { labelKolomNama, nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
 
   export let kriteriaList = [];
   export let bobot = [];
@@ -19,25 +19,32 @@
 
   /** Kolom identitas anak mengikuti pilihan pada filter tampilan nama. */
   $: jenisTampilan = $tampilanNamaAktif;
+  $: labelIdentitas = labelKolomNama(jenisTampilan);
+
+  // Data hasil perhitungan, dijaga tetap aman walau prop belum siap.
+  $: daftarBaris = hasil?.baris || [];
+  $: jumlahLengkap = hasil?.jumlahLengkap ?? 0;
+  $: jumlahAnak = hasil?.jumlahAnak ?? 0;
 
   // Search & Sort State
   let searchQuery = '';
   let sortBy = 'ranking'; // 'ranking' | 'nama'
 
   // Reactive filtering and sorting
-  $: processedData = hasil.baris
-    .filter(baris => {
-      const term = searchQuery.toLowerCase();
+  $: processedData = daftarBaris
+    .filter((baris) => {
+      const term = (searchQuery || '').toLowerCase().trim();
+      if (!term) return true;
       // Search in nama, nama_panggilan, and kode_anak
-      return baris.nama.toLowerCase().includes(term) ||
-             (baris.nama_panggilan?.toLowerCase().includes(term)) ||
-             (baris.kode_anak?.toLowerCase().includes(term));
+      return (baris?.nama || '').toLowerCase().includes(term) ||
+             (baris?.nama_panggilan || '').toLowerCase().includes(term) ||
+             (baris?.kode_anak || '').toLowerCase().includes(term);
     })
     .sort((a, b) => {
-      if (sortBy === 'nama') return a.nama.localeCompare(b.nama);
+      if (sortBy === 'nama') return (a?.nama || '').localeCompare(b?.nama || '');
       // Sort by ranking (ASC, nulls last)
-      const rA = a.ranking ?? Infinity;
-      const rB = b.ranking ?? Infinity;
+      const rA = a?.ranking ?? Infinity;
+      const rB = b?.ranking ?? Infinity;
       return rA - rB;
     })
     .map((baris, index) => ({
@@ -68,8 +75,8 @@
           className="w-full lg:w-48"
         />
         <Select
-          value={sortBy}
-          on:change={(e) => sortBy = e.target.value}
+          bind:value={sortBy}
+          placeholder=""
           options={[
             { value: 'ranking', label: 'Urut: Ranking' },
             { value: 'nama', label: 'Urut: Nama A-Z' }
@@ -78,7 +85,7 @@
         />
       </div>
       <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap">
-        Lengkap {hasil.jumlahLengkap}/{hasil.jumlahAnak} Anak
+        Lengkap {jumlahLengkap}/{jumlahAnak} Anak
       </span>
       {#if waktuPerhitungan}
         <span class="text-[10px] text-slate-400 font-medium">
@@ -113,7 +120,7 @@
       {/each}
     </div>
 
-    {#if hasil.baris.length === 0}
+    {#if daftarBaris.length === 0}
       <EmptyState
         title="Belum ada data untuk dihitung"
         description="Tambahkan anak dan isi jawaban indikator terlebih dahulu."
@@ -136,7 +143,7 @@
             let mapped = {
               ...baris
             };
-            baris.nilai.forEach((val, idx) => {
+            (baris?.nilai || []).forEach((val, idx) => {
               if (kriteriaList[idx]) {
                 mapped['k_' + kriteriaList[idx].id] = val;
               }
@@ -217,15 +224,15 @@
         </Table>
       </div>
 
-      {#if hasil.jumlahLengkap < hasil.jumlahAnak}
+      {#if jumlahLengkap < jumlahAnak}
         <div class="p-3.5 bg-amber-50 border border-amber-100 rounded-xl text-[11px] font-medium text-amber-800 leading-relaxed flex items-start gap-2">
           <AlertCircle class="w-4 h-4 shrink-0 mt-0.5" />
           <div>
             <p>
-              {hasil.jumlahAnak - hasil.jumlahLengkap} anak belum lengkap menjawab seluruh indikator sehingga belum masuk ranking:
+              {jumlahAnak - jumlahLengkap} anak belum lengkap menjawab seluruh indikator sehingga belum masuk ranking:
             </p>
             <ul class="mt-1.5 space-y-0.5">
-              {#each hasil.baris.filter((baris) => !baris.lengkap) as baris (baris.anak_id)}
+              {#each daftarBaris.filter((baris) => !baris.lengkap) as baris (baris.anak_id)}
                 <li class="font-semibold">{baris.nama} — {baris.terjawab}/{baris.total} indikator terjawab</li>
               {/each}
             </ul>
