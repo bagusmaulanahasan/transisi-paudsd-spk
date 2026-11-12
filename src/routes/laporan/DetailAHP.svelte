@@ -188,7 +188,7 @@
               <tr class="bg-blue-50 font-extrabold text-blue-900 uppercase">
                 <td colspan="2" class="p-2 border border-slate-200 text-center tracking-wider">Total Bobot</td>
                 <td class="p-2 border border-slate-200">
-                  {(ahpDetail?.weights.reduce((a, b) => a + b, 0) || 0).toFixed(3)}
+                  {(ahpDetail?.weights.reduce((a, b) => a + b, 0) || 0).toFixed(2)}
                 </td>
                 <td class="p-2 border border-slate-200 text-right">100.0%</td>
               </tr>
