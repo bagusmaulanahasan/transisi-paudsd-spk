@@ -8,7 +8,7 @@
 
 <Card className="p-5 md:p-6 space-y-4">
   <div class="max-w-md">
-    <label for="pilih-kelas" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Pilih Kelas</label>
+    <label for="pilih-kelas" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Pilih Kelas</label>
     <select
       id="pilih-kelas"
       bind:value={selectedKelasId}

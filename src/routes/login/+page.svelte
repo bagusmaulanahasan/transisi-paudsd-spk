@@ -15,7 +15,7 @@
     errorMessage = '';
 
     if (!navigator.onLine) {
-      errorMessage = 'Koneksi internet tidak tersedia. Login pertama membutuhkan koneksi online.';
+      errorMessage = 'Koneksi internet tidak tersedia. Login membutuhkan koneksi online.';
       loading = false;
       return;
     }
@@ -53,7 +53,7 @@
     
     <div class="relative z-10">
       <span class="inline-block px-3 py-1 bg-blue-700/60 rounded-full text-xs font-semibold tracking-wide uppercase text-blue-200 backdrop-blur-sm mb-4">
-        SPK TK Islam Kencana
+        TK Islam Kencana
       </span>
       <h1 class="text-4xl font-extrabold tracking-tight leading-tight">
         SPK Transisi PAUD–SD
@@ -72,9 +72,9 @@
   <div class="flex items-center justify-center p-6 sm:p-12">
     <div class="w-full max-w-md bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-200">
       <div class="mb-8">
-        <h2 class="text-2xl font-bold text-slate-900">Masuk ke Akun Pendidik</h2>
+        <h2 class="text-2xl font-bold text-slate-900">Masuk ke Akun</h2>
         <p class="mt-2 text-sm text-slate-500">
-          Gunakan akun bersama tim pendidik untuk masuk.
+          Gunakan akun yang telah didaftarkan.
         </p>
       </div>
 
@@ -90,7 +90,7 @@
       <form on:submit|preventDefault={handleLogin} class="space-y-6">
         <div>
           <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
-            Email Pendidik
+            Email
           </label>
           <input
             id="email"

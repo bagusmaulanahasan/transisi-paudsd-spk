@@ -11,6 +11,7 @@
   import TahapBobot from './TahapBobot.svelte';
   import TahapMatriks from './TahapMatriks.svelte';
   import TahapHasil from './TahapHasil.svelte';
+  import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import { FileText, Loader2, School, Printer } from 'lucide-svelte';
   import OfflineNotice from '$lib/components/ui/OfflineNotice.svelte';
   import { online } from '$lib/stores/koneksi';
@@ -130,15 +131,10 @@
 </svelte:head>
 
 <div class="space-y-8 print:space-y-4">
-  <!-- Header Layar (disembunyikan saat cetak) -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
-    <div>
-      <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Laporan Perhitungan SPK</h1>
-      <p class="text-slate-500 text-sm mt-1">
-        Laporan transparan read-only menampilkan seluruh tahapan AHP hingga perankingan MOORA.
-      </p>
-    </div>
-  </div>
+<PageHeader 
+    title="Laporan Perhitungan SPK" 
+    subtitle="Laporan transparan read-only menampilkan seluruh tahapan AHP hingga perankingan MOORA."
+  />
 
   <!-- Pemilih Kelas -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 print:p-0 print:border-none print:shadow-none">

@@ -330,12 +330,12 @@
 </script>
 
 <svelte:head>
-  <title>Indikator Pertanyaan - SPK Transisi PAUD-SD</title>
+  <title>Indikator Penilain - SPK Transisi PAUD-SD</title>
 </svelte:head>
 
 <div class="space-y-8">
 <PageHeader 
-    title="Kelola Opsi Jawaban & Indikator Pertanyaan" 
+    title="Kelola Opsi Jawaban & Indikator Penilaian" 
     subtitle="Atur skala jawaban baku untuk semua kriteria, lalu susun pertanyaan observasi per kriteria."
   />
 

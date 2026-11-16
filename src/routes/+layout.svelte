@@ -288,7 +288,7 @@
             class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/kriteria') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
           >
             <Scale class="w-5 h-5 shrink-0" />
-            <span>Kriteria & AHP</span>
+            <span>Kriteria & Bobot</span>
           </a>
           <a 
             href="/indikator" 
@@ -296,7 +296,7 @@
             class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/indikator') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
           >
             <HelpCircle class="w-5 h-5 shrink-0" />
-            <span>Indikator Pertanyaan</span>
+            <span>Indikator Penilaian</span>
           </a>
           <a 
             href="/pengguna" 
