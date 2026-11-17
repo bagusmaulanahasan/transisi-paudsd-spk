@@ -28,10 +28,10 @@
       <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap">
         Total: {masterOpsi.length} Opsi
       </span>
-      <!-- <Button on:click={openAddOpsi}>
+      <Button on:click={openAddOpsi}>
         <Plus class="w-4 h-4 mr-1.5" />
         <span>Tambah Opsi</span>
-      </Button> -->
+      </Button>
     </div>
   </div>
 
@@ -54,7 +54,7 @@
           { key: 'opsi', label: 'Teks Opsi' },
           { key: 'keterangan', label: 'Keterangan' },
           { key: 'poin', label: 'Poin Penilaian (skor kebutuhan)', class: 'text-center whitespace-nowrap' },
-          // { key: 'aksi', label: 'Aksi', class: 'text-right w-32' }
+          { key: 'aksi', label: 'Aksi', class: 'text-right w-32' }
         ]}
         data={masterOpsi.map((o, i) => ({ ...o, no: i + 1 }))}
       >
@@ -69,26 +69,22 @@
             <span class="inline-flex items-center justify-center min-w-[34px] px-2.5 py-1 bg-blue-600 text-white text-xs font-extrabold rounded-lg">
               {item.poin}
             </span>
-          <!-- {:else if col.key === 'aksi'}
+          {:else if col.key === 'aksi'}
             <div class="space-x-2 whitespace-nowrap">
               <Button variant="ghost" className="p-2" title="Ubah Opsi" on:click={() => openEditOpsi(item)}>
-                <Edit2 class="w-3.5 h-3.5" />
+                <Edit2 class="w-3.5 h-3.5 mr-1" />
+                <span>Ubah</span>
               </Button>
               <Button variant="danger" className="p-2 bg-rose-50 text-rose-600 hover:bg-rose-100 shadow-none border-none" title="Hapus Opsi" on:click={() => deleteOpsi(item)}>
-                <Trash2 class="w-3.5 h-3.5" />
+                <Trash2 class="w-3.5 h-3.5 mr-1" />
+                <span>Hapus</span>
               </Button>
-            </div> -->
+            </div>
           {:else}
             {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
           {/if}
         </svelte:fragment>
       </Table>
     </div>
-
-    <!-- <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 -mx-6 -mb-6 mt-6">
-      <p class="text-[11px] text-slate-500 font-medium leading-relaxed">
-        Poin dihitung otomatis 1, 2, 3, ... berdasarkan urutan opsi dan tidak dapat diubah manual.
-      </p>
-    </div> -->
   {/if}
 </Card>
