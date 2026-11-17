@@ -38,7 +38,7 @@
       columns={[
         { key: 'inisial', label: 'Inisial', class: 'w-24' },
         { key: 'nama', label: 'Nama Kriteria' },
-        { key: 'jenis', label: 'Jenis MOORA' },
+        { key: 'jenis', label: 'Jenis Kriteria' },
         { key: 'bobot', label: 'Bobot AHP ($w_j$)' },
         { key: 'aksi', label: 'Aksi', class: 'text-right' }
       ]}

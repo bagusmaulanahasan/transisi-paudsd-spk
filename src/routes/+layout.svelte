@@ -364,7 +364,7 @@
                 class="flex items-center space-x-2.5 py-2 px-2 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 transition"
               >
                 <Settings class="w-4 h-4 text-slate-500" />
-                <span>Kelola Akun</span>
+                <span>Profil Saya</span>
               </a>
               <button 
                 on:click={() => { handleLogout(); profileDropdownOpen = false; }}
