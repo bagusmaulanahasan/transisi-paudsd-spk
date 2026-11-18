@@ -4,6 +4,8 @@
   import Table from '$lib/components/ui/Table.svelte';
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
   import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
+  import Input from '$lib/components/ui/Input.svelte';
+  import Select from '$lib/components/ui/Select.svelte';
   import { labelKolomNama, nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
   import { Plus, Trash2, Edit2, Users, UserRound } from 'lucide-svelte';
 
@@ -15,10 +17,31 @@
   /** Label & nilai kolom identitas mengikuti pilihan pada filter. */
   $: jenisTampilan = $tampilanNamaAktif;
   $: labelIdentitas = labelKolomNama(jenisTampilan);
+
+  // Search & Sort State
+  let searchQuery = '';
+  let sortBy = 'nama'; // 'nama' | 'kode'
+
+  // Reactive filtering and sorting
+  $: processedData = anakList
+    .filter((anak) => {
+      const term = (searchQuery || '').toLowerCase().trim();
+      if (!term) return true;
+      return (anak?.nama || '').toLowerCase().includes(term) ||
+             (anak?.nama_panggilan || '').toLowerCase().includes(term) ||
+             (anak?.kode_anak || '').toLowerCase().includes(term);
+    })
+    .sort((a, b) => {
+      if (sortBy === 'kode') {
+        return (a?.kode_anak || '').localeCompare(b?.kode_anak || '');
+      }
+      return (a?.nama || '').localeCompare(b?.nama || '');
+    })
+    .map((item, index) => ({ ...item, no: index + 1 }));
 </script>
 
 <Card padding="px-5 py-4">
-  <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+  <div class="p-5 md:p-6 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
     <div class="flex items-start gap-3">
       <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
         <Users class="w-5 h-5 text-blue-600" />
@@ -30,8 +53,25 @@
         </p>
       </div>
     </div>
-    <div class="flex flex-wrap items-end gap-3">
-      <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap w-fit">Total: {anakList.length} Anak</span>
+    <div class="flex flex-col items-start lg:items-end gap-2 w-full lg:w-auto">
+      <div class="flex items-center gap-2 w-full lg:w-auto">
+        <Input 
+          type="text" 
+          placeholder="Cari anak..." 
+          bind:value={searchQuery} 
+          className="w-full lg:w-48"
+        />
+        <Select
+          bind:value={sortBy}
+          placeholder=""
+          options={[
+            { value: 'nama', label: 'Urut: Nama A-Z' },
+            { value: 'kode', label: 'Urut: Kode Anak' }
+          ]}
+          className="w-40"
+        />
+      </div>
+      <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap">Total: {anakList.length} Anak</span>
     </div>
   </div>
 
@@ -50,7 +90,7 @@
         </div>
       </EmptyState>
     </div>
-  {:else}
+      {:else}
     <div class="overflow-x-auto">
       <Table
         columns={[
@@ -58,7 +98,7 @@
           { key: 'identitas', label: labelIdentitas, class: 'w-56' },
           { key: 'aksi', label: 'Aksi', class: 'text-right w-48' }
         ]}
-        data={anakList.map((item, index) => ({ ...item, no: index + 1 }))}
+        data={processedData}
       >
         <svelte:fragment slot="header" let:col>
           {#if col.key === 'identitas'}
