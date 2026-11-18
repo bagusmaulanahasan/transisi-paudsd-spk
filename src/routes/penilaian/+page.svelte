@@ -31,7 +31,29 @@
   let perbandinganList = ahpAwal || [];
 
   // ==================== PILIHAN KELAS ====================
-  let selectedKelasId = pilihKelas(kelasAwal || []);
+  let tahunList = [];
+  let selectedTahun = '';
+  let selectedKelasId = null;
+
+  function inisialisasiPilihan(daftarKelas) {
+    const setTahun = new Set(daftarKelas.map(k => k.tahun_ajaran).filter(Boolean));
+    tahunList = Array.from(setTahun).sort().reverse();
+
+    const kelasDariUrl = Number($page.url.searchParams.get('kelas'));
+    const kelasDitemukan = daftarKelas.find(k => k.id === kelasDariUrl);
+
+    if (kelasDitemukan) {
+      selectedTahun = kelasDitemukan.tahun_ajaran;
+      selectedKelasId = kelasDitemukan.id;
+    } else if (tahunList.length > 0) {
+      selectedTahun = tahunList[0];
+      const kelasPertamaTahunIni = daftarKelas.find(k => k.tahun_ajaran === selectedTahun);
+      selectedKelasId = kelasPertamaTahunIni?.id ?? daftarKelas[0]?.id ?? null;
+    }
+  }
+
+  // Tentukan pilihan awal dari cache (bila tersedia) agar filter tidak kosong.
+  if (kelasAwal?.length) inisialisasiPilihan(kelasAwal);
 
   // Anak & jawaban dari cache memori dipakai langsung agar tabel tidak berkedip saat dibuka ulang.
   const kelasDataAwal = selectedKelasId
@@ -75,17 +97,6 @@
   });
 
   /**
-   * Menentukan kelas yang dipakai: dari query ?kelas= bila valid, jika tidak kelas pertama.
-   * @param {Array} daftarKelas
-   * @returns {number|null}
-   */
-  function pilihKelas(daftarKelas) {
-    const kelasDariUrl = Number($page.url.searchParams.get('kelas'));
-    const adaDiUrl = daftarKelas.some((kelas) => kelas.id === kelasDariUrl);
-    return adaDiUrl ? kelasDariUrl : daftarKelas[0]?.id ?? null;
-  }
-
-  /**
    * Mengambil data master lewat cache agar perpindahan halaman berikutnya instan.
    */
   async function fetchMaster() {
@@ -98,9 +109,19 @@
 
     if (kelasList.length > 0) {
       // Pilihan dari URL dipertahankan agar tidak reset saat kembali dari halaman penilaian anak.
-      if (!selectedKelasId) selectedKelasId = pilihKelas(kelasList);
+      inisialisasiPilihan(kelasList);
       await fetchKelasData();
     }
+  }
+
+  /**
+   * Menangani pergantian tahun ajaran: pilih kelas pertama pada tahun tersebut,
+   * lalu muat data kelasnya.
+   */
+  async function gantiTahun() {
+    const kelasTahunIni = kelasList.filter((k) => k.tahun_ajaran === selectedTahun);
+    selectedKelasId = kelasTahunIni[0]?.id ?? null;
+    await gantiKelas();
   }
 
   /**
@@ -291,10 +312,13 @@
       </svelte:fragment>
     </EmptyState>
   {:else}
-    <!-- Pemilihan Kelas -->
+    <!-- Pemilihan Tahun Ajaran & Kelas -->
     <PenilaianFilterCard
       {kelasList}
+      {tahunList}
+      bind:selectedTahun
       bind:selectedKelasId
+      onGantiTahun={gantiTahun}
       onGantiKelas={gantiKelas}
     />
 

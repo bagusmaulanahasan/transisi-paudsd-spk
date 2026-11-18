@@ -26,7 +26,36 @@
   let indikatorList = indikatorAwal || [];
   let perbandinganList = ahpAwal || [];
 
-  let selectedKelasId = pilihKelas(kelasAwal || []);
+  let tahunList = [];
+  let selectedTahun = '';
+  let selectedKelasId = null;
+
+  /**
+   * Menentukan pilihan awal tahun ajaran & kelas dari query ?kelas= atau data terbaru.
+   * @param {Array} daftarKelas
+   */
+  function inisialisasiPilihan(daftarKelas) {
+    const setTahun = new Set(daftarKelas.map((k) => k.tahun_ajaran).filter(Boolean));
+    tahunList = Array.from(setTahun).sort().reverse();
+
+    const kelasDariUrl = Number($page.url.searchParams.get('kelas'));
+    const kelasDitemukan = daftarKelas.find((k) => k.id === kelasDariUrl);
+
+    if (kelasDitemukan) {
+      selectedTahun = kelasDitemukan.tahun_ajaran;
+      selectedKelasId = kelasDitemukan.id;
+    } else if (tahunList.length > 0) {
+      selectedTahun = tahunList[0];
+      const kelasPertamaTahunIni = daftarKelas.find((k) => k.tahun_ajaran === selectedTahun);
+      selectedKelasId = kelasPertamaTahunIni?.id ?? daftarKelas[0]?.id ?? null;
+    }
+  }
+
+  $: filteredKelas = tahunList.length
+    ? kelasList.filter((k) => k.tahun_ajaran === selectedTahun)
+    : kelasList;
+
+  if (kelasAwal?.length) inisialisasiPilihan(kelasAwal);
 
   const kelasDataAwal = selectedKelasId
     ? peekMemoryCache('penilaian:kelas:' + selectedKelasId)
@@ -53,12 +82,6 @@
     loadingMaster = false;
   });
 
-  function pilihKelas(daftarKelas) {
-    const kelasDariUrl = Number($page.url.searchParams.get('kelas'));
-    const adaDiUrl = daftarKelas.some((kelas) => kelas.id === kelasDariUrl);
-    return adaDiUrl ? kelasDariUrl : daftarKelas[0]?.id ?? null;
-  }
-
   async function fetchMaster() {
     const master = await fetchMasterData();
 
@@ -68,9 +91,18 @@
     perbandinganList = master.perbandingan;
 
     if (kelasList.length > 0) {
-      if (!selectedKelasId) selectedKelasId = pilihKelas(kelasList);
+      inisialisasiPilihan(kelasList);
       await fetchKelasData();
     }
+  }
+
+  /**
+   * Mengganti tahun ajaran: memilih kelas pertama pada tahun tersebut lalu memuat datanya.
+   */
+  async function gantiTahun() {
+    const kelasTahunIni = kelasList.filter((k) => k.tahun_ajaran === selectedTahun);
+    selectedKelasId = kelasTahunIni[0]?.id ?? null;
+    await fetchKelasData();
   }
 
   async function fetchKelasData() {
@@ -136,21 +168,41 @@
     subtitle="Laporan transparan read-only menampilkan seluruh tahapan AHP hingga perankingan MOORA."
   />
 
-  <!-- Pemilih Kelas -->
+  <!-- Pemilih Tahun Ajaran & Kelas -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 print:p-0 print:border-none print:shadow-none">
-    <label for="pilih-kelas-laporan" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-      PILIH KELAS
-    </label>
-    <select
-      id="pilih-kelas-laporan"
-      bind:value={selectedKelasId}
-      on:change={fetchKelasData}
-      class="w-full md:w-80 px-4 py-2.5 rounded-xl border bg-white border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none print:hidden"
-    >
-      {#each kelasList as item}
-        <option value={item.id}>{item.nama_kelas} — {item.tahun_ajaran}</option>
-      {/each}
-    </select>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+      <div>
+        <label for="pilih-tahun-laporan" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+          PILIH TAHUN AJARAN
+        </label>
+        <select
+          id="pilih-tahun-laporan"
+          bind:value={selectedTahun}
+          on:change={gantiTahun}
+          class="w-full px-4 py-2.5 rounded-xl border bg-white border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none print:hidden"
+        >
+          {#each tahunList as th}
+            <option value={th}>{th}</option>
+          {/each}
+        </select>
+      </div>
+
+      <div>
+        <label for="pilih-kelas-laporan" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+          PILIH KELAS
+        </label>
+        <select
+          id="pilih-kelas-laporan"
+          bind:value={selectedKelasId}
+          on:change={fetchKelasData}
+          class="w-full px-4 py-2.5 rounded-xl border bg-white border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none print:hidden"
+        >
+          {#each filteredKelas as item}
+            <option value={item.id}>{item.nama_kelas}</option>
+          {/each}
+        </select>
+      </div>
+    </div>
   </div>
 
   {#if !$online}
