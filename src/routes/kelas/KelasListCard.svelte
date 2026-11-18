@@ -11,6 +11,8 @@
   export let openAddModal = () => {};
   export let openEditModal = () => {};
   export let deleteKelas = () => {};
+  export let tahunList = [];
+  export let selectedTahun = '';
 </script>
 
 <Card className="p-0">
@@ -26,8 +28,21 @@
         </p>
       </div>
     </div>
-    <div class="flex items-center gap-3">
-      <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-lg whitespace-nowrap w-fit">
+    <div class="flex flex-wrap items-center gap-3">
+      {#if tahunList.length > 0}
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-500">Tahun Ajaran:</span>
+          <select
+            bind:value={selectedTahun}
+            class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-65 transition shadow-sm"
+          >
+            {#each tahunList as th}
+              <option value={th}>{th}</option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+      <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg whitespace-nowrap w-fit">
         Total: {kelasList.length} Kelas
       </span>
       {#if bolehKelola}

@@ -27,6 +27,9 @@
   let loading = dataAwal === null;
   let saving = false;
 
+  let tahunList = [];
+  let selectedTahun = '';
+
   if (dataAwal) terapkanKelas(dataAwal);
 
   // ==================== STATE MODAL KELAS ====================
@@ -59,7 +62,20 @@
   function terapkanKelas(data) {
     kelasList = data.kelas;
     jumlahAnakMap = data.jumlahAnak;
+
+    // Ambil daftar tahun ajaran unik, urutkan descending (terbaru di atas)
+    const setTahun = new Set((data.kelas || []).map(k => k.tahun_ajaran).filter(Boolean));
+    tahunList = Array.from(setTahun).sort().reverse();
+
+    if (tahunList.length > 0 && (!selectedTahun || !tahunList.includes(selectedTahun))) {
+      selectedTahun = tahunList[0]; // Default ke tahun ajaran terbaru
+    }
   }
+
+  // Kelas yang difilter berdasarkan tahun ajaran terpilih
+  $: filteredKelas = selectedTahun
+    ? kelasList.filter(k => k.tahun_ajaran === selectedTahun)
+    : kelasList;
 
   /**
    * Memuat ulang daftar kelas dari server setelah data berubah.
@@ -188,9 +204,11 @@
   {:else}
     <!-- Tabel Daftar Kelas -->
     <KelasListCard
-      {kelasList}
+      kelasList={filteredKelas}
       {jumlahAnakMap}
       {bolehKelola}
+      {tahunList}
+      bind:selectedTahun
       {openAddModal}
       {openEditModal}
       {deleteKelas}
