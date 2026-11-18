@@ -304,7 +304,7 @@
             class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm font-medium transition {$page.url.pathname.startsWith('/pengguna') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-slate-600 hover:bg-slate-50'}"
           >
             <UserCheck class="w-5 h-5 shrink-0" />
-            <span>Kelola Pengguna</span>
+            <span>Akun Pengguna</span>
           </a>
         {/if}
       </nav>
