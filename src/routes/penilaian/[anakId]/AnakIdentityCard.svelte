@@ -1,7 +1,7 @@
 <script>
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
-  import { UserRound, CheckCircle2, PencilLine } from 'lucide-svelte';
+  import { UserRound, CheckCircle2, PencilLine, Eye, EyeOff } from 'lucide-svelte';
 
   export let anak = null;
   export let kelas = null;
@@ -9,6 +9,14 @@
   export let readOnly = false;
   export let onMulaiEdit = () => {};
   export let onSelesaiEdit = () => {};
+
+  const SENSOR = '*****';
+
+  // Default terbuka: nama lengkap dan nama panggilan terlihat.
+  let tampilkanNama = true;
+
+  $: namaTampil = tampilkanNama ? anak.nama : SENSOR;
+  $: panggilanTampil = tampilkanNama ? anak.nama_panggilan : SENSOR;
 </script>
 
 <Card className="p-5 md:p-6">
@@ -21,7 +29,23 @@
         <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mb-1">
           {kelas ? `${kelas.nama_kelas} — ${kelas.tahun_ajaran}` : 'Data kelas tidak ditemukan'}
         </p>
-        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">{anak.nama}</h1>
+        <div class="flex items-center gap-2">
+          <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">{namaTampil}</h1>
+          <button
+            type="button"
+            on:click={() => (tampilkanNama = !tampilkanNama)}
+            aria-pressed={!tampilkanNama}
+            aria-label={tampilkanNama ? 'Sembunyikan nama anak' : 'Tampilkan nama anak'}
+            title={tampilkanNama ? 'Sembunyikan nama anak' : 'Tampilkan nama anak'}
+            class="w-8 h-8 inline-flex items-center justify-center rounded-lg text-slate-500 hover:text-blue-700 hover:bg-blue-50 transition shrink-0"
+          >
+            {#if tampilkanNama}
+              <Eye class="w-5 h-5" />
+            {:else}
+              <EyeOff class="w-5 h-5" />
+            {/if}
+          </button>
+        </div>
         <div class="flex flex-wrap items-center gap-2 mt-2">
           {#if anak.kode_anak}
             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200 font-mono">
@@ -30,7 +54,7 @@
           {/if}
           {#if anak.nama_panggilan}
             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-              Panggilan: {anak.nama_panggilan}
+              Panggilan: {panggilanTampil}
             </span>
           {/if}
           <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider {modeEdit ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-blue-50 text-blue-700 border border-blue-100'}">

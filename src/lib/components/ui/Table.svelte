@@ -30,7 +30,8 @@
           {#each data as item, index}
             <tr class={`hover:bg-slate-50/60 transition-colors ${resolveRowClass(item, index)}`}>
               {#each columns as col, colIndex}
-                <td class={`px-6 py-4 whitespace-nowrap ${col.class || ''}`}>
+                <!-- <td class={`px-6 py-4 whitespace-nowrap ${col.class || ''}`}> -->
+                <td class={`px-6 py-4 ${col.wrap ? 'whitespace-normal' : 'whitespace-nowrap'} ${col.class || ''}`}>
                   <slot name="cell" {item} {index} {col} {colIndex}>
                     {item[col.key] !== undefined && item[col.key] !== null ? item[col.key] : '-'}
                   </slot>
