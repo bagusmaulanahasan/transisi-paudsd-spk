@@ -4,10 +4,11 @@
   export let ahpSiap = false;
 </script>
 
-<!-- TAHAP 1: BOBOT AHP -->
+<!-- BOBOT AHP -->
 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4 print:border-slate-300">
   <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-    <h2 class="text-base font-bold text-slate-900">Tahap 1: Bobot Prioritas Kriteria (AHP)</h2>
+    <h2 class="text-lg font-bold text-slate-900 tracking-tight">Kriteria Penilaian dan Bobot Prioritas</h2>
+    <!-- <h2 class="text-base font-bold text-slate-900">Bobot Prioritas Kriteria (AHP)</h2> -->
     <span class={`px-2.5 py-1 rounded-full text-xs font-semibold ${ahpSiap ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
       {ahpSiap ? 'Konsisten (CR ≤ 0.1000)' : 'Perlu Diperbaiki'}
     </span>

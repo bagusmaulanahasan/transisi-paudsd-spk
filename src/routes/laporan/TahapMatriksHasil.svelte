@@ -40,7 +40,7 @@
       // Mapping untuk kolom dinamis kriteria
       let mapped = { 
         ...baris,
-        // Properti bantuan untuk Table component jika diperlukan
+        no: index + 1
       };
       (baris.nilai || []).forEach((val, i) => {
         mapped[`c${i}`] = val;
@@ -49,6 +49,7 @@
     });
 
   $: columns = [
+    { key: 'no', label: 'No.', class: 'w-12 sm:w-16' },
     { key: 'nama', label: 'Nama Anak' },
     ...kriteriaList.map((k, i) => ({
       key: `c${i}`,
@@ -60,15 +61,12 @@
   ];
 </script>
 
-<!-- TAHAP 2 & 3: GABUNGAN MATRIKS KEPUTUSAN & HASIL MOORA -->
+<!-- GABUNGAN MATRIKS KEPUTUSAN & HASIL MOORA -->
 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-5 print:border-slate-300">
   <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-4">
     <div>
-      <h2 class="text-base font-bold text-slate-900">
-        Tahap 2 & 3: Matriks Keputusan & Hasil Akhir MOORA
-      </h2>
-      <p class="text-[11px] text-slate-500 mt-0.5">Gabungan perhitungan total poin kriteria, nilai optimasi Yi, dan perankingan.</p>
-    </div>
+      <h2 class="text-lg font-bold text-slate-900 tracking-tight">Hasil Penilaian dan Prioritas Stimulasi</h2>
+   </div>
 
     <!-- Fitur Pencarian & Filter -->
     <div class="flex flex-wrap items-center gap-2 print:hidden">
@@ -93,19 +91,19 @@
     </div>
   </div>
 
-  <!-- Legenda Kategori Warna -->
-  <div class="flex flex-wrap items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px]">
-    <span class="font-bold text-slate-700">Kategori Skala Nilai:</span>
-    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-      Rendah (1 – 1.6667)
-    </span>
-    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
-      Sedang (1.6668 – 2.3333)
-    </span>
-    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
-      Tinggi (2.3334 – 3)
-    </span>
-  </div>
+    <!-- Kategori Warna Matriks Keputusan -->
+    <div class="flex flex-wrap items-center gap-3 text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl">
+      <span class="font-bold text-slate-700">Kategori Skala Nilai:</span>
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+        Rendah (1 – 1.6667)
+      </span>
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
+        Sedang (1.6668 – 2.3333)
+      </span>
+      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
+        Tinggi (2.3334 – 3)
+      </span>
+    </div>
 
   <Table {columns} data={processedData} rowClass={(item) => item.ranking === 1 ? 'bg-blue-50/50' : ''}>
     <svelte:fragment slot="header" let:col>
@@ -117,7 +115,9 @@
     </svelte:fragment>
 
     <svelte:fragment slot="cell" let:item let:col>
-      {#if col.key === 'nama'}
+      {#if col.key === 'no'}
+        {item.no}
+      {:else if col.key === 'nama'}
         <span class="font-bold text-slate-900">{nilaiNama(item, jenisTampilan) || '—'}</span>
       {:else if col.key === 'yi'}
         {#if item.yi !== null}
