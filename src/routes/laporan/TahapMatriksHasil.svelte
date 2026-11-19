@@ -118,7 +118,7 @@
       {#if col.key === 'no'}
         {item.no}
       {:else if col.key === 'nama'}
-        <span class="font-bold text-slate-900">{nilaiNama(item, jenisTampilan) || '—'}</span>
+        <span class="font-bold text-sm text-slate-900">{nilaiNama(item, jenisTampilan) || '—'}</span>
       {:else if col.key === 'yi'}
         {#if item.yi !== null}
           <span class="font-bold text-slate-900">{item.yi.toFixed(4)}</span>
