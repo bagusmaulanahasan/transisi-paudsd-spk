@@ -208,7 +208,7 @@
   </div>
 
   <!-- Pemilih Tahun Ajaran & Kelas + Tombol Download di Kanan -->
-  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 print:p-0 print:border-none print:shadow-none flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 print:hidden flex flex-col md:flex-row md:items-end md:justify-between gap-4">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">
       <div>
         <label for="pilih-tahun-laporan" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
@@ -218,7 +218,7 @@
           id="pilih-tahun-laporan"
           bind:value={selectedTahun}
           on:change={gantiTahun}
-          class="w-full px-4 py-2.5 rounded-xl border bg-white border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none print:hidden"
+          class="w-full px-4 py-2.5 rounded-xl border bg-white border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none"
         >
           {#each tahunList as th}
             <option value={th}>{th}</option>
@@ -234,7 +234,7 @@
           id="pilih-kelas-laporan"
           bind:value={selectedKelasId}
           on:change={fetchKelasData}
-          class="w-full px-4 py-2.5 rounded-xl border bg-white border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none print:hidden"
+          class="w-full px-4 py-2.5 rounded-xl border bg-white border-slate-200 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none"
         >
           {#each filteredKelas as item}
             <option value={item.id}>{item.nama_kelas}</option>
@@ -245,7 +245,7 @@
 
     <!-- Tombol Download Dropdown di Paling Kanan -->
     {#if kelasList.length > 0 && !loadingMaster && !loadingKelas}
-      <div class="relative print:hidden" id="download-dropdown-container">
+      <div class="relative" id="download-dropdown-container">
         <button
           type="button"
           on:click={() => showDownloadDropdown = !showDownloadDropdown}
@@ -296,18 +296,19 @@
     </div>
   {:else}
     <!-- Header khusus cetak PDF -->
-    <div class="hidden print:block mb-6 text-center border-b border-slate-300 pb-4">
-      <h1 class="text-xl font-extrabold text-slate-900 uppercase">Laporan Penilaian SPK Transisi PAUD-SD</h1>
-      <p class="text-sm font-semibold text-slate-600 mt-1">
-        Tahun Ajaran: {selectedTahun} | Kelas: {kelasList.find(k => k.id === selectedKelasId)?.nama_kelas || '-'}
+    <div class="hidden print:block mb-8 text-center border-b-2 border-slate-900 pb-6">
+      <h1 class="text-2xl font-extrabold text-slate-900 uppercase tracking-wide">Laporan Penilaian Perhitungan SPK</h1>
+      <p class="text-base font-bold text-slate-700 mt-2">
+        TAHUN AJARAN: <span class="text-blue-700">{selectedTahun}</span> | KELAS: <span class="text-blue-700">{kelasList.find(k => k.id === selectedKelasId)?.nama_kelas || '-'}</span>
       </p>
+      <p class="text-xs text-slate-500 mt-1 italic">Dicetak pada: {new Date().toLocaleString('id-ID')}</p>
     </div>
 
     <TahapBobot {kriteriaList} {bobot} {ahpSiap} />
     <TahapMatriksHasil {kriteriaList} {hasil} />
 
     <!-- DETAIL PERHITUNGAN -->
-    <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-6 print:bg-white print:border-none print:p-0">
+    <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-6 print:bg-white print:border-none print:p-0 print:space-y-4">
       <div class="flex items-center gap-3 print:hidden">
         <div class="p-3 bg-white rounded-xl border border-slate-200">
           <FileText class="w-6 h-6 text-blue-600" />
@@ -318,8 +319,12 @@
         </div>
       </div>
       
-      <DetailAHP {kriteriaList} {perbandinganList} ahpDetail={ahpDetail} />
-      <DetailMoora {kriteriaList} mooraDetail={mooraDetail} bobot={bobot} />
+      <div class="print:break-before-page">
+        <DetailAHP {kriteriaList} {perbandinganList} ahpDetail={ahpDetail} />
+      </div>
+      <div class="print:break-before-page">
+        <DetailMoora {kriteriaList} mooraDetail={mooraDetail} bobot={bobot} />
+      </div>
     </div>
   {/if}
 </div>
