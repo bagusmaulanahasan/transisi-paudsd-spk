@@ -13,7 +13,7 @@
       <div>
         <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Nilai Yi</p>
         <p class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
-          {barisSaya && barisSaya.lengkap && barisSaya.yi !== null ? barisSaya.yi.toFixed(3) : '—'}
+          {barisSaya && barisSaya.lengkap && barisSaya.yi !== null ? barisSaya.yi.toFixed(4) : '—'}
         </p>
       </div>
       <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
@@ -26,7 +26,7 @@
       {:else if barisSaya && !barisSaya.lengkap}
         Jawaban belum lengkap ({barisSaya.terjawab}/{barisSaya.total} indikator).
       {:else}
-        Nilai optimasi MOORA, dibulatkan 3 angka di belakang koma.
+        Nilai optimasi MOORA, dibulatkan 4 angka di belakang koma.
       {/if}
     </p>
   </Card>

@@ -54,7 +54,7 @@
             {item.jenis}
           </span>
         {:else if col.key === 'bobot'}
-          <span class="font-extrabold text-slate-900">{ahpResult.weights[index] ? ahpResult.weights[index].toFixed(3) : '0.000'}</span>
+          <span class="font-extrabold text-slate-900">{ahpResult.weights[index] ? ahpResult.weights[index].toFixed(4) : '0.0000'}</span>
         {:else if col.key === 'aksi'}
           <div class="space-x-2">
             <Button variant="ghost" className="p-2" title="Edit Kriteria" on:click={() => openEditModal(item)}>

@@ -1,5 +1,6 @@
 /**
  * Modul perhitungan Analytical Hierarchy Process (AHP) untuk pembobotan kriteria.
+ * Setiap nilai hasil perhitungan dibulatkan menjadi 4 angka di belakang koma.
  */
 
 // Random Index (RI) standar untuk ukuran matriks 1 sampai 10
@@ -16,9 +17,15 @@ const RANDOM_INDEX = {
   10: 1.49,
 };
 
+const DESIMAL = 4;
+const FAKTOR = 10 ** DESIMAL;
+// Pembulatan setengah ke atas (half-up) agar cocok dengan pembulatan manual/Excel.
+const bulat = (v) =>
+  (Math.sign(v) * Math.round((Math.abs(v) + Number.EPSILON) * FAKTOR)) / FAKTOR;
+
 /**
  * Menghitung bobot prioritas kriteria, Consistency Index (CI), dan Consistency Ratio (CR) dari matriks perbandingan berpasangan.
- * Setiap nilai hasil perhitungan dibulatkan menjadi 3 angka di belakang koma (parseFloat(val.toFixed(3))).
+ * Setiap nilai hasil perhitungan dibulatkan menjadi 4 angka di belakang koma.
  * @param {number[][]} matrix - Matriks perbandingan berpasangan ukuran n x n
  * @returns {Object} { weights: number[], lambdaMax: number, ci: number, cr: number, isConsistent: boolean }
  */
@@ -29,46 +36,68 @@ export function calculateAHP(matrix) {
   if (n === 1)
     return { weights: [1], lambdaMax: 1, ci: 0, cr: 0, isConsistent: true };
 
-  const round3 = (v) => parseFloat(v.toFixed(3));
+  // 1. Setiap elemen matriks a_ij dibulatkan 4 desimal saat dibaca
+  const roundedMatrix = matrix.map((row) => row.map(bulat));
 
-  // 1. Jumlah tiap kolom
+  // 2. colSums[j] = bulat(jumlah kolom dari elemen yang sudah dibulatkan)
   const colSums = new Array(n).fill(0);
-  for (let j = 0; j < n; j++)
-    for (let i = 0; i < n; i++) colSums[j] += matrix[i][j];
+  for (let j = 0; j < n; j++) {
+    let sum = 0;
+    for (let i = 0; i < n; i++) sum += roundedMatrix[i][j];
+    colSums[j] = bulat(sum);
+  }
 
-  // 2. Normalisasi dan bobot (rata-rata baris), presisi penuh
+  // 3. normalisasi = bulat(a_ij / colSums[j])
+  const normalizedMatrix = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      normalizedMatrix[i][j] = bulat(roundedMatrix[i][j] / colSums[j]);
+    }
+  }
+
+  // 4. w[i] = bulat(rata-rata baris dari normalisasi yang sudah dibulatkan)
   const w = new Array(n).fill(0);
   for (let i = 0; i < n; i++) {
     let rowSum = 0;
-    for (let j = 0; j < n; j++) rowSum += matrix[i][j] / colSums[j];
-    w[i] = rowSum / n;
+    for (let j = 0; j < n; j++) rowSum += normalizedMatrix[i][j];
+    w[i] = bulat(rowSum / n);
   }
 
-  // 3. λmax = rata-rata dari (A·w)_i / w_i   <-- diperbaiki: jumlah per BARIS
-  let lambdaMax = 0;
+  // 5. aw[i] = bulat(sum_j a_ij * w[j]) memakai a_ij dan w yang sudah dibulatkan
+  const awVector = new Array(n).fill(0);
+  let lambdaSum = 0;
   for (let i = 0; i < n; i++) {
     let aw = 0;
-    for (let j = 0; j < n; j++) aw += matrix[i][j] * w[j];
-    lambdaMax += aw / w[i];
+    for (let j = 0; j < n; j++) {
+      aw += roundedMatrix[i][j] * w[j];
+    }
+    awVector[i] = bulat(aw);
+    // 6. rasio[i] = bulat(aw[i] / w[i])
+    lambdaSum += bulat(awVector[i] / w[i]);
   }
-  lambdaMax /= n;
 
-  // 4-5. CI dan CR
-  const ci = (lambdaMax - n) / (n - 1);
-  const ri = RANDOM_INDEX[n];
-  const cr = ri ? ci / ri : 0;
+  // lambdaMax = bulat(rata-rata rasio)
+  const lambdaMax = bulat(lambdaSum / n);
+
+  // 7. ci = bulat((lambdaMax - n) / (n - 1)); cr = bulat(ci / ri)
+  const ci = bulat((lambdaMax - n) / (n - 1));
+  const ri = RANDOM_INDEX[n] || 0;
+  const cr = ri ? bulat(ci / ri) : 0;
 
   return {
-    weights: w.map(round3),
-    lambdaMax: round3(lambdaMax),
-    ci: round3(ci),
-    cr: round3(cr),
+    weights: w,
+    lambdaMax,
+    ci,
+    cr,
     isConsistent: cr <= 0.1,
   };
 }
 
 /**
  * Menyusun matriks perbandingan berpasangan n x n dari data kriteria dan baris tabel perbandingan_ahp.
+ * Hanya nilai di atas diagonal yang dipakai; nilai kebalikan dihitung ulang dengan helper 4 desimal
+ * sehingga tidak bergantung pada nilai kebalikan yang tersimpan. Pasangan yang tersimpan terbalik
+ * (kriteria_1 berada setelah kriteria_2) tetap ditangani.
  * Nilai yang tidak tersedia dianggap 1 (sama penting).
  * @param {Array} kriteriaList - Daftar kriteria terurut.
  * @param {Array} perbandinganList - Baris tabel perbandingan_ahp.
@@ -77,11 +106,35 @@ export function calculateAHP(matrix) {
 export function susunMatriksPerbandingan(kriteriaList, perbandinganList) {
   const n = kriteriaList.length;
   const matrix = Array.from({ length: n }, () => Array(n).fill(1));
+  const terpakai = new Set();
 
+  const pasangan = [];
   for (const item of perbandinganList) {
     const i = kriteriaList.findIndex((kriteria) => kriteria.id === item.kriteria_1_id);
     const j = kriteriaList.findIndex((kriteria) => kriteria.id === item.kriteria_2_id);
-    if (i !== -1 && j !== -1) matrix[i][j] = parseFloat(item.nilai);
+    if (i === -1 || j === -1 || i === j) continue;
+    const nilai = parseFloat(item.nilai);
+    if (!Number.isFinite(nilai) || nilai <= 0) continue;
+    pasangan.push({ i, j, nilai });
+  }
+
+  // Utamakan pasangan yang tersimpan di atas diagonal (i < j).
+  for (const { i, j, nilai } of pasangan) {
+    if (i >= j) continue;
+    matrix[i][j] = nilai;
+    matrix[j][i] = bulat(1 / nilai);
+    terpakai.add(`${i}-${j}`);
+  }
+
+  // Pasangan yang hanya tersimpan terbalik (i > j): nilai tersimpan adalah a[j][i].
+  for (const { i, j, nilai } of pasangan) {
+    if (i <= j) continue;
+    const kunci = `${j}-${i}`;
+    if (terpakai.has(kunci)) continue;
+    const atas = bulat(1 / nilai);
+    matrix[j][i] = atas;
+    matrix[i][j] = bulat(1 / atas);
+    terpakai.add(kunci);
   }
 
   return matrix;
@@ -124,7 +177,7 @@ export function hitungBobotAhp(kriteriaList, perbandinganList) {
     ahpSiap: hasil.isConsistent,
     pesan: hasil.isConsistent
       ? ''
-      : `Matriks AHP belum konsisten (CR = ${hasil.cr.toFixed(3)}, batas 0.100). Perbaiki perbandingan agar bobot dapat dipakai.`
+      : `Matriks AHP belum konsisten (CR = ${hasil.cr.toFixed(4)}, batas 0.1000). Perbaiki perbandingan agar bobot dapat dipakai.`
   };
 }
 
@@ -135,7 +188,6 @@ export function hitungBobotAhp(kriteriaList, perbandinganList) {
  */
 export function getAHPDetail(matrix) {
   const n = matrix.length;
-  const round3 = (v) => parseFloat(v.toFixed(3));
 
   if (n === 0) {
     return {
@@ -155,7 +207,7 @@ export function getAHPDetail(matrix) {
   if (n === 1) {
     return {
       n: 1,
-      colSums: [matrix[0][0] || 1],
+      colSums: [bulat(matrix[0][0] || 1)],
       normalizedMatrix: [[1]],
       weights: [1],
       awVector: [1],
@@ -167,56 +219,61 @@ export function getAHPDetail(matrix) {
     };
   }
 
-  // 1. Jumlah tiap kolom
+  // 1. Setiap elemen matriks a_ij dibulatkan 4 desimal
+  const roundedMatrix = matrix.map((row) => row.map(bulat));
+
+  // 2. Jumlah tiap kolom
   const colSums = new Array(n).fill(0);
   for (let j = 0; j < n; j++) {
+    let sum = 0;
     for (let i = 0; i < n; i++) {
-      colSums[j] += matrix[i][j];
+      sum += roundedMatrix[i][j];
     }
+    colSums[j] = bulat(sum);
   }
 
-  // 2. Matriks normalisasi dan bobot (rata-rata baris)
+  // 3. Matriks normalisasi
   const normalizedMatrix = Array.from({ length: n }, () => new Array(n).fill(0));
   const w = new Array(n).fill(0);
 
   for (let i = 0; i < n; i++) {
     let rowSum = 0;
     for (let j = 0; j < n; j++) {
-      const normVal = matrix[i][j] / colSums[j];
+      const normVal = bulat(roundedMatrix[i][j] / colSums[j]);
       normalizedMatrix[i][j] = normVal;
       rowSum += normVal;
     }
-    w[i] = rowSum / n;
+    w[i] = bulat(rowSum / n);
   }
 
-  // 3. Vektor (A · w)_i dan λmax
+  // 4. Vektor (A · w)_i dan λmax
   const awVector = new Array(n).fill(0);
-  let lambdaMax = 0;
+  let lambdaSum = 0;
   for (let i = 0; i < n; i++) {
     let aw = 0;
     for (let j = 0; j < n; j++) {
-      aw += matrix[i][j] * w[j];
+      aw += roundedMatrix[i][j] * w[j];
     }
-    awVector[i] = aw;
-    lambdaMax += aw / w[i];
+    awVector[i] = bulat(aw);
+    lambdaSum += bulat(awVector[i] / w[i]);
   }
-  lambdaMax /= n;
+  const lambdaMax = bulat(lambdaSum / n);
 
-  // 4. CI, RI, CR
-  const ci = (lambdaMax - n) / (n - 1);
+  // 5. CI, RI, CR
+  const ci = bulat((lambdaMax - n) / (n - 1));
   const ri = RANDOM_INDEX[n] || 0;
-  const cr = ri ? ci / ri : 0;
+  const cr = ri ? bulat(ci / ri) : 0;
 
   return {
     n,
-    colSums: colSums.map(round3),
-    normalizedMatrix: normalizedMatrix.map((row) => row.map(round3)),
-    weights: w.map(round3),
-    awVector: awVector.map(round3),
-    lambdaMax: round3(lambdaMax),
-    ci: round3(ci),
+    colSums,
+    normalizedMatrix,
+    weights: w,
+    awVector,
+    lambdaMax,
+    ci,
     ri,
-    cr: round3(cr),
+    cr,
     isConsistent: cr <= 0.1
   };
 }

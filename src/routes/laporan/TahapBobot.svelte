@@ -9,7 +9,7 @@
   <div class="flex items-center justify-between border-b border-slate-100 pb-3">
     <h2 class="text-base font-bold text-slate-900">Tahap 1: Bobot Prioritas Kriteria (AHP)</h2>
     <span class={`px-2.5 py-1 rounded-full text-xs font-semibold ${ahpSiap ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-      {ahpSiap ? 'Konsisten (CR ≤ 0.10)' : 'Perlu Diperbaiki'}
+      {ahpSiap ? 'Konsisten (CR ≤ 0.1000)' : 'Perlu Diperbaiki'}
     </span>
   </div>
 
@@ -29,7 +29,7 @@
             <td class="p-3 font-bold">C{item.urutan || i + 1}</td>
             <td class="p-3 font-medium">{item.nama}</td>
             <td class="p-3 font-semibold uppercase text-slate-500">{item.jenis}</td>
-            <td class="p-3 font-bold text-slate-900">{(bobot[i] ?? 0).toFixed(3)}</td>
+            <td class="p-3 font-bold text-slate-900">{(bobot[i] ?? 0).toFixed(4)}</td>
           </tr>
         {/each}
       </tbody>

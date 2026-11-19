@@ -9,8 +9,7 @@
   import DetailAHP from './DetailAHP.svelte';
   import DetailMoora from './DetailMoora.svelte';
   import TahapBobot from './TahapBobot.svelte';
-  import TahapMatriks from './TahapMatriks.svelte';
-  import TahapHasil from './TahapHasil.svelte';
+  import TahapMatriksHasil from './TahapMatriksHasil.svelte';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import { FileText, Loader2, School, Printer } from 'lucide-svelte';
   import OfflineNotice from '$lib/components/ui/OfflineNotice.svelte';
@@ -222,8 +221,7 @@
     </div>
   {:else}
     <TahapBobot {kriteriaList} {bobot} {ahpSiap} />
-    <TahapMatriks {kriteriaList} {hasil} />
-    <TahapHasil {hasil} />
+    <TahapMatriksHasil {kriteriaList} {hasil} />
 
     <!-- DETAIL PERHITUNGAN -->
     <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-6">

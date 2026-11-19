@@ -62,7 +62,7 @@
       <div>
         <h2 class="text-lg font-bold text-slate-900 tracking-tight">Hasil Perhitungan MOORA</h2>
         <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-          Nilai Yi dibulatkan 3 angka di belakang koma. Klik baris anak atau tombol Lihat untuk membuka penilaian.
+          Nilai Yi dibulatkan 4 angka di belakang koma. Klik baris anak atau tombol Lihat untuk membuka penilaian.
         </p>
       </div>
     </div>
@@ -100,13 +100,13 @@
     <div class="flex flex-wrap items-center gap-3 text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl">
       <span class="font-bold text-slate-700">Kategori Skala Nilai:</span>
       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-        Rendah (1 – 1.667)
+        Rendah (1 – 1.6667)
       </span>
       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
-        Sedang (1.668 – 2.333)
+        Sedang (1.6668 – 2.3333)
       </span>
       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
-        Tinggi (2.334 – 3)
+        Tinggi (2.3334 – 3)
       </span>
     </div>
 
@@ -114,7 +114,7 @@
     <div class="flex flex-wrap sm:columns-2 gap-2">
       {#each kriteriaList as kriteria, index (kriteria.id)}
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-          {kriteria.inisial}: {bobot[index] !== undefined ? bobot[index].toFixed(3) : '—'}
+          {kriteria.inisial}: {bobot[index] !== undefined ? bobot[index].toFixed(4) : '—'}
           <span class="text-slate-400">({kriteria.jenis})</span>
         </span>
       {/each}
@@ -188,13 +188,13 @@
             {:else if col.key.startsWith('k_')}
               {@const kat = getKategoriNilai(item[col.key])}
               <div class="flex items-center justify-center">
-                <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {item[col.key]} ({kat.label})">
-                  {item[col.key]}
+                <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {item[col.key].toFixed(4)} ({kat.label})">
+                  {item[col.key].toFixed(4)}
                 </span>
               </div>
             {:else if col.key === 'yi'}
               <span class="text-sm font-extrabold text-slate-900 text-center">
-                {item.yi !== null ? item.yi.toFixed(3) : '—'}
+                {item.yi !== null ? item.yi.toFixed(4) : '—'}
               </span>
             {:else if col.key === 'ranking'}
               {#if item.ranking !== null}

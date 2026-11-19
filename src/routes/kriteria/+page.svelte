@@ -1,6 +1,6 @@
 <script>
   import { supabase } from '$lib/db/supabase';
-  import { calculateAHP } from '$lib/spk/ahp';
+  import { calculateAHP, susunMatriksPerbandingan } from '$lib/spk/ahp';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { confirmAction } from '$lib/confirm';
@@ -72,19 +72,7 @@
   function terapkanKriteria(data) {
     kriteriaList = data.kriteria;
 
-    const n = kriteriaList.length;
-    // Inisialisasi matriks identitas n x n
-    const matrix = Array.from({ length: n }, () => Array(n).fill(1.0));
-
-    for (const item of data.perbandingan) {
-      const idx1 = kriteriaList.findIndex((k) => k.id === item.kriteria_1_id);
-      const idx2 = kriteriaList.findIndex((k) => k.id === item.kriteria_2_id);
-      if (idx1 !== -1 && idx2 !== -1) {
-        matrix[idx1][idx2] = parseFloat(item.nilai);
-      }
-    }
-
-    pairwiseMatrix = matrix;
+    pairwiseMatrix = susunMatriksPerbandingan(kriteriaList, data.perbandingan);
     recalculateAHP();
   }
 
@@ -134,7 +122,7 @@
     if (!Number.isFinite(nilai) || nilai <= 0) return;
 
     matriks[i][j] = nilai;
-    matriks[j][i] = parseFloat((1 / nilai).toFixed(3));
+    matriks[j][i] = parseFloat((1 / nilai).toFixed(4));
     pairwiseMatrix = matriks;
     recalculateAHP();
   }
