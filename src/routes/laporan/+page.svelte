@@ -137,24 +137,28 @@
     const kelasObj = kelasList.find(k => k.id === selectedKelasId);
     const namaKelas = kelasObj ? kelasObj.nama_kelas : 'Kelas';
     
-    // Sheet 1: Ringkasan & Bobot Kriteria
+    // Total columns for main table = 2 (No, Nama Anak) + kriteriaList.length + 2 (Nilai Yi, Ranking)
+    const totalCols = 2 + kriteriaList.length + 2;
+    const maxCols = Math.max(totalCols, 5);
+
     let wsData = [
       ["LAPORAN PENILAIAN PERHITUNGAN SPK"],
       ["Tahun Ajaran:", selectedTahun],
       ["Kelas:", namaKelas],
       [],
-      ["BOBOT KRITERIA (AHP)"],
-      ["No", "Kode", "Nama Kriteria", "Jenis", "Bobot (Wj)"]
+      ["BOBOT KRITERIA"],
+      ["No", "Kode & Nama Kriteria", "Jenis", "Bobot (Wj)"]
     ];
 
     kriteriaList.forEach((k, i) => {
-      wsData.push([i + 1, `C${k.urutan || i + 1}`, k.nama_kriteria, k.jenis, bobot[i] !== undefined ? Number(bobot[i].toFixed(4)) : 0]);
+      const kodeNama = `(C${k.urutan || i + 1}) ${k.nama || k.nama_kriteria || ''}`;
+      wsData.push([i + 1, kodeNama, k.jenis, bobot[i] !== undefined ? Number(bobot[i].toFixed(4)) : 0]);
     });
 
     wsData.push([], [], ["HASIL PENILAIAN DAN PRIORITAS STIMULASI"]);
     
     let headers = ["No", "Nama Anak"];
-    kriteriaList.forEach((k, i) => headers.push(`C${k.urutan || i + 1} (${k.inisial})`));
+    kriteriaList.forEach((k, i) => headers.push(`C${k.urutan || i + 1}`));
     headers.push("Nilai Yi", "Ranking");
     wsData.push(headers);
 
@@ -168,6 +172,15 @@
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+    // Merge & center headers
+    if (!ws['!merges']) ws['!merges'] = [];
+    ws['!merges'].push(
+      { s: { r: 0, c: 0 }, e: { r: 0, c: maxCols - 1 } }, // Title
+      { s: { r: 4, c: 0 }, e: { r: 4, c: 3 } },          // BOBOT KRITERIA
+      { s: { r: kriteriaList.length + 8, c: 0 }, e: { r: kriteriaList.length + 8, c: maxCols - 1 } } // HASIL PENILAIAN
+    );
+
     XLSX.utils.book_append_sheet(wb, ws, "Laporan Penilaian");
     XLSX.writeFile(wb, `Laporan_SPK_${namaKelas.replace(/\s+/g, '_')}_${selectedTahun.replace(/\//g, '-')}.xlsx`);
   }
