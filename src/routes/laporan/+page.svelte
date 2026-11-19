@@ -11,9 +11,10 @@
   import TahapBobot from './TahapBobot.svelte';
   import TahapMatriksHasil from './TahapMatriksHasil.svelte';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
-  import { FileText, Loader2, School, Printer } from 'lucide-svelte';
+  import { FileText, Loader2, School, Printer, Download, FileSpreadsheet, FileCode } from 'lucide-svelte';
   import OfflineNotice from '$lib/components/ui/OfflineNotice.svelte';
   import { online } from '$lib/stores/koneksi';
+  import * as XLSX from 'xlsx';
 
   const kelasAwal = peekMemoryCache('master:kelas');
   const kriteriaAwal = peekMemoryCache('master:kriteria');
@@ -27,81 +28,53 @@
 
   let tahunList = [];
   let selectedTahun = '';
-  let selectedKelasId = null;
+  let filteredKelas = [];
+  let selectedKelasId = '';
 
-  /**
-   * Menentukan pilihan awal tahun ajaran & kelas dari query ?kelas= atau data terbaru.
-   * @param {Array} daftarKelas
-   */
-  function inisialisasiPilihan(daftarKelas) {
-    const setTahun = new Set(daftarKelas.map((k) => k.tahun_ajaran).filter(Boolean));
-    tahunList = Array.from(setTahun).sort().reverse();
+  let anakList = [];
+  let jawabanList = [];
 
-    const kelasDariUrl = Number($page.url.searchParams.get('kelas'));
-    const kelasDitemukan = daftarKelas.find((k) => k.id === kelasDariUrl);
-
-    if (kelasDitemukan) {
-      selectedTahun = kelasDitemukan.tahun_ajaran;
-      selectedKelasId = kelasDitemukan.id;
-    } else if (tahunList.length > 0) {
-      selectedTahun = tahunList[0];
-      const kelasPertamaTahunIni = daftarKelas.find((k) => k.tahun_ajaran === selectedTahun);
-      selectedKelasId = kelasPertamaTahunIni?.id ?? daftarKelas[0]?.id ?? null;
-    }
-  }
-
-  $: filteredKelas = tahunList.length
-    ? kelasList.filter((k) => k.tahun_ajaran === selectedTahun)
-    : kelasList;
-
-  if (kelasAwal?.length) inisialisasiPilihan(kelasAwal);
-
-  const kelasDataAwal = selectedKelasId
-    ? peekMemoryCache('penilaian:kelas:' + selectedKelasId)
-    : null;
-
-  let anakList = kelasDataAwal?.anak ?? [];
-  let jawabanList = kelasDataAwal?.jawaban ?? [];
-
-  let loadingMaster = !(kelasAwal && kriteriaAwal && indikatorAwal && ahpAwal);
-  let loadingKelas = selectedKelasId !== null && kelasDataAwal === null;
   let bobot = [];
   let ahpSiap = false;
   let pesanAhp = '';
-  let hasil = { baris: [], jumlahLengkap: 0, jumlahAnak: 0 };
-
-  // Detail Perhitungan State
   let ahpDetail = null;
   let mooraDetail = null;
+  let hasil = { baris: [] };
 
-  if (kelasDataAwal && !loadingMaster) hitungUlang();
+  let loadingMaster = !kelasAwal || !kriteriaAwal;
+  let loadingKelas = false;
+  let showDownloadDropdown = false;
 
   onMount(async () => {
-    await fetchMaster();
-    loadingMaster = false;
+    try {
+      const data = await fetchMasterData();
+      kelasList = data.kelas || [];
+      kriteriaList = data.kriteria || [];
+      indikatorList = data.indikator || [];
+      perbandinganList = data.perbandingan || [];
+
+      tahunList = [...new Set(kelasList.map(k => k.tahun_ajaran))].sort().reverse();
+      if (tahunList.length > 0) {
+        selectedTahun = tahunList[0];
+        gantiTahun();
+      }
+      loadingMaster = false;
+    } catch (err) {
+      console.error('Gagal memuat master data:', err);
+      loadingMaster = false;
+    }
   });
 
-  async function fetchMaster() {
-    const master = await fetchMasterData();
-
-    kelasList = master.kelas;
-    kriteriaList = master.kriteria;
-    indikatorList = master.indikator;
-    perbandinganList = master.perbandingan;
-
-    if (kelasList.length > 0) {
-      inisialisasiPilihan(kelasList);
-      await fetchKelasData();
+  function gantiTahun() {
+    filteredKelas = kelasList.filter(k => k.tahun_ajaran === selectedTahun);
+    if (filteredKelas.length > 0) {
+      selectedKelasId = filteredKelas[0].id;
+      fetchKelasData();
+    } else {
+      selectedKelasId = '';
+      anakList = [];
+      jawabanList = [];
     }
-  }
-
-  /**
-   * Mengganti tahun ajaran: memilih kelas pertama pada tahun tersebut lalu memuat datanya.
-   */
-  async function gantiTahun() {
-    const kelasTahunIni = kelasList.filter((k) => k.tahun_ajaran === selectedTahun);
-    selectedKelasId = kelasTahunIni[0]?.id ?? null;
-    await fetchKelasData();
   }
 
   async function fetchKelasData() {
@@ -133,7 +106,6 @@
     ahpSiap = hasilAhp.ahpSiap;
     pesanAhp = hasilAhp.pesan;
 
-    // Hitung rincian untuk transparansi
     ahpDetail = getAHPDetail(matrix);
     
     mooraDetail = getMooraDetail({
@@ -154,22 +126,77 @@
       ahpSiap
     });
   }
+
+  function handleDownloadPDF() {
+    showDownloadDropdown = false;
+    window.print();
+  }
+
+  function handleDownloadExcel() {
+    showDownloadDropdown = false;
+    const kelasObj = kelasList.find(k => k.id === selectedKelasId);
+    const namaKelas = kelasObj ? kelasObj.nama_kelas : 'Kelas';
+    
+    // Sheet 1: Ringkasan & Bobot Kriteria
+    let wsData = [
+      ["LAPORAN PENILAIAN PERHITUNGAN SPK"],
+      ["Tahun Ajaran:", selectedTahun],
+      ["Kelas:", namaKelas],
+      [],
+      ["BOBOT KRITERIA (AHP)"],
+      ["No", "Kode", "Nama Kriteria", "Jenis", "Bobot (Wj)"]
+    ];
+
+    kriteriaList.forEach((k, i) => {
+      wsData.push([i + 1, `C${k.urutan || i + 1}`, k.nama_kriteria, k.jenis, bobot[i] !== undefined ? Number(bobot[i].toFixed(4)) : 0]);
+    });
+
+    wsData.push([], [], ["HASIL PENILAIAN DAN PRIORITAS STIMULASI"]);
+    
+    let headers = ["No", "Nama Anak"];
+    kriteriaList.forEach((k, i) => headers.push(`C${k.urutan || i + 1} (${k.inisial})`));
+    headers.push("Nilai Yi", "Ranking");
+    wsData.push(headers);
+
+    hasil.baris.forEach((baris, idx) => {
+      let row = [idx + 1, baris.nama];
+      (baris.nilai || []).forEach(val => row.push(Number(val.toFixed(4))));
+      row.push(baris.yi !== null ? Number(baris.yi.toFixed(4)) : "Belum Lengkap");
+      row.push(baris.ranking !== null ? baris.ranking : "-");
+      wsData.push(row);
+    });
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Laporan Penilaian");
+    XLSX.writeFile(wb, `Laporan_SPK_${namaKelas.replace(/\s+/g, '_')}_${selectedTahun.replace(/\//g, '-')}.xlsx`);
+  }
+
+  // Close dropdown on outside click
+  function handleClickOutside(event) {
+    if (!event.target.closest('#download-dropdown-container')) {
+      showDownloadDropdown = false;
+    }
+  }
 </script>
 
+<svelte:window on:click={handleClickOutside} />
 
 <svelte:head>
   <title>Laporan Perhitungan - SPK Transisi PAUD-SD</title>
 </svelte:head>
 
 <div class="space-y-8 print:space-y-4">
-<PageHeader 
-    title="Laporan Perhitungan SPK" 
-    subtitle="Laporan transparan read-only menampilkan seluruh tahapan AHP hingga perankingan MOORA."
-  />
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 print:hidden">
+    <PageHeader 
+      title="Laporan Perhitungan SPK" 
+      subtitle="Laporan transparan read-only menampilkan seluruh tahapan AHP hingga perankingan MOORA."
+    />
+  </div>
 
-  <!-- Pemilih Tahun Ajaran & Kelas -->
-  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 print:p-0 print:border-none print:shadow-none">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+  <!-- Pemilih Tahun Ajaran & Kelas + Tombol Download di Kanan -->
+  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 print:p-0 print:border-none print:shadow-none flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl w-full">
       <div>
         <label for="pilih-tahun-laporan" class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
           PILIH TAHUN AJARAN
@@ -202,6 +229,41 @@
         </select>
       </div>
     </div>
+
+    <!-- Tombol Download Dropdown di Paling Kanan -->
+    {#if kelasList.length > 0 && !loadingMaster && !loadingKelas}
+      <div class="relative print:hidden" id="download-dropdown-container">
+        <button
+          type="button"
+          on:click={() => showDownloadDropdown = !showDownloadDropdown}
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold shadow-sm shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all"
+        >
+          <Download class="w-4 h-4" />
+          Download Laporan
+        </button>
+
+        {#if showDownloadDropdown}
+          <div class="absolute right-0 mt-2 w-48 rounded-xl bg-white border border-slate-200 shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100">
+            <button
+              type="button"
+              on:click={handleDownloadPDF}
+              class="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              <Printer class="w-4 h-4 text-blue-600" />
+              Cetak / Unduh PDF
+            </button>
+            <button
+              type="button"
+              on:click={handleDownloadExcel}
+              class="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
+            >
+              <FileSpreadsheet class="w-4 h-4 text-emerald-600" />
+              Unduh Excel (.xlsx)
+            </button>
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 
   {#if !$online}
@@ -220,12 +282,20 @@
       <p class="text-xs text-slate-500 mt-1">Tambahkan kelas terlebih dahulu untuk melihat laporan.</p>
     </div>
   {:else}
+    <!-- Header khusus cetak PDF -->
+    <div class="hidden print:block mb-6 text-center border-b border-slate-300 pb-4">
+      <h1 class="text-xl font-extrabold text-slate-900 uppercase">Laporan Penilaian SPK Transisi PAUD-SD</h1>
+      <p class="text-sm font-semibold text-slate-600 mt-1">
+        Tahun Ajaran: {selectedTahun} | Kelas: {kelasList.find(k => k.id === selectedKelasId)?.nama_kelas || '-'}
+      </p>
+    </div>
+
     <TahapBobot {kriteriaList} {bobot} {ahpSiap} />
     <TahapMatriksHasil {kriteriaList} {hasil} />
 
     <!-- DETAIL PERHITUNGAN -->
-    <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-6">
-      <div class="flex items-center gap-3">
+    <div class="bg-slate-50 rounded-2xl border border-slate-200 p-6 space-y-6 print:bg-white print:border-none print:p-0">
+      <div class="flex items-center gap-3 print:hidden">
         <div class="p-3 bg-white rounded-xl border border-slate-200">
           <FileText class="w-6 h-6 text-blue-600" />
         </div>
