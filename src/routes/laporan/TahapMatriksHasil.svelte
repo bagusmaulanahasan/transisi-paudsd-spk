@@ -62,8 +62,8 @@
 </script>
 
 <!-- GABUNGAN MATRIKS KEPUTUSAN & HASIL MOORA -->
-<div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-5 print:border-slate-300">
-  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-4">
+<div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-5 print:border-slate-300 print:shadow-none">
+  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-slate-100 pb-4 print:border-slate-300">
     <div>
       <h2 class="text-lg font-bold text-slate-900 tracking-tight">Hasil Penilaian dan Prioritas Stimulasi</h2>
    </div>
@@ -118,7 +118,7 @@
       {#if col.key === 'no'}
         {item.no}
       {:else if col.key === 'nama'}
-        <span class="font-bold text-slate-900">{nilaiNama(item, jenisTampilan) || '—'}</span>
+        <span class="font-bold text-sm text-slate-900">{nilaiNama(item, jenisTampilan) || '—'}</span>
       {:else if col.key === 'yi'}
         {#if item.yi !== null}
           <span class="font-bold text-slate-900">{item.yi.toFixed(4)}</span>
