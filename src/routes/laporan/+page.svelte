@@ -127,13 +127,7 @@
     });
   }
 
-  function handleDownloadPDF() {
-    showDownloadDropdown = false;
-    window.print();
-  }
-
   function handleDownloadExcel() {
-    showDownloadDropdown = false;
     const kelasObj = kelasList.find(k => k.id === selectedKelasId);
     const namaKelas = kelasObj ? kelasObj.nama_kelas : 'Kelas';
     
@@ -146,7 +140,7 @@
       ["Tahun Ajaran:", selectedTahun],
       ["Kelas:", namaKelas],
       [],
-      ["BOBOT KRITERIA"],
+      ["Kriteria Penilaian dan Bobot Prioritas"],
       ["No", "Kode & Nama Kriteria", "Jenis", "Bobot (Wj)"]
     ];
 
@@ -243,38 +237,17 @@
       </div>
     </div>
 
-    <!-- Tombol Download Dropdown di Paling Kanan -->
+  <!-- Tombol Download Excel Langsung -->
     {#if kelasList.length > 0 && !loadingMaster && !loadingKelas}
-      <div class="relative" id="download-dropdown-container">
+      <div>
         <button
           type="button"
-          on:click={() => showDownloadDropdown = !showDownloadDropdown}
-          class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold shadow-sm shadow-blue-500/20 hover:bg-blue-700 active:scale-95 transition-all"
+          on:click={handleDownloadExcel}
+          class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-bold shadow-sm shadow-emerald-500/20 hover:bg-emerald-700 active:scale-95 transition-all"
         >
-          <Download class="w-4 h-4" />
-          Download Laporan
+          <FileSpreadsheet class="w-4 h-4" />
+          Download
         </button>
-
-        {#if showDownloadDropdown}
-          <div class="absolute right-0 mt-2 w-48 rounded-xl bg-white border border-slate-200 shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-100">
-            <button
-              type="button"
-              on:click={handleDownloadPDF}
-              class="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-            >
-              <Printer class="w-4 h-4 text-blue-600" />
-              Cetak / Unduh PDF
-            </button>
-            <button
-              type="button"
-              on:click={handleDownloadExcel}
-              class="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-            >
-              <FileSpreadsheet class="w-4 h-4 text-emerald-600" />
-              Unduh Excel (.xlsx)
-            </button>
-          </div>
-        {/if}
       </div>
     {/if}
   </div>

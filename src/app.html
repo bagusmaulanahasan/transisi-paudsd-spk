@@ -7,25 +7,6 @@
 		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
 		<meta name="theme-color" content="#2563eb" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<style>
-			@media print {
-				@page {
-					size: A4 landscape;
-					margin: 10mm;
-				}
-				body {
-					-webkit-print-color-adjust: exact;
-					print-color-adjust: exact;
-					font-size: 11pt;
-				}
-				.print\:hidden {
-					display: none !important;
-				}
-				.print\:block {
-					display: block !important;
-				}
-			}
-		</style>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
