@@ -118,7 +118,7 @@ export function susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jaw
 /**
  * Menormalisasi matriks keputusan dengan rumus rasio MOORA.
  * @param {number[][]} matriks - Matriks keputusan (baris = anak, kolom = kriteria).
- * @returns {number[][]} Matriks normalisasi dengan 3 angka di belakang koma.
+ * @returns {number[][]} Matriks normalisasi dengan 4 angka di belakang koma.
  */
 export function normalisasiMatriks(matriks) {
   if (matriks.length === 0) return [];

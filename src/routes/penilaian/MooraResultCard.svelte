@@ -62,7 +62,7 @@
       <div>
         <h2 class="text-lg font-bold text-slate-900 tracking-tight">Hasil Perhitungan MOORA</h2>
         <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-          Nilai Yi dibulatkan 3 angka di belakang koma. Klik baris anak atau tombol Lihat untuk membuka penilaian.
+          Nilai Yi dibulatkan 4 angka di belakang koma. Klik baris anak atau tombol Lihat untuk membuka penilaian.
         </p>
       </div>
     </div>
@@ -114,7 +114,7 @@
     <div class="flex flex-wrap sm:columns-2 gap-2">
       {#each kriteriaList as kriteria, index (kriteria.id)}
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-200">
-          {kriteria.inisial}: {bobot[index] !== undefined ? bobot[index].toFixed(3) : '—'}
+          {kriteria.inisial}: {bobot[index] !== undefined ? bobot[index].toFixed(4) : '—'}
           <span class="text-slate-400">({kriteria.jenis})</span>
         </span>
       {/each}
@@ -188,13 +188,13 @@
             {:else if col.key.startsWith('k_')}
               {@const kat = getKategoriNilai(item[col.key])}
               <div class="flex items-center justify-center">
-                <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {item[col.key]} ({kat.label})">
-                  {item[col.key]}
+                <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {item[col.key].toFixed(3)} ({kat.label})">
+                  {item[col.key].toFixed(3)}
                 </span>
               </div>
             {:else if col.key === 'yi'}
               <span class="text-sm font-extrabold text-slate-900 text-center">
-                {item.yi !== null ? item.yi.toFixed(3) : '—'}
+                {item.yi !== null ? item.yi.toFixed(4) : '—'}
               </span>
             {:else if col.key === 'ranking'}
               {#if item.ranking !== null}

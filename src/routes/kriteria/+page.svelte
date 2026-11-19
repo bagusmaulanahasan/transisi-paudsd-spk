@@ -134,7 +134,7 @@
     if (!Number.isFinite(nilai) || nilai <= 0) return;
 
     matriks[i][j] = nilai;
-    matriks[j][i] = parseFloat((1 / nilai).toFixed(3));
+    matriks[j][i] = parseFloat((1 / nilai).toFixed(4));
     pairwiseMatrix = matriks;
     recalculateAHP();
   }

@@ -73,8 +73,8 @@
         {@const val = item[col.key]}
         {@const kat = getKategoriNilai(val)}
         <div class="flex items-center justify-center">
-          <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {val} ({kat.label})">
-            {val}
+          <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {val.toFixed(3)} ({kat.label})">
+            {val.toFixed(3)}
           </span>
         </div>
       {:else}

@@ -82,7 +82,7 @@
                   </td>
                   {#each kriteriaList as kj, j}
                     <td class="p-2 border border-slate-200 font-medium text-slate-700">
-                      {getPairwiseValue(ki.id, kj.id).toFixed(3)}
+                      {getPairwiseValue(ki.id, kj.id).toFixed(4)}
                     </td>
                   {/each}
                 </tr>
@@ -90,7 +90,7 @@
               <tr class="bg-blue-50 font-bold text-blue-900">
                 <td class="p-2 border border-slate-200 text-left">Jumlah Kolom (Cⱼ)</td>
                 {#each ahpDetail?.colSums || [] as sum}
-                  <td class="p-2 border border-slate-200">{sum.toFixed(3)}</td>
+                  <td class="p-2 border border-slate-200">{sum.toFixed(4)}</td>
                 {/each}
               </tr>
             </tbody>
@@ -134,7 +134,7 @@
                     C{kriteriaList[i].urutan || i+1}
                   </td>
                   {#each row as val}
-                    <td class="p-2 border border-slate-200 font-medium text-slate-700">{val.toFixed(3)}</td>
+                    <td class="p-2 border border-slate-200 font-medium text-slate-700">{val.toFixed(4)}</td>
                   {/each}
                 </tr>
               {/each}
@@ -178,7 +178,7 @@
                   <td class="p-2 border border-slate-200 font-bold ">C{item.urutan || i+1}</td>
                   <td class="p-2 border border-slate-200 font-medium">{item.nama}</td>
                   <td class="p-2 border border-slate-200 font-bold text-slate-900">
-                    {(ahpDetail?.weights[i] ?? 0).toFixed(3)}
+                    {(ahpDetail?.weights[i] ?? 0).toFixed(4)}
                   </td>
                   <td class="p-2 border border-slate-200 text-right font-medium text-slate-700">
                     {((ahpDetail?.weights[i] ?? 0) * 100).toFixed(1)}%
@@ -188,7 +188,7 @@
               <tr class="bg-blue-50 font-extrabold text-blue-900 uppercase">
                 <td colspan="2" class="p-2 border border-slate-200 text-center tracking-wider">Total Bobot</td>
                 <td class="p-2 border border-slate-200">
-                  {(ahpDetail?.weights.reduce((a, b) => a + b, 0) || 0).toFixed(2)}
+                  {(ahpDetail?.weights.reduce((a, b) => a + b, 0) || 0).toFixed(4)}
                 </td>
                 <td class="p-2 border border-slate-200 text-right">100.0%</td>
               </tr>
@@ -221,7 +221,7 @@
             <div class="space-y-2 font-mono text-[11px] bg-slate-50 p-3 rounded-lg border border-slate-100">
             {#each kriteriaList as item, i}
               <div class="pb-1.5 border-b border-slate-200/60 last:border-0">
-                C{item.urutan || i+1}: ({kriteriaList.map((k, j) => `${getPairwiseValue(item.id, k.id).toFixed(2)} × ${(ahpDetail?.weights[j] ?? 0).toFixed(3)}`).join(' + ')}) = <strong>{(ahpDetail?.awVector[i] ?? 0).toFixed(3)}</strong>
+                C{item.urutan || i+1}: ({kriteriaList.map((k, j) => `${getPairwiseValue(item.id, k.id).toFixed(4)} × ${(ahpDetail?.weights[j] ?? 0).toFixed(4)}`).join(' + ')}) = <strong>{(ahpDetail?.awVector[i] ?? 0).toFixed(4)}</strong>
               </div>
             {/each}
           </div>
@@ -234,11 +234,11 @@
             <div class="space-y-2">
               <div class="flex justify-between items-center py-1.5 border-b border-slate-50">
                 <span class="text-slate-500">Lambda Max (λmax)</span>
-                <span class="font-bold text-slate-800">{ahpDetail?.lambdaMax.toFixed(3)}</span>
+                <span class="font-bold text-slate-800">{ahpDetail?.lambdaMax.toFixed(4)}</span>
               </div>
               <div class="flex justify-between items-center py-1.5 border-b border-slate-50">
                 <span class="text-slate-500">Consistency Index (CI)</span>
-                <span class="font-bold text-slate-800">{ahpDetail?.ci.toFixed(3)}</span>
+                <span class="font-bold text-slate-800">{ahpDetail?.ci.toFixed(4)}</span>
               </div>
               <div class="flex justify-between items-center py-1.5 border-b border-slate-50">
                 <span class="text-slate-500 font-medium">Random Index (RI) - Tabel n={ahpDetail?.n}</span>
@@ -247,7 +247,7 @@
               <div class="flex justify-between items-center py-2 bg-blue-50/50 px-2 rounded-lg">
                 <span class="font-bold text-blue-800 uppercase tracking-tight">Consistency Ratio (CR)</span>
                 <span class={`font-extrabold text-sm ${ahpDetail?.isConsistent ? 'text-emerald-600' : 'text-red-600'}`}>
-                  {ahpDetail?.cr.toFixed(3)}
+                  {ahpDetail?.cr.toFixed(4)}
                 </span>
               </div>
             </div>
@@ -271,10 +271,10 @@
         <div class={`p-3 rounded-lg border flex items-center gap-3 font-bold ${ahpDetail?.isConsistent ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-red-50 border-red-200 text-red-700'}`}>
           {#if ahpDetail?.isConsistent}
             <CheckCircle2 class="w-5 h-5" />
-            <span>Kesimpulan: Bobot Konsisten (CR ≤ 0.10)</span>
+            <span>Kesimpulan: Bobot Konsisten (CR ≤ 0.1000)</span>
           {:else}
             <AlertCircle class="w-5 h-5" />
-            <span>Kesimpulan: Matriks Tidak Konsisten, Perlu Revisi (CR > 0.10)</span>
+            <span>Kesimpulan: Matriks Tidak Konsisten, Perlu Revisi (CR > 0.1000)</span>
           {/if}
         </div>
       </div>

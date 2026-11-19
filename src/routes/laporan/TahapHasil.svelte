@@ -35,7 +35,7 @@
         <span class="font-bold">{nilaiNama(item, jenisTampilan) || '—'}</span>
       {:else if col.key === 'yi'}
         <span class="font-bold text-slate-900">
-          {item.yi !== null ? item.yi.toFixed(3) : '—'}
+          {item.yi !== null ? item.yi.toFixed(4) : '—'}
         </span>
       {:else if col.key === 'ranking'}
         {#if item.ranking !== null}

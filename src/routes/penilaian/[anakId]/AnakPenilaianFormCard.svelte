@@ -68,7 +68,7 @@
               {kriteria.jenis}
             </span>
             <span class="ml-auto text-[11px] font-semibold text-slate-400 whitespace-nowrap">
-              Bobot {bobot[kriteriaIndex] !== undefined ? bobot[kriteriaIndex].toFixed(3) : '—'}
+              Bobot {bobot[kriteriaIndex] !== undefined ? bobot[kriteriaIndex].toFixed(4) : '—'}
             </span>
           </div>
 
