@@ -95,6 +95,9 @@ export function calculateAHP(matrix) {
 
 /**
  * Menyusun matriks perbandingan berpasangan n x n dari data kriteria dan baris tabel perbandingan_ahp.
+ * Hanya nilai di atas diagonal yang dipakai; nilai kebalikan dihitung ulang dengan helper 4 desimal
+ * sehingga tidak bergantung pada nilai kebalikan yang tersimpan. Pasangan yang tersimpan terbalik
+ * (kriteria_1 berada setelah kriteria_2) tetap ditangani.
  * Nilai yang tidak tersedia dianggap 1 (sama penting).
  * @param {Array} kriteriaList - Daftar kriteria terurut.
  * @param {Array} perbandinganList - Baris tabel perbandingan_ahp.
@@ -103,11 +106,35 @@ export function calculateAHP(matrix) {
 export function susunMatriksPerbandingan(kriteriaList, perbandinganList) {
   const n = kriteriaList.length;
   const matrix = Array.from({ length: n }, () => Array(n).fill(1));
+  const terpakai = new Set();
 
+  const pasangan = [];
   for (const item of perbandinganList) {
     const i = kriteriaList.findIndex((kriteria) => kriteria.id === item.kriteria_1_id);
     const j = kriteriaList.findIndex((kriteria) => kriteria.id === item.kriteria_2_id);
-    if (i !== -1 && j !== -1) matrix[i][j] = parseFloat(item.nilai);
+    if (i === -1 || j === -1 || i === j) continue;
+    const nilai = parseFloat(item.nilai);
+    if (!Number.isFinite(nilai) || nilai <= 0) continue;
+    pasangan.push({ i, j, nilai });
+  }
+
+  // Utamakan pasangan yang tersimpan di atas diagonal (i < j).
+  for (const { i, j, nilai } of pasangan) {
+    if (i >= j) continue;
+    matrix[i][j] = nilai;
+    matrix[j][i] = bulat(1 / nilai);
+    terpakai.add(`${i}-${j}`);
+  }
+
+  // Pasangan yang hanya tersimpan terbalik (i > j): nilai tersimpan adalah a[j][i].
+  for (const { i, j, nilai } of pasangan) {
+    if (i <= j) continue;
+    const kunci = `${j}-${i}`;
+    if (terpakai.has(kunci)) continue;
+    const atas = bulat(1 / nilai);
+    matrix[j][i] = atas;
+    matrix[i][j] = bulat(1 / atas);
+    terpakai.add(kunci);
   }
 
   return matrix;

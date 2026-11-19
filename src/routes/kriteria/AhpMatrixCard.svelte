@@ -74,7 +74,7 @@
           {#each kriteriaList as k}
             <th class="p-3 border border-slate-200">{k.inisial}</th>
           {/each}
-          <th class="p-3 border border-slate-200 bg-blue-50/50">Bobot ($w_j$)</th>
+          <th class="p-3 border border-slate-200 bg-blue-50/50">BOBOT (Wⱼ)</th>
         </tr>
       </thead>
       <tbody>

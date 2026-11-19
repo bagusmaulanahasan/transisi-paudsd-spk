@@ -39,8 +39,8 @@ export function getKategoriNilai(nilai, minPoin = 1, maxPoin = 3) {
   }
 
   const rentang = (maxPoin - minPoin) / 3;
-  const batasRendah = minPoin + rentang;
-  const batasSedang = minPoin + 2 * rentang;
+  const batasRendah = bulat(minPoin + rentang);
+  const batasSedang = bulat(minPoin + 2 * rentang);
 
   if (nilai <= batasRendah) {
     return {

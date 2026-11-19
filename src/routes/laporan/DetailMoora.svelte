@@ -71,13 +71,13 @@
             <div class="flex flex-wrap items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
               <span class="font-bold text-slate-700">Kategori Skala Nilai:</span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Rendah (1 – 1.667)
+                Rendah (1 – 1.6667)
               </span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
-                Sedang (1.668 – 2.333)
+                Sedang (1.6668 – 2.3333)
               </span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
-                Tinggi (2.334 – 3)
+                Tinggi (2.3334 – 3)
               </span>
             </div>
 
@@ -106,7 +106,7 @@
                         {@const kat = getKategoriNilai(val)}
                         <td class="p-2 border border-slate-200 font-medium text-slate-700">
                           <span class="inline-block px-2 py-0.5 rounded font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Kategori: {kat.label}">
-                            {val.toFixed(3)}
+                            {val.toFixed(4)}
                           </span>
                         </td>
                       {/each}
