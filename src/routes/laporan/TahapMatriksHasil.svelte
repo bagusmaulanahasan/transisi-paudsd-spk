@@ -121,9 +121,9 @@
         <span class="font-bold text-sm text-slate-900">{nilaiNama(item, jenisTampilan) || '—'}</span>
       {:else if col.key === 'yi'}
         {#if item.yi !== null}
-          <span class="font-bold text-slate-900">{item.yi.toFixed(4)}</span>
+          <span class="font-bold text-sm text-slate-900">{item.yi.toFixed(4)}</span>
         {:else}
-          <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">
             Belum Lengkap ({item.terjawab}/{item.total})
           </span>
         {/if}
