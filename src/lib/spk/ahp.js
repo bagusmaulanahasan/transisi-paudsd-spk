@@ -1,6 +1,6 @@
 /**
  * Modul perhitungan Analytical Hierarchy Process (AHP) untuk pembobotan kriteria.
- * Setiap nilai hasil perhitungan dibulatkan menjadi 4 angka di belakang koma (parseFloat(val.toFixed(4))).
+ * Setiap nilai hasil perhitungan dibulatkan menjadi 4 angka di belakang koma.
  */
 
 // Random Index (RI) standar untuk ukuran matriks 1 sampai 10
@@ -18,7 +18,10 @@ const RANDOM_INDEX = {
 };
 
 const DESIMAL = 4;
-const bulat = (v) => parseFloat(v.toFixed(DESIMAL));
+const FAKTOR = 10 ** DESIMAL;
+// Pembulatan setengah ke atas (half-up) agar cocok dengan pembulatan manual/Excel.
+const bulat = (v) =>
+  (Math.sign(v) * Math.round((Math.abs(v) + Number.EPSILON) * FAKTOR)) / FAKTOR;
 
 /**
  * Menghitung bobot prioritas kriteria, Consistency Index (CI), dan Consistency Ratio (CR) dari matriks perbandingan berpasangan.

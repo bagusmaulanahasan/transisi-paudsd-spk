@@ -5,12 +5,14 @@
  */
 
 const DESIMAL = 4;
+const FAKTOR = 10 ** DESIMAL;
 
 /**
  * Membulatkan angka menjadi 4 angka di belakang koma.
+ * Memakai pembulatan setengah ke atas (half-up) agar cocok dengan hitung manual/Excel.
  */
 function bulat(nilai) {
-  return parseFloat(nilai.toFixed(DESIMAL));
+  return (Math.sign(nilai) * Math.round((Math.abs(nilai) + Number.EPSILON) * FAKTOR)) / FAKTOR;
 }
 
 /**
