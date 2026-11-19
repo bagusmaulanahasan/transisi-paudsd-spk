@@ -1,14 +1,16 @@
 /**
  * Modul perhitungan MOORA (Multi-Objective Optimization on the Basis of Ratio Analysis).
- * Semua nilai hasil perhitungan dibulatkan 3 angka di belakang koma agar mudah
+ * Semua nilai hasil perhitungan dibulatkan 4 angka di belakang koma agar mudah
  * dicocokkan dengan perhitungan manual di kertas.
  */
 
+const DESIMAL = 4;
+
 /**
- * Membulatkan angka menjadi 3 angka di belakang koma.
+ * Membulatkan angka menjadi 4 angka di belakang koma.
  */
-function bulat3(nilai) {
-  return parseFloat(nilai.toFixed(3));
+function bulat(nilai) {
+  return parseFloat(nilai.toFixed(DESIMAL));
 }
 
 /**
@@ -90,7 +92,7 @@ export function susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jaw
         const jawaban = jawabanMap.get(`${anak.id}-${indikator.id}`);
         return total + (jawaban ? Number(jawaban.poin) : 0);
       }, 0);
-      return bulat3(totalPoin / indikatorKriteria.length);
+      return bulat(totalPoin / indikatorKriteria.length);
     });
 
     const terjawab = indikatorList.filter((indikator) =>
@@ -127,11 +129,11 @@ export function normalisasiMatriks(matriks) {
     for (let i = 0; i < matriks.length; i++) {
       jumlahKuadrat += matriks[i][j] ** 2;
     }
-    pembagi[j] = Math.sqrt(jumlahKuadrat);
+    pembagi[j] = bulat(Math.sqrt(jumlahKuadrat));
   }
 
   return matriks.map((baris) =>
-    baris.map((nilai, j) => (pembagi[j] === 0 ? 0 : bulat3(nilai / pembagi[j])))
+    baris.map((nilai, j) => (pembagi[j] === 0 ? 0 : bulat(nilai / pembagi[j])))
   );
 }
 
@@ -155,10 +157,10 @@ export function hitungMoora({
   let normalisasi = [];
   let nilaiBerbobot = [];
 
-  if (ahpSiap && lengkap.length > 0) {
+    if (ahpSiap && lengkap.length > 0) {
     normalisasi = normalisasiMatriks(lengkap.map((baris) => baris.nilai));
     nilaiBerbobot = normalisasi.map((baris) =>
-      baris.map((nilai, j) => bulat3(nilai * (bobot[j] ?? 0)))
+      baris.map((nilai, j) => bulat(nilai * (bobot[j] ?? 0)))
     );
   }
 
@@ -171,7 +173,7 @@ export function hitungMoora({
       kriteriaList.forEach((kriteria, j) => {
         total += kriteria.jenis === 'cost' ? -berbobot[j] : berbobot[j];
       });
-      yi = bulat3(total);
+      yi = bulat(total);
     }
 
     return {
@@ -255,12 +257,12 @@ export function getMooraDetail({
     for (let i = 0; i < matriksLengkap.length; i++) {
       sumSq += matriksLengkap[i][j] ** 2;
     }
-    pembagi[j] = bulat3(Math.sqrt(sumSq));
+    pembagi[j] = bulat(Math.sqrt(sumSq));
   }
 
   const normalisasi = normalisasiMatriks(matriksLengkap);
   const berbobot = normalisasi.map((baris) =>
-    baris.map((nilai, j) => bulat3(nilai * (bobot[j] ?? 0)))
+    baris.map((nilai, j) => bulat(nilai * (bobot[j] ?? 0)))
   );
 
   const hasilAkhir = lengkap.map((baris, index) => {
@@ -278,14 +280,14 @@ export function getMooraDetail({
       }
     });
 
-    const yi = bulat3(benefitSum - costSum);
+    const yi = bulat(benefitSum - costSum);
 
     return {
       ...baris,
       normalisasi: rowNorm,
       berbobot: rowW,
-      benefitSum: bulat3(benefitSum),
-      costSum: bulat3(costSum),
+      benefitSum: bulat(benefitSum),
+      costSum: bulat(costSum),
       yi,
       ranking: null
     };
