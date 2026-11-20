@@ -14,6 +14,7 @@
   import EmptyState from '$lib/components/ui/EmptyState.svelte';
   import AnakIdentityCard from './AnakIdentityCard.svelte';
   import AnakScoreSummaryCard from './AnakScoreSummaryCard.svelte';
+  import InformasiCapaianCard from './InformasiCapaianCard.svelte';
   import AnakPenilaianFormCard from './AnakPenilaianFormCard.svelte';
 
   // ID anak diambil dari URL, misalnya /penilaian/12.
@@ -463,6 +464,8 @@
       {ahpSiap}
       jumlahLengkap={hasil.jumlahLengkap}
     />
+
+    <InformasiCapaianCard {opsiList} />
 
     {#if !ahpSiap}
       <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-3">
