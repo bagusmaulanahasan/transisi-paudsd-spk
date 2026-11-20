@@ -19,9 +19,8 @@
   export let statusLokal = {};
   export let onPilihJawaban = () => {};
 
-  /** Filter capaian (hanya mode lihat): 'semua' | 'kosong' | id opsi (string). */
+  /** Filter capaian (aktif di mode lihat dan edit): 'semua' | 'kosong' | id opsi (string). */
   let filterCapaian = 'semua';
-  $: filterEfektif = modeEdit ? 'semua' : filterCapaian;
 
   /** Pembulatan half-up 4 desimal, sama dengan bulat() di moora.js. */
   function bulat(nilai) {
@@ -57,7 +56,7 @@
 
   $: semuaIndikator = indikatorPerKriteria.flatMap((kriteria) => kriteria.indikator || []);
 
-  // Jumlah indikator per pilihan filter (selalu dari seluruh indikator).
+  // Jumlah indikator per pilihan filter (selalu dari seluruh indikator, ikut berubah saat menilai).
   $: jumlah = (() => {
     const perOpsi = {};
     let kosong = 0;
@@ -79,15 +78,33 @@
     return item ? String(item.opsi_jawaban_id) === filter : false;
   }
 
-  // Id indikator yang lolos filter, per kriteria.
-  $: tampil = indikatorPerKriteria.map(
+  function ambilDaftarTampil(daftarKriteria, filter) {
+    return daftarKriteria.map(
+      (kriteria) =>
+        new Set(
+          (kriteria.indikator || [])
+            .filter((indikator) => cocok(indikator, jawabanAnakMap, filter))
+            .map((indikator) => indikator.id)
+        )
+    );
+  }
+
+  // Mode lihat: daftar tampil mengikuti jawaban secara langsung.
+  $: tampilLangsung = indikatorPerKriteria.map(
     (kriteria) =>
       new Set(
         (kriteria.indikator || [])
-          .filter((indikator) => cocok(indikator, jawabanAnakMap, filterEfektif))
+          .filter((indikator) => cocok(indikator, jawabanAnakMap, filterCapaian))
           .map((indikator) => indikator.id)
       )
   );
+
+  // Mode edit: daftar "dikunci" saat masuk mode edit atau saat filter diganti, supaya indikator
+  // yang baru dinilai tidak langsung hilang. Sengaja TIDAK bergantung pada jawabanAnakMap:
+  // jawabanAnakMap dibaca di dalam ambilDaftarTampil(), bukan di pernyataan reaktif ini.
+  $: tampilTerkunci = modeEdit ? ambilDaftarTampil(indikatorPerKriteria, filterCapaian) : null;
+
+  $: tampil = modeEdit && tampilTerkunci ? tampilTerkunci : tampilLangsung;
   $: totalTampil = tampil.reduce((sum, set) => sum + set.size, 0);
 </script>
 
@@ -125,7 +142,7 @@
         </span>
       {/if}
 
-      {#if !modeEdit && kriteriaList.length > 0}
+      {#if kriteriaList.length > 0}
         <div class="relative w-full sm:w-auto">
           <Filter class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <select
@@ -149,12 +166,18 @@
   <div class="mt-4 md:p-6 space-y-8">
     {#if kriteriaList.length === 0}
       <p class="text-sm text-slate-500">Belum ada kriteria penilaian.</p>
-    {:else if filterEfektif !== 'semua' && totalTampil === 0}
+    {:else if filterCapaian !== 'semua' && totalTampil === 0}
       <p class="text-sm text-slate-500">Tidak ada indikator dengan capaian ini.</p>
     {:else}
+      {#if modeEdit && filterCapaian !== 'semua'}
+        <p class="text-[11px] font-medium text-slate-500 leading-relaxed -mb-4">
+          Indikator yang baru dinilai tetap tampil sampai filter diganti atau Anda menekan Selesai.
+        </p>
+      {/if}
+
       {#each indikatorPerKriteria as kriteria, kriteriaIndex (kriteria.id)}
         {@const info = ringkasan[kriteriaIndex] ?? { terisi: 0, jumlah: 0, nilai: null, kategori: getKategoriNilai(null) }}
-        {#if filterEfektif === 'semua' || tampil[kriteriaIndex]?.size > 0}
+        {#if filterCapaian === 'semua' || tampil[kriteriaIndex]?.size > 0}
           <section class="space-y-3">
             <!-- Judul kriteria: kiri = nama kriteria, kanan = ternilai & nilai -->
             <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-slate-100 pb-3">
@@ -183,13 +206,14 @@
                 {jawabanAnakMap}
                 {statusLokal}
                 {onPilihJawaban}
+                filterId={filterCapaian === 'semua' ? null : tampil[kriteriaIndex]}
               />
             {:else}
               <KriteriaPenilaianTabel
                 {kriteria}
                 {opsiList}
                 {jawabanAnakMap}
-                filterId={filterEfektif === 'semua' ? null : tampil[kriteriaIndex]}
+                filterId={filterCapaian === 'semua' ? null : tampil[kriteriaIndex]}
               />
             {/if}
           </section>
