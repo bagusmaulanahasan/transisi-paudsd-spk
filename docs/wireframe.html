@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wireframe SPK Transisi PAUD-SD</title>
+  <style>
+    :root {
+      --line: #555;
+      --bg: #f4f4f4;
+      --ph: #d9d9d9;
+      --phtx: #8a8a8a;
+      --dark: #444;
+      --mid: #bdbdbd
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      color: #222;
+      background: #e9e9e9
+    }
+
+    #bar {
+      position: fixed;
+      left: 8px;
+      bottom: 8px;
+      z-index: 10;
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 6px;
+      max-width: 320px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px
+    }
+
+    #bar button {
+      font-size: 11px;
+      padding: 3px 6px;
+      border: 1px solid var(--line);
+      background: #f4f4f4;
+      cursor: pointer
+    }
+
+    #bar button.on {
+      background: var(--dark);
+      color: #fff
+    }
+
+    .screen {
+      display: none;
+      width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid var(--line)
+    }
+
+    .screen.on {
+      display: block
+    }
+
+    .app {
+      display: flex;
+      min-height: 760px
+    }
+
+    .side {
+      width: 200px;
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      background: #fafafa
+    }
+
+    .brand {
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--mid)
+    }
+
+    .brand b {
+      font-size: 15px
+    }
+
+    .brand small {
+      display: block;
+      color: #666;
+      margin-top: 2px
+    }
+
+    .grp {
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: .08em;
+      color: #777;
+      padding: 12px 14px 4px
+    }
+
+    .mi {
+      margin: 3px 8px;
+      padding: 8px 10px;
+      border: 1px solid transparent
+    }
+
+    .mi.act {
+      background: var(--dark);
+      color: #fff
+    }
+
+    .side .foot {
+      margin-top: auto;
+      border-top: 1px solid var(--mid);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0
+    }
+
+    .top {
+      height: 46px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 12px
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .av {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--ph)
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      font-size: 9px;
+      font-weight: bold;
+      padding: 1px 5px;
+      display: inline-block
+    }
+
+    .content {
+      padding: 20px 22px;
+      flex: 1;
+      background: #fff
+    }
+
+    h1 {
+      margin: 0 0 2px;
+      font-size: 20px
+    }
+
+    .sub {
+      color: #666;
+      margin: 0 0 14px
+    }
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      padding: 6px 12px;
+      background: var(--dark);
+      color: #fff;
+      font-weight: bold;
+      font-size: 12px;
+      display: inline-block
+    }
+
+    .btn.o {
+      background: #fff;
+      color: #222
+    }
+
+    .btn.d {
+      background: #fff;
+      color: #222;
+      border-style: dashed
+    }
+
+    .btn.s {
+      padding: 3px 8px;
+      font-size: 11px
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      padding: 14px;
+      margin-bottom: 14px;
+      background: #fff
+    }
+
+    .ch {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px
+    }
+
+    .ct {
+      font-weight: bold;
+      font-size: 15px
+    }
+
+    .cs {
+      color: #666;
+      font-size: 11px;
+      margin-top: 2px
+    }
+
+    .ico {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--line);
+      background: var(--ph);
+      vertical-align: middle;
+      margin-right: 8px
+    }
+
+    .ico.t {
+      text-align: center;
+      line-height: 20px;
+      font-size: 12px;
+      color: #333
+    }
+
+    .chip {
+      border: 1px solid var(--mid);
+      background: var(--bg);
+      padding: 2px 8px;
+      font-size: 11px;
+      display: inline-block;
+      margin-right: 4px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th {
+      background: #ececec;
+      text-align: left;
+      font-size: 10px;
+      letter-spacing: .06em;
+      padding: 9px 10px;
+      border: 1px solid var(--mid)
+    }
+
+    td {
+      padding: 9px 10px;
+      border: 1px solid var(--mid);
+      font-size: 12px
+    }
+
+    .c {
+      text-align: center
+    }
+
+    .r {
+      text-align: right
+    }
+
+    .ph {
+      background: var(--ph);
+      color: var(--phtx);
+      padding: 2px 8px;
+      display: inline-block;
+      min-width: 44px;
+      text-align: center;
+      font-style: italic
+    }
+
+    .phl {
+      color: var(--phtx);
+      font-style: italic
+    }
+
+    .stats {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 14px
+    }
+
+    .stats .card {
+      flex: 1;
+      margin: 0
+    }
+
+    .lab {
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: .06em;
+      color: #777
+    }
+
+    .fl {
+      font-size: 12px;
+      font-weight: bold;
+      color: #333
+    }
+
+    .req {
+      font-weight: bold
+    }
+
+    .val {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 4px
+    }
+
+    .inp {
+      border: 1px solid var(--line);
+      height: 32px;
+      padding: 7px 10px;
+      color: var(--phtx);
+      background: #fff;
+      margin: 3px 0 10px;
+      position: relative
+    }
+
+    .inp.ro {
+      background: var(--bg);
+      color: #222
+    }
+
+    .inp.ta {
+      height: 84px
+    }
+
+    .inp.selb {
+      color: #222
+    }
+
+    .inp.selb:after {
+      content: "\25BE";
+      position: absolute;
+      right: 10px
+    }
+
+    .sel {
+      border: 1px solid var(--line);
+      height: 32px;
+      padding: 7px 10px;
+      background: #fff;
+      display: inline-block;
+      min-width: 230px;
+      position: relative
+    }
+
+    .sel:after {
+      content: "\25BE";
+      position: absolute;
+      right: 8px
+    }
+
+    .note {
+      background: var(--bg);
+      border: 1px solid var(--mid);
+      padding: 8px 10px;
+      font-size: 11px;
+      color: #555;
+      margin-top: 10px
+    }
+
+    .info {
+      background: #f0f0f0;
+      border: 1px solid var(--line);
+      padding: 9px 12px;
+      margin-bottom: 14px
+    }
+
+    .back {
+      font-size: 12px;
+      margin-bottom: 14px;
+      font-weight: bold
+    }
+
+    .row2 {
+      display: flex;
+      gap: 14px
+    }
+
+    .row2>div {
+      flex: 1
+    }
+
+    .item {
+      border: 1px solid var(--mid);
+      background: var(--bg);
+      padding: 10px 12px;
+      margin-bottom: 8px
+    }
+
+    .ans {
+      border: 1px solid var(--mid);
+      background: #fff;
+      padding: 7px 10px;
+      margin-top: 8px
+    }
+
+    .cb {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--line);
+      background: #fff;
+      vertical-align: middle;
+      text-align: center;
+      line-height: 18px;
+      font-size: 13px
+    }
+
+    .cb.on {
+      background: var(--dark);
+      color: #fff
+    }
+
+    tr.warn td {
+      background: #e6e6e6
+    }
+
+    .kh {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--mid);
+      padding-bottom: 8px;
+      margin: 16px 0 10px;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .login {
+      display: flex;
+      min-height: 760px
+    }
+
+    .lp {
+      width: 50%;
+      background: #8c8c8c;
+      color: #fff;
+      padding: 36px 44px;
+      position: relative
+    }
+
+    .lp h2 {
+      font-size: 28px;
+      margin: 14px 0 8px
+    }
+
+    .illu {
+      position: absolute;
+      left: 44px;
+      right: 44px;
+      bottom: 70px;
+      height: 300px;
+      border: 1px dashed #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #eee
+    }
+
+    .rp {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa
+    }
+
+    .lc {
+      width: 360px;
+      border: 1px solid var(--line);
+      padding: 28px;
+      background: #fff
+    }
+
+    .lc .btn {
+      display: block;
+      text-align: center;
+      padding: 11px;
+      margin-top: 6px
+    }
+
+    .cap {
+      font-size: 11px;
+      color: #666;
+      text-align: center;
+      padding: 6px
+    }
+
+    .fnt {
+      font-size: 10px;
+      color: #777;
+      margin: 10px 0 6px
+    }
+
+    /* ---------- Modal / form ---------- */
+    .mwrap {
+      position: relative
+    }
+
+    .mo {
+      position: absolute;
+      inset: 0;
+      background: rgba(60, 60, 60, .55);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 110px
+    }
+
+    .md {
+      background: #fff;
+      border: 1px solid var(--line)
+    }
+
+    .mh {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--mid);
+      background: #fafafa;
+      font-size: 15px
+    }
+
+    .mb {
+      padding: 16px 18px 6px
+    }
+
+    .mf {
+      padding: 12px 18px;
+      border-top: 1px solid var(--mid);
+      background: #fafafa;
+      text-align: right
+    }
+
+    .mf .tx {
+      font-weight: bold;
+      margin-right: 16px;
+      font-size: 12px
+    }
+  </style>
+</head>
+
+<body>
+  <div id="bar"></div>
+  <div id="root"></div>
+  <script>
+    const ph = (t) => `<span class="ph">${t}</span>`;
+    const MENUS = [['Dashboard', 'dash'], ['G', 'OPERASIONAL'], ['Kelas & Anak', 'kelas'], ['Penilaian', 'nilai'], ['Laporan Perhitungan', 'lap'], ['G', 'KHUSUS KEPALA SEKOLAH'], ['Kriteria & Bobot', 'krit'], ['Indikator Penilaian', 'ind'], ['Akun Pengguna', 'user']];
+
+    // role: 'kepsek' (Kepala Sekolah) atau 'tim' (Tim Pendidik, tanpa menu khusus Kepala Sekolah)
+    const side = (act, role) => {
+      const menus = role === 'tim' ? MENUS.slice(0, MENUS.findIndex(m => m[1] === 'KHUSUS KEPALA SEKOLAH')) : MENUS;
+      return `<div class="side"><div class="brand"><b>SPK Transisi PAUD–SD</b><small>TK Islam Kencana</small></div>${menus.map(m => m[0] === 'G' ? `<div class="grp">${m[1]}</div>` : `<div class="mi ${m[1] === act ? 'act' : ''}">${m[0]}</div>`).join('')}<div class="foot"><span>Status Koneksi</span><span class="chip">Online</span></div></div>`;
+    };
+    const topbar = (role) => `<div class="top"><span>Sistem Penunjang Keputusan Prioritas Stimulasi Anak (PAUD–SD)</span><div class="user"><div class="av"></div><div><b>Nama Pengguna</b><br><span class="badge">${role === 'tim' ? 'TIM PENDIDIK' : 'KEPALA SEKOLAH'}</span></div></div></div>`;
+    const shell = (act, body, role = 'kepsek') => `<div class="app">${side(act, role)}<div class="main">${topbar(role)}<div class="content">${body}</div></div></div>`;
+    const trs = (n, cells) => Array.from({ length: n }, () => `<tr>${cells}</tr>`).join('');
+    const act2 = `<span class="btn o s">Edit</span> <span class="btn s">Hapus</span>`;
+
+    // ---------- Modal / form helpers ----------
+    const fld = (label, val, o = {}) =>
+      `<div class="${o.up ? 'lab' : 'fl'}">${label}${o.req ? ' <span class="req">*</span>' : ''}${o.opt ? ` <span class="phl" style="text-transform:none;letter-spacing:0;font-weight:normal">${o.opt}</span>` : ''}</div>` +
+      `<div class="inp${o.ro ? ' ro' : ''}${o.ta ? ' ta' : ''}${o.sel ? ' selb' : ''}">${val}</div>` +
+      (o.hint ? `<div class="cs" style="margin:-6px 0 10px">${o.hint}</div>` : '');
+    const modal = (title, width, inner, simpan) =>
+      `<div class="mo"><div class="md" style="width:${width}px"><div class="mh"><b>${title}</b><span>✕</span></div><div class="mb">${inner}</div><div class="mf"><span class="tx">Batal</span><span class="btn">${simpan}</span></div></div></div>`;
+    const withModal = (act, body, m) => `<div class="mwrap">${shell(act, body)}${m}</div>`;
+
+    const B = {};
+    const S = {};
+
+    S.login = `<div class="login"><div class="lp"><span class="chip" style="color:#222">TK ISLAM KENCANA</span><h2>SPK Transisi PAUD–SD</h2><div style="max-width:380px">Sistem Penunjang Keputusan Prioritas Kebutuhan Stimulasi Anak Menggunakan Metode AHP dan MOORA.</div><div class="illu">[ Ilustrasi ]</div><div style="position:absolute;left:44px;bottom:24px;font-size:11px">© 2026 TK Islam Kencana. Hak cipta dilindungi.</div></div><div class="rp"><div class="lc"><div class="ct" style="font-size:20px">Masuk ke Akun</div><div class="cs" style="margin-bottom:18px">Gunakan akun yang telah didaftarkan.</div><div class="lab">EMAIL</div><div class="inp">email@contoh.com</div><div class="lab">PASSWORD</div><div class="inp">••••••••</div><span class="btn">Masuk</span></div></div></div>`;
+
+    // ---------- 2. Dashboard (dua peran) ----------
+    // Hanya data kelas & anak pada tahun ajaran berjalan. Beda peran: menu samping dan tombol aksi pada tabel.
+    const dashBody = (role) => {
+      const tim = role === 'tim';
+      const row = (no, status, aksi) => `<tr><td>${ph(no)}</td><td>${ph('Nama Kelas')}</td><td>${ph('....')}</td><td class="c">${ph('..')} Anak</td><td><span class="chip">${status}</span></td><td class="r">${aksi}</td></tr>`;
+      const belum = '⏱ BELUM DINILAI', sudah = '✓ SUDAH DINILAI';
+      const mulai = tim ? '<span class="btn s">Mulai Penilaian</span>' : '';
+      const lapor = '<span class="btn o s">Lihat Laporan</span>';
+      return `<div class="head"><div><h1>Dashboard Utama</h1><span class="chip" style="margin-top:6px">TAHUN AJARAN ${ph('....')}</span></div></div>
+<div class="stats" style="margin-top:14px"><div class="card"><div class="lab">TOTAL KELAS AKTIF</div><div class="val">${ph('...')} Kelas</div></div><div class="card"><div class="lab">TOTAL DATA ANAK</div><div class="val">${ph('...')} Anak</div></div><div class="card"><div class="lab">STATUS KONSISTENSI AHP</div><div class="val" style="font-size:15px">${ph('Konsisten / Tidak')}</div></div></div>
+<div class="card"><div class="ch"><div><div class="ct">Daftar Kelas & Status MOORA</div><div class="cs">Pantau progres penilaian transisi PAUD ke SD per kelas.</div></div>${tim ? '<span style="font-weight:bold;font-size:12px">Buka Penilaian →</span>' : ''}</div>
+<table><tr><th>NO.</th><th>NAMA KELAS</th><th>TAHUN AJARAN</th><th class="c">JUMLAH ANAK</th><th>STATUS PENILAIAN</th><th class="r">AKSI</th></tr>${row('1', belum, mulai)}${row('2', belum, mulai)}${row('3', sudah, lapor)}</table>
+<div class="fnt">${tim ? 'Kelas belum dinilai: tombol "Mulai Penilaian". Kelas sudah dinilai: tombol "Lihat Laporan".' : 'Tombol "Lihat Laporan" hanya muncul pada kelas yang sudah dinilai.'}</div></div>`;
+    };
+    S.dashKepsek = shell('dash', dashBody('kepsek'));
+    S.dashTim = shell('dash', dashBody('tim'), 'tim');
+
+    // ---------- 3. Kelas & Anak ----------
+    B.kelas = `<h1>Kelola Kelas & Data Anak</h1><p class="sub">Buat kelas terlebih dahulu, lalu tambahkan data anak di dalamnya sebagai alternatif yang dinilai pada perhitungan MOORA.</p>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Daftar Kelas</span><div class="cs" style="margin-left:30px">Klik <b>Kelola Anak</b> untuk melihat dan menambah anak pada kelas tersebut.</div></div><div> <span class="sel" style="min-width:150px">Tahun Ajaran</span> <span class="chip">Total: ${ph('..')} Kelas</span> <span class="btn">+ Tambah Kelas</span></div></div>
+<table><tr><th>NO.</th><th>NAMA KELAS</th><th>TAHUN AJARAN</th><th class="c">JUMLAH ANAK</th><th class="r">AKSI</th></tr>${trs(2, `<td>${ph('1')}</td><td>${ph('Nama Kelas')}</td><td>${ph('....')}</td><td class="c">${ph('..')}</td><td class="r"><span class="btn o s">Kelola Anak</span> ${act2}</td>`)}</table>
+<div class="note">Menghapus kelas akan menghapus seluruh data anak dan penilaian di dalamnya. Pastikan data sudah tidak dibutuhkan.</div></div>`;
+    S.kelas = shell('kelas', B.kelas);
+
+    S.formKelas = withModal('kelas', B.kelas, modal('Tambah Kelas Baru', 440,
+      fld('Nama Kelas', 'Contoh: Kelas A', { req: true }) +
+      fld('Tahun Ajaran', '2026/2027', { req: true, ro: false }) +
+      `<div class="note" style="margin:0 0 12px">ⓘ Setelah kelas dibuat, tambahkan data anak melalui halaman detail kelas (tombol <b>Kelola Anak</b>).</div>`,
+      'Simpan Kelas'));
+
+    // ---------- 4. Daftar Anak ----------
+    B.anak = `<div class="back">← Kembali ke Daftar Kelas</div><div class="head"><div><h1>${ph('Nama Kelas')}</h1><p class="sub">Tahun Ajaran ${ph('....')} • ${ph('..')} anak terdaftar</p></div><span><span class="inp" style="display:inline-block;width:150px;margin-right:20px">Cari anak…</span><span class="btn">+ Tambah Data Anak</span></span></div>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Daftar Anak</span><div class="cs" style="margin-left:30px">Nama panggilan boleh dikosongkan dan harus unik di kelas ini. Kode anak dibuat otomatis oleh sistem.</div></div><span class="chip">Total: ${ph('..')} Anak</span></div>
+<table><tr><th>NO.</th><th>KODE ANAK</th><th class="r">AKSI</th></tr>${trs(4, `<td>${ph('1')}</td><td>${ph('B3-xx')}</td><td class="r">${act2}</td>`)}</table></div>`;
+    S.anak = shell('kelas', B.anak);
+
+    S.formAnak = withModal('kelas', B.anak, modal('Tambah Data Anak', 440,
+      fld('KELAS', 'Kelas B3 • 2026/2027', { up: true, ro: true }) +
+      fld('NAMA LENGKAP ANAK', 'Contoh: Aisyah Putri', { up: true }) +
+      fld('NAMA PANGGILAN', 'Contoh: Aisyah', { up: true, opt: '(Opsional, harus unik di kelas ini)', hint: 'Boleh dikosongkan sekarang dan diisi kapan saja melalui tombol <b>Ubah Data Anak</b>.' }) +
+      `<div class="note" style="margin:0 0 12px">ⓘ Nama panggilan harus unik di dalam kelas ini. <b>Kode anak</b> dibuat otomatis oleh sistem setelah data disimpan, sehingga tidak perlu diisi manual.</div>`,
+      'Simpan Data Anak'));
+
+    // ---------- 5. Penilaian (daftar) ----------
+    S.nilai = shell('nilai', `<div class="head"><div><h1>Penilaian Anak & Perankingan MOORA</h1><p class="sub">Pilih kelas, lalu klik Lihat pada baris anak untuk membuka penilaian. Tampilan awal hanya baca.</p></div><span class="chip">Perhitungan otomatis</span></div>
+<div class="card"><div class="lab">PILIH KELAS</div><div class="sel" style="margin:6px 0">${ph('Nama Kelas — Tahun Ajaran')}</div><div class="cs">Nilai Yi dan ranking dihitung otomatis dari jawaban terbaru seluruh anak di kelas ini.</div></div>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Hasil Perhitungan MOORA</span><div class="cs" style="margin-left:30px">Nilai Yi dibulatkan 4 angka di belakang koma. Klik baris anak atau tombol Lihat untuk membuka penilaian.</div></div><div><span class="inp" style="display:inline-block;width:150px;margin:0">Cari anak…</span> <span class="sel" style="min-width:150px">Urut: Ranking</span><br><span class="chip" style="margin-top:6px">Lengkap ${ph('..')}/${ph('..')} Anak</span></div></div>
+<div class="note" style="margin:0 0 8px"><b>Kategori Skala Nilai:</b> <span class="chip">Rendah (${ph('..')} – ${ph('..')})</span> <span class="chip">Sedang (${ph('..')} – ${ph('..')})</span> <span class="chip">Tinggi (${ph('..')} – ${ph('..')})</span></div>
+<div style="margin-bottom:8px">${[1, 2, 3, 4, 5, 6].map(i => `<span class="chip">C${i}: ${ph('0,0000')} (BENEFIT)</span>`).join('')}</div>
+<table><tr><th>NO.</th><th>KODE ANAK</th>${[1, 2, 3, 4, 5, 6].map(i => `<th class="c">C${i}</th>`).join('')}<th class="c">NILAI YI</th><th class="c">RANKING</th><th class="r">AKSI</th></tr>${trs(4, `<td>${ph('1')}</td><td>${ph('B3-xx')}</td>${[1, 2, 3, 4, 5, 6].map(() => `<td class="c">${ph('0,0')}</td>`).join('')}<td class="c">${ph('0,0000')}</td><td class="c">${ph('#')}</td><td class="r"><span class="btn o s">Lihat</span></td>`)}</table></div>`);
+
+    // ---------- 6. Detail penilaian (bagian bersama) ----------
+    // Judul kriteria: kiri = (C1) nama kriteria, kanan = Ternilai i/j Indikator & Nilai · Kategori
+    const kritHead = (n) => `<div class="kh"><div><span class="chip">C${n}</span> <b>${ph('Nama Kriteria')}</b></div><div><span class="chip">Ternilai ${ph('..')}/${ph('..')} Indikator</span><span class="chip">Nilai ${ph('0,0000')} · ${ph('Kategori')}</span></div></div>`;
+    const idCard = (edit) => `<div class="card"><div class="ch"><div><span class="ico t" style="width:40px;height:40px"></span><span class="lab">${ph('KELAS — TAHUN AJARAN')}</span><div class="ct" style="font-size:20px;margin:4px 0 4px 52px">${edit ? '*****' : ph('Nama Anak')} <span class="ico t" style="margin-left:8px" title="Tampilkan / sembunyikan nama">${edit ? '⊘' : '◉'}</span></div><div style="margin-left:52px"><span class="chip">KODE: ${ph('B3-xx')}</span><span class="chip">PANGGILAN: ${edit ? '*****' : ph('....')}</span><span class="chip">${edit ? 'MODE EDIT' : 'MODE LIHAT'}</span></div></div>${edit ? `<span class="btn">✓ Selesai</span>` : `<span class="chip">Hanya baca</span>`}</div>
+<div class="fnt" style="margin:0">Ikon mata: nama lengkap & nama panggilan tampil (default). Klik → mata tercoret, keduanya diganti *****. Kode anak tetap tampil.</div></div>`;
+    const filterSel = `<span class="sel" style="min-width:150px;margin-left:4px"><span style="color:#777">▽</span> Semua (${ph('..')})</span>`;
+
+    // ---- 6a. Mode LIHAT (role: Kepala Sekolah) ----
+    S.nilaiDetail = shell('nilai', `<div class="back">← Kembali ke Daftar Penilaian</div>
+${idCard(false)}
+<div class="info">◉ Halaman ini ditampilkan dalam mode <b>Read-Only (Kepala Sekolah)</b>.</div>
+<div class="stats"><div class="card"><div class="lab">NILAI YI</div><div class="val">—</div><div class="cs" style="margin-top:6px">Jawaban belum lengkap (${ph('..')}/${ph('..')} indikator).</div></div><div class="card"><div class="lab">RANKING</div><div class="val">—</div><div class="cs" style="margin-top:6px">Belum masuk ranking karena jawaban belum lengkap.</div></div></div>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Jawaban Penilaian</span><div class="cs" style="margin-left:30px">Mode hanya baca — Kepala Sekolah dapat melihat jawaban tanpa mengubahnya.</div></div><div><span class="chip">Ternilai ${ph('..')}/${ph('..')} Indikator</span><span class="chip">⚠ Belum lengkap</span>${filterSel}</div></div>
+${kritHead(1)}
+<table><tr><th style="width:70px">NO.</th><th>INDIKATOR</th><th class="c" style="width:110px">SUDAH BISA</th><th class="c" style="width:110px">MULAI BISA</th><th class="c" style="width:110px">BELUM BISA</th></tr>
+<tr><td><span class="chip">C1.1</span></td><td>${ph('Teks indikator penilaian')}</td><td class="c"><span class="cb"></span></td><td class="c"><span class="cb"></span></td><td class="c"><span class="cb on">✓</span></td></tr>
+<tr><td><span class="chip">C1.2</span></td><td>${ph('Teks indikator penilaian')}</td><td class="c"><span class="cb"></span></td><td class="c"><span class="cb on">✓</span></td><td class="c"><span class="cb"></span></td></tr>
+<tr class="warn"><td><span class="chip">C1.3</span></td><td>${ph('Teks indikator penilaian')}<br><span class="chip" style="margin-top:6px">⚠ BELUM DINILAI</span></td><td class="c"><span class="cb"></span></td><td class="c"><span class="cb"></span></td><td class="c"><span class="cb"></span></td></tr></table>
+<div class="fnt">Baris belum dinilai: latar abu-abu/kuning + ikon peringatan, ketiga kotak kosong. Filter dropdown: Semua · Belum bisa · Mulai bisa · Sudah bisa · Belum dinilai (masing-masing disertai jumlah).</div>
+<div class="cs" style="text-align:center">… kriteria berikutnya (tampilan tabel serupa)</div>
+<div class="note">Tampilan hanya baca untuk Kepala Sekolah. Jawaban hanya dapat diubah oleh Tim Pendidik.</div></div>`);
+
+    // ---- 6b. Mode EDIT (role: Tim Pendidik) ----
+    const opsi = (pilih) => ['Sudah Bisa', 'Mulai Bisa', 'Belum Bisa'].map(o => o === pilih ? `<span class="btn">✓ ${o}</span>` : `<span class="btn o">${o}</span>`).join(' ');
+    S.nilaiEdit = shell('nilai', `<div class="back">← Kembali ke Daftar Penilaian</div>
+${idCard(true)}
+<div class="stats"><div class="card"><div class="lab">NILAI YI</div><div class="val">${ph('0,0000')}</div><div class="cs" style="margin-top:6px">Nilai optimasi MOORA, dibulatkan 4 angka di belakang koma.</div></div><div class="card"><div class="lab">RANKING</div><div class="val">${ph('#')}</div><div class="cs" style="margin-top:6px">Peringkat dari ${ph('..')} anak yang jawabannya lengkap.</div></div></div>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Jawaban Penilaian</span><div class="cs" style="margin-left:30px">Mode edit — setiap jawaban yang dipilih langsung tersimpan otomatis.</div></div><div><span class="chip">Ternilai ${ph('..')}/${ph('..')} Indikator</span><span class="chip">✓ Lengkap</span>${filterSel}</div></div>
+${kritHead(1)}
+<div class="item"><span class="chip">C1.1</span> ${ph('Teks indikator penilaian')}<div style="margin-top:8px">${opsi('Sudah Bisa')}</div></div>
+<div class="item"><span class="chip">C1.2</span> ${ph('Teks indikator penilaian')}<div style="margin-top:8px">${opsi('Mulai Bisa')}</div><div style="margin-top:8px"><span class="chip">✓ TERSINKRON</span></div></div>
+<div class="item"><span class="chip">C1.3</span> ${ph('Teks indikator penilaian')}<div style="margin-top:8px">${opsi('Belum Bisa')}</div><div style="margin-top:8px"><span class="chip">☁ TERSIMPAN DI PERANGKAT, MENUNGGU SINKRONISASI</span></div></div>
+<div class="fnt">Opsi terpilih: tombol hijau/gelap + tanda centang di kiri. Status sinkron muncul di bawah opsi (offline = menunggu sinkronisasi, online = tersinkron). Filter tetap aktif di mode edit; indikator yang baru dinilai tetap tampil sampai filter diganti atau menekan Selesai.</div>
+<div class="cs" style="text-align:center">… indikator dan kriteria berikutnya (tampilan serupa)</div>
+<div class="note">Jawaban disimpan otomatis setiap kali dipilih. Nilai Yi dan ranking seluruh anak di kelas ini ikut diperbarui.</div></div>`, 'tim');
+
+    // ---------- 7. Laporan ----------
+    S.lap = shell('lap', `<h1>Laporan Perhitungan SPK</h1><p class="sub">Laporan transparan read-only menampilkan seluruh tahapan AHP hingga perankingan MOORA.</p>
+<div class="card" style="display:flex;justify-content:space-between;align-items:flex-end;gap:14px"><div style="display:flex;gap:14px"><div><div class="lab">PILIH TAHUN AJARAN</div><div class="sel" style="margin:6px 0 0;min-width:210px">${ph('2026/2027')}</div></div><div><div class="lab">PILIH KELAS</div><div class="sel" style="margin:6px 0 0;min-width:210px">${ph('Nama Kelas')}</div></div></div><span class="btn">⬇ Download</span></div>
+<div class="card"><div class="ch"><div class="ct">Kriteria Penilaian dan Bobot Prioritas</div><span class="chip">${ph('Konsisten / Tidak')} (CR ≤ 0,1000)</span></div>
+<table><tr><th>INISIAL</th><th>NAMA KRITERIA</th><th>JENIS MOORA</th><th>BOBOT PRIORITAS</th></tr>${trs(3, `<td>${ph('C1')}</td><td>${ph('Nama Kriteria')}</td><td>${ph('BENEFIT')}</td><td>${ph('0,0000')}</td>`)}</table></div>
+<div class="card"><div class="ch"><div class="ct">Hasil Penilaian dan Prioritas Stimulasi</div><div><span class="inp" style="display:inline-block;width:150px;margin:0">Cari anak…</span> <span class="sel" style="min-width:150px">Urut: Ranking</span></div></div>
+<div class="note" style="margin:0 0 8px"><b>Kategori Skala Nilai:</b> <span class="chip">Rendah</span> <span class="chip">Sedang</span> <span class="chip">Tinggi</span></div>
+<table><tr><th>NO.</th><th>KODE ANAK</th>${[1, 2, 3, 4, 5, 6].map(i => `<th class="c">C${i}</th>`).join('')}<th class="c">NILAI YI</th><th class="c">RANKING</th></tr>${trs(3, `<td>${ph('1')}</td><td>${ph('B3-xx')}</td>${[1, 2, 3, 4, 5, 6].map(() => `<td class="c">${ph('0,0')}</td>`).join('')}<td class="c">${ph('0,0000')}</td><td class="c">${ph('#')}</td>`)}</table></div>
+<div class="card" style="text-align:center;color:#777">Bagian berikutnya (tahapan perhitungan lanjutan) — tampilan tabel serupa</div>`);
+
+    // ---------- 8. Kriteria & Bobot ----------
+    B.krit = `<h1>Kelola Kriteria & Pembobotan AHP</h1><p class="sub">Tentukan kriteria penilaian anak beserta bobot prioritas menggunakan perbandingan berpasangan AHP.</p>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Daftar Kriteria Penilaian</span><div class="cs" style="margin-left:30px">Daftar kriteria aktif yang digunakan dalam perhitungan.</div></div><div><span class="chip">Total: ${ph('..')} Kriteria</span> <span class="btn">+ Tambah Kriteria</span></div></div>
+<table><tr><th>INISIAL</th><th>NAMA KRITERIA</th><th>JENIS KRITERIA</th><th>BOBOT AHP (Wⱼ)</th><th class="r">AKSI</th></tr>${trs(3, `<td>${ph('C1')}</td><td>${ph('Nama Kriteria')}</td><td>${ph('BENEFIT')}</td><td>${ph('0,0000')}</td><td class="r">${act2}</td>`)}</table></div>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Matriks Perbandingan Berpasangan (AHP)</span><div class="cs" style="margin-left:30px">Batas konsistensi yang diizinkan: CR ≤ 0,10. Simpan perubahan ke database setelah nilai konsisten.</div></div><span class="btn">Edit Matriks</span></div>
+<div class="note" style="margin:0 0 10px"><b>PANDUAN SKALA PERBANDINGAN SAATY (1 - 9):</b><br>1 : Sama penting &nbsp; 3 : Sedikit lebih penting &nbsp; 5 : Lebih penting &nbsp; 7 : Sangat lebih penting &nbsp; 9 : Mutlak lebih penting<br><i>Nilai 2, 4, 6, 8 adalah nilai tengah antar penilaian berdekatan.</i></div>
+<table><tr><th>KRITERIA</th>${[1, 2, 3, 4, 5, 6].map(i => `<th class="c">C${i}</th>`).join('')}<th class="c">BOBOT (Wⱼ)</th></tr>${trs(3, `<td>${ph('C1')}</td>${[1, 2, 3, 4, 5, 6].map(() => `<td class="c">${ph('0')}</td>`).join('')}<td class="c">${ph('0,0000')}</td>`)}</table></div>`;
+    S.krit = shell('krit', B.krit);
+
+    S.formKrit = withModal('krit', B.krit, modal('Tambah Kriteria Baru', 400,
+      fld('INISIAL KRITERIA (OTOMATIS)', 'C7', { up: true, ro: true }) +
+      fld('NAMA KRITERIA', 'Masukkan nama kriteria…', { up: true }) +
+      fld('JENIS KRITERIA MOORA', 'Benefit (Nilai besar lebih baik)', { up: true, sel: true }),
+      'Simpan Kriteria'));
+
+    // ---------- 9. Indikator ----------
+    B.ind = `<h1>Kelola Opsi Jawaban & Indikator Penilaian</h1><p class="sub">Atur skala jawaban baku untuk semua kriteria, lalu susun pertanyaan observasi per kriteria.</p>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Opsi Jawaban</span><div class="cs" style="margin-left:30px">Skala penilaian baku yang berlaku untuk <b>semua kriteria & indikator</b>.</div></div><div><span class="chip">Total: ${ph('..')} Opsi</span> <span class="btn">+ Tambah Opsi</span></div></div>
+<table><tr><th>NO.</th><th>TEKS OPSI</th><th>KETERANGAN</th><th class="c">POIN PENILAIAN (SKOR KEBUTUHAN)</th><th class="r">AKSI</th></tr>${trs(3, `<td>${ph('1')}</td><td>${ph('Teks Opsi')}</td><td>${ph('Keterangan opsi jawaban')}</td><td class="c">${ph('x')}</td><td class="r"><span class="btn o s">Ubah</span> <span class="btn s">Hapus</span></td>`)}</table></div>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Kelola Indikator Pertanyaan</span><div class="cs" style="margin-left:30px">Daftar pertanyaan observasi mengikuti kriteria yang dipilih pada dropdown di bawah.</div></div><span class="btn">+ Tambah Indikator</span></div>
+<div class="note" style="display:flex;justify-content:space-between;align-items:center;margin:0 0 10px"><div><span class="lab">PILIH KRITERIA PENILAIAN</span> &nbsp; <span class="sel">${ph('C1 — Nama Kriteria')}</span></div><span class="chip">Total: ${ph('..')} Indikator</span></div>
+${[1, 2, 3].map(i => `<div class="item" style="display:flex;justify-content:space-between;align-items:center"><div><span class="chip">PERTANYAAN #${i}</span><span class="chip">C1</span><div style="margin-top:6px">${ph('Teks indikator penilaian')}</div></div><div>${act2}</div></div>`).join('')}</div>`;
+    S.ind = shell('ind', B.ind);
+
+    S.formInd = withModal('ind', B.ind, modal('Tambah Indikator Baru', 420,
+      fld('KRITERIA PENILAIAN', 'C1 - Nilai Agama dan Budi Pekerti', { up: true, ro: true }) +
+      fld('TEKS PERTANYAAN OBSERVASI', 'Contoh: Anak mampu mengenali dan menyebutkan simbol huruf/angka dasar.', { up: true, ta: true }) +
+      `<div class="note" style="margin:0 0 12px">ⓘ Jawaban anak memakai <b>Master Opsi Jawaban</b> yang sudah diatur pada section atas, sehingga tidak perlu diatur ulang per pertanyaan.</div>`,
+      'Simpan Indikator'));
+
+    // ---------- 10. Pengguna ----------
+    B.user = `<h1>Kelola Pengguna</h1><p class="sub">Kelola akun Tim Pendidik dan reset password akun dengan hak akses Kepala Sekolah.</p>
+<div class="card"><div class="ch"><div><span class="ico"></span><span class="ct">Daftar Akun Pengguna</span><div class="cs" style="margin-left:30px">Kepala Sekolah dapat mendaftarkan akun Tim Pendidik baru dan melakukan reset password.</div></div><div><span class="chip">Total: ${ph('..')} Akun</span> <span class="btn">+ Tambah Tim Pendidik</span></div></div>
+<table><tr><th>NO.</th><th>NAMA LENGKAP</th><th>EMAIL</th><th>ROLE</th><th>TANGGAL DIBUAT</th><th class="r">AKSI</th></tr>${trs(3, `<td>${ph('1')}</td><td>${ph('Nama Lengkap')}</td><td>${ph('email')}</td><td><span class="chip">${ph('Role')}</span></td><td>${ph('Tanggal')}</td><td class="r"><span class="btn o s">Reset Password</span> <span class="btn s">Hapus</span></td>`)}</table>
+<div class="note">Tombol <b>Reset Password</b> akan mengubah sandi akun pengguna bersangkutan menjadi sandi bawaan seketika tanpa mengganggu sesi Anda. Tombol <b>Hapus</b> akan menghapus akun tersebut secara permanen.</div></div>`;
+    S.user = shell('user', B.user);
+
+    S.formUser = withModal('user', B.user, modal('Tambah Akun Tim Pendidik', 440,
+      fld('Nama Lengkap', 'Contoh: Siti Aminah, S.Pd.', { req: true }) +
+      fld('Email', 'Contoh: pendidik@tkkencana.sch.id', { req: true }) +
+      fld('Password Awal', 'Minimal 6 karakter', { req: true }) +
+      `<div class="note" style="margin:0 0 12px">⛨ Akun yang dibuat otomatis memiliki role <b>Tim Pendidik</b> dan dapat langsung digunakan untuk login ke aplikasi.</div>`,
+      'Simpan Akun'));
+
+    // ---------- 11. Kelola Akun ----------
+    S.akun = shell('', `<div style="max-width:620px;margin:0 auto"><div class="back">← Kembali ke Dashboard</div><h1 style="margin-bottom:14px">Kelola Akun</h1>
+<div class="row2"><div class="card"><div class="ct" style="margin-bottom:12px">Informasi Profil</div><div class="lab">Nama Lengkap</div><div class="inp">${ph('Nama Lengkap')}</div><div class="lab">Email</div><div class="inp">${ph('email')}</div><span class="btn" style="display:block;text-align:center">Simpan Perubahan</span></div>
+<div class="card"><div class="ct" style="margin-bottom:12px">Keamanan</div><div class="lab">Password Baru</div><div class="inp">&nbsp;</div><div class="lab">Konfirmasi Password</div><div class="inp">&nbsp;</div><span class="btn" style="display:block;text-align:center">Update Password</span></div></div></div>`);
+
+    const NAMES = [
+      ['login', '1 Login'],
+      ['dashKepsek', '2 Dashboard (Kepsek)'],
+      ['dashTim', '2a Dashboard (Tim)'],
+      ['kelas', '3 Kelas & Anak'],
+      ['formKelas', '3a Form Kelas'],
+      ['anak', '4 Daftar Anak'],
+      ['formAnak', '4a Form Anak'],
+      ['nilai', '5 Penilaian'],
+      ['nilaiDetail', '6 Detail: Lihat (Kepsek)'],
+      ['nilaiEdit', '6a Detail: Edit (Tim)'],
+      ['lap', '7 Laporan'],
+      ['krit', '8 Kriteria & Bobot'],
+      ['formKrit', '8a Form Kriteria'],
+      ['ind', '9 Indikator'],
+      ['formInd', '9a Form Indikator'],
+      ['user', '10 Pengguna'],
+      ['formUser', '10a Form Akun'],
+      ['akun', '11 Kelola Akun']
+    ];
+    document.getElementById('root').innerHTML = NAMES.map(n => `<div class="screen" id="s-${n[0]}">${S[n[0]]}</div>`).join('');
+    const bar = document.getElementById('bar');
+    bar.innerHTML = NAMES.map(n => `<button data-k="${n[0]}">${n[1]}</button>`).join('') + '<button id="hide" style="width:100%">Sembunyikan menu (tekan H untuk tampil lagi)</button>';
+    function show(k) { document.querySelectorAll('.screen').forEach(e => e.classList.toggle('on', e.id === 's-' + k)); bar.querySelectorAll('button[data-k]').forEach(b => b.classList.toggle('on', b.dataset.k === k)); location.hash = k }
+    bar.addEventListener('click', e => { if (e.target.dataset.k) show(e.target.dataset.k); if (e.target.id === 'hide') bar.style.display = 'none' });
+    document.addEventListener('keydown', e => { if (e.key === 'h' || e.key === 'H') bar.style.display = bar.style.display === 'none' ? 'flex' : 'none' });
+    show((location.hash || '#login').slice(1) in S ? (location.hash || '#login').slice(1) : 'login');
+  </script>
+</body>
+
+</html>
