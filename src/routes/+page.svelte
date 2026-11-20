@@ -135,19 +135,11 @@
 
 <div class="space-y-6 md:space-y-8">
   <!-- Header Section -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-    <div>
-      <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Dashboard Utama</h1>
-      <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2 bg-slate-100 px-3 py-1 rounded-full w-fit">
-        TAHUN AJARAN {currentTahunAjaran}
-      </p>
-    </div>
-    <div class="flex items-center space-x-3">
-      <a href="/kelas" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200">
-        <Plus class="w-4 h-4 mr-1.5" />
-        <span>Kelola Kelas & Anak</span>
-      </a>
-    </div>
+  <div>
+    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Dashboard Utama</h1>
+    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2 bg-slate-100 px-3 py-1 rounded-full w-fit">
+      TAHUN AJARAN {currentTahunAjaran}
+    </p>
   </div>
 
   {#if loading}
