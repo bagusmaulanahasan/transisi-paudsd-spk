@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { fetchKelasDenganJumlahAnak } from '$lib/services/kelas';
   import { peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
+  import { getTahunAjaranBerjalan } from '$lib/dateUtils';
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { confirmAction } from '$lib/confirm';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
@@ -42,12 +43,8 @@
   /**
    * Menentukan tahun ajaran berjalan (dimulai bulan Juli) sebagai nilai awal form.
    */
-  function tahunAjaranSekarang() {
-    const sekarang = new Date();
-    const tahun = sekarang.getFullYear();
-    const tahunMulai = sekarang.getMonth() >= 6 ? tahun : tahun - 1;
-    return `${tahunMulai}/${tahunMulai + 1}`;
-  }
+  // Diganti oleh getTahunAjaranBerjalan dari dateUtils
+  // function tahunAjaranSekarang() { ... }
 
   onMount(async () => {
     const data = await fetchKelasDenganJumlahAnak(terapkanKelas);
@@ -68,7 +65,12 @@
     tahunList = Array.from(setTahun).sort().reverse();
 
     if (tahunList.length > 0 && (!selectedTahun || !tahunList.includes(selectedTahun))) {
-      selectedTahun = tahunList[0]; // Default ke tahun ajaran terbaru
+      const berjalan = getTahunAjaranBerjalan();
+      if (tahunList.includes(berjalan)) {
+        selectedTahun = berjalan;
+      } else {
+        selectedTahun = tahunList[0]; // Fallback ke tahun ajaran terbaru
+      }
     }
   }
 
@@ -96,7 +98,7 @@
     isEditing = false;
     currentId = null;
     namaKelas = '';
-    tahunAjaran = tahunAjaranSekarang();
+    tahunAjaran = getTahunAjaranBerjalan();
     showModal = true;
   }
 

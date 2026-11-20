@@ -1,6 +1,7 @@
 <script>
   import { supabase } from '$lib/db/supabase';
   import { hitungBobotAhp } from '$lib/spk/ahp';
+  import { getTahunAjaranBerjalan } from '$lib/dateUtils';
   import { cachedFetch, peekMemoryCache } from '$lib/db/cache';
   import { onMount } from 'svelte';
   import { 
@@ -26,6 +27,7 @@
   let statusAhp = 'Memuat...';
   let ahpWarna = 'text-slate-600 bg-slate-50';
   let kelasList = [];
+  let currentTahunAjaran = '';
   let userRole = null;
 
   if (dataAwal) terapkanDashboard(dataAwal);
@@ -78,8 +80,27 @@
    * @param {Object} data - Hasil dari ambilDashboard().
    */
   function terapkanDashboard(data) {
-    totalKelas = data.kelas.length;
-    totalAnak = data.anak.length;
+    // Tentukan tahun ajaran berjalan
+    const defaultTahun = getTahunAjaranBerjalan();
+    const adaKelasTahunIni = data.kelas.some(k => k.tahun_ajaran === defaultTahun);
+
+    if (adaKelasTahunIni) {
+      currentTahunAjaran = defaultTahun;
+    } else if (data.kelas.length > 0) {
+      // Fallback ke tahun ajaran terbaru
+      const sortedTahun = [...new Set(data.kelas.map(k => k.tahun_ajaran))].sort().reverse();
+      currentTahunAjaran = sortedTahun[0];
+    } else {
+      currentTahunAjaran = defaultTahun;
+    }
+
+    // Filter data berdasarkan tahun ajaran terpilih
+    const filteredKelas = data.kelas.filter(k => k.tahun_ajaran === currentTahunAjaran);
+    const filteredKelasIds = new Set(filteredKelas.map(k => k.id));
+    const filteredAnak = data.anak.filter(a => filteredKelasIds.has(a.kelas_id));
+
+    totalKelas = filteredKelas.length;
+    totalAnak = filteredAnak.length;
 
     const ahpCheck = hitungBobotAhp(data.kriteria, data.ahp);
     if (ahpCheck.ahpSiap) {
@@ -92,7 +113,7 @@
 
     const kelasSudahDinilai = new Set(data.hasil.map((baris) => baris.kelas_id));
 
-    kelasList = data.kelas.map((kelas) => {
+    kelasList = filteredKelas.map((kelas) => {
       const jumlahAnak = data.anak.filter((anak) => anak.kelas_id === kelas.id).length;
       const sudahDinilai = kelasSudahDinilai.has(kelas.id);
 
@@ -117,7 +138,9 @@
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
     <div>
       <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Dashboard Utama</h1>
-      <p class="text-sm text-slate-500 mt-1 font-medium">Panel kendali sistem penunjang keputusan TK Islam Kencana.</p>
+      <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mt-2 bg-slate-100 px-3 py-1 rounded-full w-fit">
+        TAHUN AJARAN {currentTahunAjaran}
+      </p>
     </div>
     <div class="flex items-center space-x-3">
       <a href="/kelas" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-blue-200">

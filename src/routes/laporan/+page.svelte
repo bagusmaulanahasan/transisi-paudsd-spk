@@ -10,6 +10,7 @@
   import DetailMoora from './DetailMoora.svelte';
   import TahapBobot from './TahapBobot.svelte';
   import TahapMatriksHasil from './TahapMatriksHasil.svelte';
+  import { getTahunAjaranBerjalan } from '$lib/dateUtils';
   import PageHeader from '$lib/components/ui/PageHeader.svelte';
   import { FileText, Loader2, School, Printer, Download, FileSpreadsheet, FileCode } from 'lucide-svelte';
   import OfflineNotice from '$lib/components/ui/OfflineNotice.svelte';
@@ -54,10 +55,13 @@
       perbandinganList = data.perbandingan || [];
 
       tahunList = [...new Set(kelasList.map(k => k.tahun_ajaran))].sort().reverse();
-      if (tahunList.length > 0) {
+      const berjalan = getTahunAjaranBerjalan();
+      if (tahunList.includes(berjalan)) {
+        selectedTahun = berjalan;
+      } else if (tahunList.length > 0) {
         selectedTahun = tahunList[0];
-        gantiTahun();
       }
+      gantiTahun();
       loadingMaster = false;
     } catch (err) {
       console.error('Gagal memuat master data:', err);
