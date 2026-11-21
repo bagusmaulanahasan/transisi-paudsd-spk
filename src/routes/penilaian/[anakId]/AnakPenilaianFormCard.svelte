@@ -115,7 +115,7 @@
         <ClipboardList class="w-5 h-5 text-blue-600" />
       </div>
       <div>
-        <h2 class="text-lg font-bold text-slate-900 tracking-tight">Jawaban Penilaian</h2>
+        <h2 class="text-lg font-bold text-slate-900 tracking-tight">Profil Kebutuhan</h2>
         <p class="text-xs text-slate-500 mt-1 leading-relaxed">
           {#if readOnly}
             Mode hanya baca — Kepala Sekolah dapat melihat jawaban tanpa mengubahnya.

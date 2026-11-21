@@ -27,7 +27,7 @@
         <MessageSquareText class="w-5 h-5 text-blue-600" />
       </div>
       <div>
-        <h2 class="text-lg font-bold text-slate-900 tracking-tight">Kelola Indikator Pertanyaan</h2>
+        <h2 class="text-lg font-bold text-slate-900 tracking-tight">Kelola Indikator Penilaian</h2>
         <p class="text-xs text-slate-500 mt-1 leading-relaxed max-w-xl">
           Daftar pertanyaan observasi mengikuti kriteria yang dipilih pada dropdown di bawah.
         </p>
