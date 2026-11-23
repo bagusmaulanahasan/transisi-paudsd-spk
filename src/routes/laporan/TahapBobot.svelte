@@ -1,4 +1,6 @@
 <script>
+  import { formatAngka } from '$lib/utils/angka';
+
   export let kriteriaList = [];
   export let bobot = [];
   export let ahpSiap = false;
@@ -9,7 +11,7 @@
   <div class="flex items-center justify-between border-b border-slate-100 pb-3 print:border-slate-300">
     <h2 class="text-lg font-bold text-slate-900 tracking-tight">Kriteria Penilaian dan Bobot Prioritas</h2>
     <span class={`px-2.5 py-1 rounded-full text-xs font-semibold print:bg-white print:border-slate-300 ${ahpSiap ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}`}>
-      {ahpSiap ? 'Konsisten (CR ≤ 0.1000)' : 'Perlu Diperbaiki'}
+      {ahpSiap ? 'Konsisten (CR ≤ 0,1000)' : 'Perlu Diperbaiki'}
     </span>
   </div>
 
@@ -29,7 +31,7 @@
             <td class="p-3 font-bold print:border print:border-slate-300">C{item.urutan || i + 1}</td>
             <td class="p-3 font-medium print:border print:border-slate-300">{item.nama}</td>
             <td class="p-3 font-semibold uppercase text-slate-500 print:border print:border-slate-300">{item.jenis}</td>
-            <td class="p-3 font-bold text-slate-900 print:border print:border-slate-300">{(bobot[i] ?? 0).toFixed(4)}</td>
+            <td class="p-3 font-bold text-slate-900 print:border print:border-slate-300">{formatAngka(bobot[i] ?? 0, 4)}</td>
           </tr>
         {/each}
       </tbody>

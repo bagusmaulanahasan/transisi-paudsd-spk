@@ -2,6 +2,7 @@
   import Card from '$lib/components/ui/Card.svelte';
   import { CheckCircle2, AlertCircle, ClipboardList, Filter } from 'lucide-svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
+  import { formatAngka } from '$lib/utils/angka';
   import KriteriaPenilaianTabel from './KriteriaPenilaianTabel.svelte';
   import KriteriaPenilaianForm from './KriteriaPenilaianForm.svelte';
 
@@ -192,7 +193,7 @@
                   Ternilai {info.terisi}/{info.jumlah} Indikator
                 </span>
                 <span class="px-2.5 py-1 rounded-lg border {info.kategori.badgeClass}">
-                  Nilai {info.nilai !== null ? info.nilai.toFixed(4) : '—'}
+                  Nilai {info.nilai !== null ? formatAngka(info.nilai, 4) : '—'}
                   {#if info.nilai !== null}· {info.kategori.label}{/if}
                 </span>
               </div>

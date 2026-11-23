@@ -3,6 +3,8 @@
  * Setiap nilai hasil perhitungan dibulatkan menjadi 4 angka di belakang koma.
  */
 
+import { formatAngka } from '../utils/angka.js';
+
 // Random Index (RI) standar untuk ukuran matriks 1 sampai 10
 const RANDOM_INDEX = {
   1: 0.0,
@@ -177,7 +179,7 @@ export function hitungBobotAhp(kriteriaList, perbandinganList) {
     ahpSiap: hasil.isConsistent,
     pesan: hasil.isConsistent
       ? ''
-      : `Matriks AHP belum konsisten (CR = ${hasil.cr.toFixed(4)}, batas 0.1000). Perbaiki perbandingan agar bobot dapat dipakai.`
+      : `Matriks AHP belum konsisten (CR = ${formatAngka(hasil.cr, 4)}, batas 0,1000). Perbaiki perbandingan agar bobot dapat dipakai.`
   };
 }
 

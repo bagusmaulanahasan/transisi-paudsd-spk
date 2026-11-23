@@ -2,6 +2,7 @@
   import Table from '$lib/components/ui/Table.svelte';
   import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
+  import { formatAngka } from '$lib/utils/angka';
   import { nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
   import Input from '$lib/components/ui/Input.svelte';
   import Select from '$lib/components/ui/Select.svelte';
@@ -95,13 +96,13 @@
     <div class="flex flex-wrap items-center gap-3 text-xs p-3 bg-slate-50 border border-slate-200 rounded-xl">
       <span class="font-bold text-slate-700">Kategori Skala Nilai:</span>
       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-        Rendah (1 – 1.6667)
+        Rendah (1 – 1,6667)
       </span>
       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
-        Sedang (1.6668 – 2.3333)
+        Sedang (1,6668 – 2,3333)
       </span>
       <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
-        Tinggi (2.3334 – 3)
+        Tinggi (2,3334 – 3)
       </span>
     </div>
 
@@ -121,7 +122,7 @@
         <span class="font-bold text-sm text-slate-900">{nilaiNama(item, jenisTampilan) || '—'}</span>
       {:else if col.key === 'yi'}
         {#if item.yi !== null}
-          <span class="font-bold text-sm text-slate-900">{item.yi.toFixed(4)}</span>
+          <span class="font-bold text-sm text-slate-900">{formatAngka(item.yi, 4)}</span>
         {:else}
           <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">
             Belum Lengkap ({item.terjawab}/{item.total})
@@ -139,8 +140,8 @@
         {@const val = item[col.key]}
         {@const kat = getKategoriNilai(val)}
         <div class="flex items-center justify-center">
-          <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {val.toFixed(4)} ({kat.label})">
-            {val.toFixed(4)}
+          <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {formatAngka(val, 4)} ({kat.label})">
+            {formatAngka(val, 4)}
           </span>
         </div>
       {/if}

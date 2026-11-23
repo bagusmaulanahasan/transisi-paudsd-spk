@@ -1,6 +1,7 @@
 <script>
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
+  import { formatAngka } from '$lib/utils/angka';
   import { Edit2, Save, CheckCircle2, AlertCircle, Scale } from 'lucide-svelte';
 
   export let kriteriaList = [];
@@ -22,7 +23,7 @@
       </div>
       <div>
         <h2 class="text-lg font-bold text-slate-900 tracking-tight">Matriks Perbandingan Berpasangan (AHP)</h2>
-        <p class="text-xs text-slate-500 mt-0.5">Batas konsistensi yang diizinkan: CR ≤ 0.1000. Simpan perubahan ke database setelah nilai konsisten.</p>
+        <p class="text-xs text-slate-500 mt-0.5">Batas konsistensi yang diizinkan: CR ≤ 0,1000. Simpan perubahan ke database setelah nilai konsisten.</p>
       </div>
     </div>
     <div class="flex items-center gap-2">
@@ -86,7 +87,7 @@
             {#each kriteriaList as kj, j}
               <td class="p-2 border border-slate-200">
                 {#if i === j}
-                  <div class="w-20 mx-auto py-1.5 px-2 bg-slate-100 text-slate-400 font-bold rounded-lg border border-transparent">1.0000</div>
+                  <div class="w-20 mx-auto py-1.5 px-2 bg-slate-100 text-slate-400 font-bold rounded-lg border border-transparent">1,0000</div>
                 {:else if i < j}
                   {#if modeEditMatriks}
                     <input
@@ -100,18 +101,18 @@
                     />
                   {:else}
                     <div class="w-20 mx-auto py-1.5 px-2 bg-slate-50 text-slate-700 font-semibold rounded-lg border border-slate-100">
-                      {Number.isFinite(pairwiseMatrix[i][j]) ? pairwiseMatrix[i][j].toFixed(4) : ''}
+                      {Number.isFinite(pairwiseMatrix[i][j]) ? formatAngka(pairwiseMatrix[i][j], 4) : ''}
                     </div>
                   {/if}
                 {:else}
                   <div class="w-20 mx-auto py-1.5 px-2 bg-slate-50 text-slate-500 font-medium rounded-lg border border-slate-100">
-                    {Number.isFinite(pairwiseMatrix[i][j]) ? pairwiseMatrix[i][j].toFixed(4) : ''}
+                    {Number.isFinite(pairwiseMatrix[i][j]) ? formatAngka(pairwiseMatrix[i][j], 4) : ''}
                   </div>
                 {/if}
               </td>
             {/each}
             <td class="p-3 font-extrabold border border-slate-200 bg-blue-50/30">
-              {ahpResult.weights[i] ? ahpResult.weights[i].toFixed(4) : '0.0000'}
+              {formatAngka(ahpResult.weights[i] ?? 0, 4)}
             </td>
           </tr>
         {/each}
@@ -124,14 +125,14 @@
     {#if ahpResult.isConsistent}
       <CheckCircle2 class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
       <div>
-        <p class="text-xs font-extrabold uppercase tracking-wide">Matriks Konsisten (CR = {ahpResult.cr.toFixed(4)})</p>
+        <p class="text-xs font-extrabold uppercase tracking-wide">Matriks Konsisten (CR = {formatAngka(ahpResult.cr, 4)})</p>
         <p class="text-[11px] mt-0.5 opacity-90 font-medium text-emerald-700/80">Bobot kriteria sah dan dapat disimpan untuk digunakan pada perankingan MOORA.</p>
       </div>
     {:else}
       <AlertCircle class="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
       <div>
-        <p class="text-xs font-extrabold uppercase tracking-wide">Belum Konsisten (CR = {ahpResult.cr.toFixed(4)})</p>
-        <p class="text-[11px] mt-0.5 opacity-90 font-medium text-red-700/80">Rasio konsistensi melebihi 0.1000. Harap perbaiki perbandingan nilai antar kriteria.</p>
+        <p class="text-xs font-extrabold uppercase tracking-wide">Belum Konsisten (CR = {formatAngka(ahpResult.cr, 4)})</p>
+        <p class="text-[11px] mt-0.5 opacity-90 font-medium text-red-700/80">Rasio konsistensi melebihi 0,1000. Harap perbaiki perbandingan nilai antar kriteria.</p>
       </div>
     {/if}
   </div>

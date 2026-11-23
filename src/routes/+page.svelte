@@ -104,7 +104,7 @@
 
     const ahpCheck = hitungBobotAhp(data.kriteria, data.ahp);
     if (ahpCheck.ahpSiap) {
-      statusAhp = 'Konsisten (CR ≤ 0.1000)';
+      statusAhp = 'Konsisten (CR ≤ 0,1000)';
       ahpWarna = 'text-emerald-600 bg-emerald-50';
     } else {
       statusAhp = 'Belum / Perlu Diperbaiki';

@@ -2,6 +2,7 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import Table from '$lib/components/ui/Table.svelte';
+  import { formatAngka } from '$lib/utils/angka';
   import { Plus, Trash2, Edit2, ListTree } from 'lucide-svelte';
 
   export let kriteriaList = [];
@@ -54,7 +55,7 @@
             {item.jenis}
           </span>
         {:else if col.key === 'bobot'}
-          <span class="font-extrabold text-slate-900">{ahpResult.weights[index] ? ahpResult.weights[index].toFixed(4) : '0.0000'}</span>
+          <span class="font-extrabold text-slate-900">{formatAngka(ahpResult.weights[index] ?? 0, 4)}</span>
         {:else if col.key === 'aksi'}
           <div class="space-x-2">
             <Button variant="ghost" className="p-2" title="Edit Kriteria" on:click={() => openEditModal(item)}>

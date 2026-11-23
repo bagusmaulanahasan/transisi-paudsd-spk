@@ -4,6 +4,7 @@
     ChevronUp 
   } from 'lucide-svelte';
   import { getKategoriNilai } from '$lib/spk/moora';
+  import { formatAngka } from '$lib/utils/angka';
   import FilterTampilanNama from '$lib/components/ui/FilterTampilanNama.svelte';
   import { nilaiNama, tampilanNamaAktif } from '$lib/stores/tampilanNama';
 
@@ -71,13 +72,13 @@
             <div class="flex flex-wrap items-center gap-3 p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
               <span class="font-bold text-slate-700">Kategori Skala Nilai:</span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Rendah (1 – 1.6667)
+                Rendah (1 – 1,6667)
               </span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200">
-                Sedang (1.6668 – 2.3333)
+                Sedang (1,6668 – 2,3333)
               </span>
               <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-extrabold bg-rose-50 text-rose-700 border border-rose-200">
-                Tinggi (2.3334 – 3)
+                Tinggi (2,3334 – 3)
               </span>
             </div>
 
@@ -106,7 +107,7 @@
                         {@const kat = getKategoriNilai(val)}
                         <td class="p-2 border border-slate-200 font-medium text-slate-700">
                           <span class="inline-block px-2 py-0.5 rounded font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Kategori: {kat.label}">
-                            {val.toFixed(4)}
+                            {formatAngka(val, 4)}
                           </span>
                         </td>
                       {/each}
@@ -151,7 +152,7 @@
               {#each kriteriaList as k, j}
                 {@const rawValues = mooraDetail.lengkap.map(b => b.nilai[j])}
                 <div class="pb-1.5 border-b border-slate-200/60 last:border-0">
-                  <strong>C{k.urutan || j+1} ({k.nama})</strong> = √( {rawValues.map(v => `${v}^2`).join(' + ')} ) = <strong>{(mooraDetail.pembagi[j] ?? 0).toFixed(4)}</strong>
+                  <strong>C{k.urutan || j+1} ({k.nama})</strong> = √( {rawValues.map(v => `${formatAngka(v, 4)}^2`).join(' + ')} ) = <strong>{formatAngka(mooraDetail.pembagi[j] ?? 0, 4)}</strong>
                 </div>
               {/each}
             </div>
@@ -176,7 +177,7 @@
         {#if openSteps.B3}
           <div class="p-4 space-y-4 bg-white border-t border-slate-200 text-xs">
             <p class="text-slate-600">Rumus: x*ᵢⱼ = xᵢⱼ / pembagiⱼ. Contoh substitusi anak pertama ({mooraDetail.lengkap[0]?.nama}), kriteria C1: 
-              {mooraDetail.lengkap[0]?.nilai[0]} / {mooraDetail.pembagi[0]} = <strong>{(mooraDetail.normalisasi[0]?.[0] ?? 0).toFixed(4)}</strong>
+              {formatAngka(mooraDetail.lengkap[0]?.nilai[0], 4)} / {formatAngka(mooraDetail.pembagi[0], 4)} = <strong>{formatAngka(mooraDetail.normalisasi[0]?.[0] ?? 0, 4)}</strong>
             </p>
             <div class="overflow-x-auto">
               <table class="w-full text-center border-collapse border border-slate-200">
@@ -197,7 +198,7 @@
                         {nilaiNama(baris, jenisTampilan) || '—'}
                       </td>
                       {#each (mooraDetail.normalisasi[idx] || []) as val}
-                        <td class="p-2 border border-slate-200 font-medium text-slate-700">{val.toFixed(4)}</td>
+                        <td class="p-2 border border-slate-200 font-medium text-slate-700">{formatAngka(val, 4)}</td>
                       {/each}
                     </tr>
                   {/each}
@@ -225,7 +226,7 @@
         {#if openSteps.B4}
           <div class="p-4 space-y-4 bg-white border-t border-slate-200 text-xs">
             <p class="text-slate-600">Rumus: yᵢⱼ = wⱼ × x*ᵢⱼ. Menggunakan bobot AHP (wⱼ). Contoh substitusi anak pertama, kriteria C1: 
-              {(bobot[0] ?? 0).toFixed(4)} × {(mooraDetail.normalisasi[0]?.[0] ?? 0).toFixed(4)} = <strong>{(mooraDetail.berbobot[0]?.[0] ?? 0).toFixed(4)}</strong>
+              {formatAngka(bobot[0] ?? 0, 4)} × {formatAngka(mooraDetail.normalisasi[0]?.[0] ?? 0, 4)} = <strong>{formatAngka(mooraDetail.berbobot[0]?.[0] ?? 0, 4)}</strong>
             </p>
             <div class="overflow-x-auto">
               <table class="w-full text-center border-collapse border border-slate-200">
@@ -233,7 +234,7 @@
                   <tr class="bg-blue-50 text-blue-900 font-bold">
                     <th class="p-2 border border-slate-200 text-left">Bobot AHP (wⱼ)</th>
                     {#each kriteriaList as k, j}
-                      <th class="p-2 border border-slate-200">{(bobot[j] ?? 0).toFixed(4)}</th>
+                      <th class="p-2 border border-slate-200">{formatAngka(bobot[j] ?? 0, 4)}</th>
                     {/each}
                   </tr>
                   <tr class="bg-slate-50 text-slate-600 font-bold">
@@ -252,7 +253,7 @@
                         {nilaiNama(baris, jenisTampilan) || '—'}
                       </td>
                       {#each (mooraDetail.berbobot[idx] || []) as val}
-                        <td class="p-2 border border-slate-200 font-medium text-slate-700">{val.toFixed(4)}</td>
+                        <td class="p-2 border border-slate-200 font-medium text-slate-700">{formatAngka(val, 4)}</td>
                       {/each}
                     </tr>
                   {/each}
@@ -286,7 +287,7 @@
                 {#if item}
                   <div class="pb-1.5 border-b border-slate-200/60 last:border-0">
                     <strong>{nilaiNama(baris, jenisTampilan) || '—'}</strong>: 
-                    Benefit ({item.benefitSum.toFixed(4)}) - Cost ({item.costSum.toFixed(4)}) = <strong class="text-blue-700">Yi = {item.yi.toFixed(4)}</strong>
+                    Benefit ({formatAngka(item.benefitSum, 4)}) - Cost ({formatAngka(item.costSum, 4)}) = <strong class="text-blue-700">Yi = {formatAngka(item.yi, 4)}</strong>
                   </div>
                 {/if}
               {/each}
@@ -340,7 +341,7 @@
                         {/if}
                       </td>
                       <td class="p-2.5 border border-slate-200 text-right font-extrabold text-slate-900">
-                        {baris.yi !== null ? baris.yi.toFixed(4) : '—'}
+                        {baris.yi !== null ? formatAngka(baris.yi, 4) : '—'}
                       </td>
                                             <td class="p-2.5 border border-slate-200 text-center">
                         {#if baris.ranking !== null}

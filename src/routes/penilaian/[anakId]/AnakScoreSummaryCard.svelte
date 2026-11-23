@@ -1,5 +1,6 @@
 <script>
   import Card from '$lib/components/ui/Card.svelte';
+  import { formatAngka } from '$lib/utils/angka';
   import { Trophy, Target } from 'lucide-svelte';
 
   export let barisSaya = null;
@@ -13,7 +14,7 @@
       <div>
         <p class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Nilai Yi</p>
         <p class="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
-          {barisSaya && barisSaya.lengkap && barisSaya.yi !== null ? barisSaya.yi.toFixed(4) : '—'}
+          {barisSaya && barisSaya.lengkap && barisSaya.yi !== null ? formatAngka(barisSaya.yi, 4) : '—'}
         </p>
       </div>
       <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
