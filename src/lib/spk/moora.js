@@ -12,7 +12,11 @@ const FAKTOR = 10 ** DESIMAL;
  * Memakai pembulatan setengah ke atas (half-up) agar cocok dengan hitung manual/Excel.
  */
 function bulat(nilai) {
-  return (Math.sign(nilai) * Math.round((Math.abs(nilai) + Number.EPSILON) * FAKTOR)) / FAKTOR;
+  return (
+    (Math.sign(nilai) *
+      Math.round((Math.abs(nilai) + Number.EPSILON) * FAKTOR)) /
+    FAKTOR
+  );
 }
 
 /**
@@ -26,15 +30,62 @@ function bulat(nilai) {
  * @param {number} [maxPoin=3] - Poin terbesar skala.
  * @returns {{ label: string, warna: string, bgClass: string, textClass: string, borderClass: string, badgeClass: string }}
  */
+// export function getKategoriNilai(nilai, minPoin = 1, maxPoin = 3) {
+//   if (nilai === null || nilai === undefined || isNaN(nilai) || nilai === 0) {
+//     return {
+//       label: '—',
+//       warna: 'slate',
+//       bgClass: 'bg-slate-100',
+//       textClass: 'text-slate-500',
+//       borderClass: 'border-slate-200',
+//       badgeClass: 'bg-slate-100 text-slate-500 border-slate-200'
+//     };
+//   }
+
+//   const rentang = (maxPoin - minPoin) / 3;
+//   const batasRendah = bulat(minPoin + rentang);
+//   const batasSedang = bulat(minPoin + 2 * rentang);
+
+//   if (nilai <= batasRendah) {
+//     return {
+//       label: 'Rendah',
+//       warna: 'hijau',
+//       bgClass: 'bg-emerald-50',
+//       textClass: 'text-emerald-700',
+//       borderClass: 'border-emerald-200',
+//       badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+//     };
+//   } else if (nilai <= batasSedang) {
+//     return {
+//       label: 'Sedang',
+//       warna: 'kuning',
+//       bgClass: 'bg-amber-50',
+//       textClass: 'text-amber-700',
+//       borderClass: 'border-amber-200',
+//       badgeClass: 'bg-amber-50 text-amber-700 border-amber-200'
+//     };
+//   } else {
+//     return {
+//       label: 'Tinggi',
+//       warna: 'merah',
+//       bgClass: 'bg-rose-50',
+//       textClass: 'text-rose-700',
+//       borderClass: 'border-rose-200',
+//       badgeClass: 'bg-rose-50 text-rose-700 border-rose-200'
+//     };
+//   }
+// }
+
 export function getKategoriNilai(nilai, minPoin = 1, maxPoin = 3) {
   if (nilai === null || nilai === undefined || isNaN(nilai) || nilai === 0) {
     return {
-      label: '—',
-      warna: 'slate',
-      bgClass: 'bg-slate-100',
-      textClass: 'text-slate-500',
-      borderClass: 'border-slate-200',
-      badgeClass: 'bg-slate-100 text-slate-500 border-slate-200'
+      label: "—",
+      singkatan: "—",
+      warna: "slate",
+      bgClass: "bg-slate-100",
+      textClass: "text-slate-600",
+      borderClass: "border-slate-300",
+      badgeClass: "bg-slate-100 text-slate-600 border-slate-300",
     };
   }
 
@@ -44,30 +95,33 @@ export function getKategoriNilai(nilai, minPoin = 1, maxPoin = 3) {
 
   if (nilai <= batasRendah) {
     return {
-      label: 'Rendah',
-      warna: 'hijau',
-      bgClass: 'bg-emerald-50',
-      textClass: 'text-emerald-700',
-      borderClass: 'border-emerald-200',
-      badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+      label: "Rendah",
+      singkatan: "R",
+      warna: "hijau",
+      bgClass: "bg-emerald-50",
+      textClass: "text-emerald-900",
+      borderClass: "border-emerald-300",
+      badgeClass: "bg-emerald-50 text-emerald-800 border-emerald-300",
     };
   } else if (nilai <= batasSedang) {
     return {
-      label: 'Sedang',
-      warna: 'kuning',
-      bgClass: 'bg-amber-50',
-      textClass: 'text-amber-700',
-      borderClass: 'border-amber-200',
-      badgeClass: 'bg-amber-50 text-amber-700 border-amber-200'
+      label: "Sedang",
+      singkatan: "S",
+      warna: "kuning",
+      bgClass: "bg-amber-50",
+      textClass: "text-amber-900",
+      borderClass: "border-amber-300",
+      badgeClass: "bg-amber-50 text-amber-900 border-amber-300",
     };
   } else {
     return {
-      label: 'Tinggi',
-      warna: 'merah',
-      bgClass: 'bg-rose-50',
-      textClass: 'text-rose-700',
-      borderClass: 'border-rose-200',
-      badgeClass: 'bg-rose-50 text-rose-700 border-rose-200'
+      label: "Tinggi",
+      singkatan: "T",
+      warna: "merah",
+      bgClass: "bg-rose-50",
+      textClass: "text-rose-900",
+      borderClass: "border-rose-300",
+      badgeClass: "bg-rose-50 text-rose-800 border-rose-300",
     };
   }
 }
@@ -80,7 +134,12 @@ export function getKategoriNilai(nilai, minPoin = 1, maxPoin = 3) {
  * @param {Array} jawabanList - Baris detail_penilaian yang sudah tersimpan.
  * @returns {Array} Baris per anak: nilai per kriteria, jumlah terjawab, status lengkap.
  */
-export function susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jawabanList) {
+export function susunMatriksKeputusan(
+  anakList,
+  kriteriaList,
+  indikatorList,
+  jawabanList
+) {
   const jawabanMap = new Map();
   for (const jawaban of jawabanList) {
     jawabanMap.set(`${jawaban.anak_id}-${jawaban.indikator_id}`, jawaban);
@@ -88,7 +147,9 @@ export function susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jaw
 
   return anakList.map((anak) => {
     const nilai = kriteriaList.map((kriteria) => {
-      const indikatorKriteria = indikatorList.filter((indikator) => indikator.kriteria_id === kriteria.id);
+      const indikatorKriteria = indikatorList.filter(
+        (indikator) => indikator.kriteria_id === kriteria.id
+      );
       if (indikatorKriteria.length === 0) return 0;
       const totalPoin = indikatorKriteria.reduce((total, indikator) => {
         const jawaban = jawabanMap.get(`${anak.id}-${indikator.id}`);
@@ -110,7 +171,7 @@ export function susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jaw
       nilai,
       terjawab,
       total,
-      lengkap: total > 0 && terjawab === total
+      lengkap: total > 0 && terjawab === total,
     };
   });
 }
@@ -151,15 +212,20 @@ export function hitungMoora({
   indikatorList,
   jawabanList,
   bobot = [],
-  ahpSiap = true
+  ahpSiap = true,
 }) {
-  const keputusan = susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jawabanList);
+  const keputusan = susunMatriksKeputusan(
+    anakList,
+    kriteriaList,
+    indikatorList,
+    jawabanList
+  );
   const lengkap = keputusan.filter((baris) => baris.lengkap);
 
   let normalisasi = [];
   let nilaiBerbobot = [];
 
-    if (ahpSiap && lengkap.length > 0) {
+  if (ahpSiap && lengkap.length > 0) {
     normalisasi = normalisasiMatriks(lengkap.map((baris) => baris.nilai));
     nilaiBerbobot = normalisasi.map((baris) =>
       baris.map((nilai, j) => bulat(nilai * (bobot[j] ?? 0)))
@@ -173,7 +239,7 @@ export function hitungMoora({
     if (ahpSiap && berbobot) {
       let total = 0;
       kriteriaList.forEach((kriteria, j) => {
-        total += kriteria.jenis === 'cost' ? -berbobot[j] : berbobot[j];
+        total += kriteria.jenis === "cost" ? -berbobot[j] : berbobot[j];
       });
       yi = bulat(total);
     }
@@ -183,7 +249,7 @@ export function hitungMoora({
       normalisasi: normalisasi[index] ?? null,
       berbobot,
       yi,
-      ranking: null
+      ranking: null,
     };
   });
 
@@ -206,16 +272,16 @@ export function hitungMoora({
       normalisasi: null,
       berbobot: null,
       yi: null,
-      ranking: null
+      ranking: null,
     }))
-    .sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+    .sort((a, b) => (a.nama || "").localeCompare(b.nama || ""));
 
   return {
     ahpSiap,
     bobot,
     baris: [...barisLengkap, ...barisBelumLengkap],
     jumlahLengkap: lengkap.length,
-    jumlahAnak: keputusan.length
+    jumlahAnak: keputusan.length,
   };
 }
 
@@ -231,9 +297,14 @@ export function getMooraDetail({
   indikatorList,
   jawabanList,
   bobot = [],
-  ahpSiap = true
+  ahpSiap = true,
 }) {
-  const keputusan = susunMatriksKeputusan(anakList, kriteriaList, indikatorList, jawabanList);
+  const keputusan = susunMatriksKeputusan(
+    anakList,
+    kriteriaList,
+    indikatorList,
+    jawabanList
+  );
   const lengkap = keputusan.filter((baris) => baris.lengkap);
   const belumLengkap = keputusan.filter((baris) => !baris.lengkap);
 
@@ -246,7 +317,7 @@ export function getMooraDetail({
       normalisasi: [],
       berbobot: [],
       hasilAkhir: [],
-      ahpSiap
+      ahpSiap,
     };
   }
 
@@ -275,7 +346,7 @@ export function getMooraDetail({
 
     kriteriaList.forEach((kriteria, j) => {
       const valW = rowW[j] ?? 0;
-      if (kriteria.jenis === 'cost') {
+      if (kriteria.jenis === "cost") {
         costSum += valW;
       } else {
         benefitSum += valW;
@@ -291,7 +362,7 @@ export function getMooraDetail({
       benefitSum: bulat(benefitSum),
       costSum: bulat(costSum),
       yi,
-      ranking: null
+      ranking: null,
     };
   });
 
@@ -313,30 +384,32 @@ export function getMooraDetail({
       indikatorList,
       jawabanList,
       bobot,
-      ahpSiap
+      ahpSiap,
     });
     const petaPembanding = new Map(pembanding.baris.map((b) => [b.anak_id, b]));
     for (const baris of hasilAkhir) {
       const lain = petaPembanding.get(baris.anak_id);
       if (!lain || lain.yi !== baris.yi || lain.ranking !== baris.ranking) {
         console.warn(
-          'getMooraDetail: hasil Yi/ranking berbeda dengan hitungMoora untuk',
+          "getMooraDetail: hasil Yi/ranking berbeda dengan hitungMoora untuk",
           baris.nama
         );
         break;
       }
     }
   } catch (e) {
-    console.warn('getMooraDetail assertion error:', e);
+    console.warn("getMooraDetail assertion error:", e);
   }
 
-  const barisBelumLengkapSorted = belumLengkap.map((baris) => ({
-    ...baris,
-    normalisasi: null,
-    berbobot: null,
-    yi: null,
-    ranking: null
-  })).sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+  const barisBelumLengkapSorted = belumLengkap
+    .map((baris) => ({
+      ...baris,
+      normalisasi: null,
+      berbobot: null,
+      yi: null,
+      ranking: null,
+    }))
+    .sort((a, b) => (a.nama || "").localeCompare(b.nama || ""));
 
   return {
     keputusan,
@@ -346,7 +419,6 @@ export function getMooraDetail({
     normalisasi,
     berbobot,
     hasilAkhir: [...hasilAkhir, ...barisBelumLengkapSorted],
-    ahpSiap
+    ahpSiap,
   };
 }
-
