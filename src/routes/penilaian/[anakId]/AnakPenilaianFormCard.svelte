@@ -52,7 +52,7 @@
 
   // ---- Filter capaian ----
   // Urutan dropdown: dari poin terkecil (belum bisa) ke terbesar (sudah bisa).
-  $: opsiUrut = [...opsiList].sort((a, b) => Number(a.poin) - Number(b.poin));
+  $: opsiUrut = [...opsiList].sort((a, b) => Number(b.poin) - Number(a.poin));
 
   $: semuaIndikator = indikatorPerKriteria.flatMap((kriteria) => kriteria.indikator || []);
 

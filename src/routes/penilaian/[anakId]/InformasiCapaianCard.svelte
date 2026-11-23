@@ -11,7 +11,7 @@
     { key: 'keterangan', label: 'Deskripsi', class: 'text-left' }
   ];
 
-  $: tableData = [...opsiList].sort((a, b) => a.poin - b.poin);
+  $: tableData = [...opsiList].sort((a, b) => b.poin - a.poin);
 </script>
 
 <Card className="overflow-hidden p-0">
