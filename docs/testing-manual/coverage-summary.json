@@ -1,0 +1,67 @@
+[
+  {
+    "name": "calculateAHP",
+    "file": "ahp.js",
+    "stTotal": 63,
+    "stCov": 63,
+    "stPct": 100,
+    "brTotal": 22,
+    "brCov": 22,
+    "brPct": 100,
+    "fnTotal": 1,
+    "fnCov": 1,
+    "fnPct": 100
+  },
+  {
+    "name": "normalisasiMatriks",
+    "file": "moora.js",
+    "stTotal": 18,
+    "stCov": 18,
+    "stPct": 100,
+    "brTotal": 10,
+    "brCov": 10,
+    "brPct": 100,
+    "fnTotal": 1,
+    "fnCov": 1,
+    "fnPct": 100
+  },
+  {
+    "name": "hitungMoora",
+    "file": "moora.js",
+    "stTotal": 73,
+    "stCov": 73,
+    "stPct": 100,
+    "brTotal": 30,
+    "brCov": 30,
+    "brPct": 100,
+    "fnTotal": 1,
+    "fnCov": 1,
+    "fnPct": 100
+  },
+  {
+    "name": "FILE ahp.js",
+    "file": "ahp.js",
+    "stTotal": 279,
+    "stCov": 122,
+    "stPct": 43.73,
+    "brTotal": 23,
+    "brCov": 23,
+    "brPct": 100,
+    "fnTotal": 5,
+    "fnCov": 2,
+    "fnPct": 40
+  },
+  {
+    "name": "FILE moora.js",
+    "file": "moora.js",
+    "stTotal": 351,
+    "stCov": 184,
+    "stPct": 52.42,
+    "brTotal": 53,
+    "brCov": 53,
+    "brPct": 100,
+    "fnTotal": 6,
+    "fnCov": 4,
+    "fnPct": 66.67
+  }
+]

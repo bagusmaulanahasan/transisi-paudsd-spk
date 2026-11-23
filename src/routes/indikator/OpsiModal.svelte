@@ -10,6 +10,7 @@
   export let isEditing = false;
   export let opsiText = '';
   export let keteranganText = '';
+  export let poinValue = 1;
   export let saving = false;
 </script>
 
@@ -32,6 +33,18 @@
     </div>
 
     <div>
+      <label for="poin" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Poin Penilaian (Skor)</label>
+      <input
+        id="poin"
+        type="number"
+        min="1"
+        bind:value={poinValue}
+        placeholder="Contoh: 1"
+        class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition shadow-sm"
+      />
+    </div>
+
+    <div>
       <label for="keterangan" class="block text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-2">Keterangan (Opsional)</label>
       <input
         id="keterangan"
@@ -43,7 +56,7 @@
     </div>
 
     <div class="p-3.5 bg-blue-50 border border-blue-100 rounded-xl text-[11px] font-medium text-blue-800 leading-relaxed">
-      Opsi ini berlaku untuk seluruh kriteria dan indikator. Poin dihitung otomatis berdasarkan urutan.
+      Opsi ini berlaku untuk seluruh kriteria dan indikator. Opsi diurutkan berdasarkan besarnya poin penilaian.
     </div>
   </div>
 

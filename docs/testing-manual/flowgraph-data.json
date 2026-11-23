@@ -1,0 +1,1798 @@
+{
+  "generatedAt": "2026-11-21T04:34:15.102Z",
+  "graphs": [
+    {
+      "name": "calculateAHP",
+      "title": "Flow Graph calculateAHP",
+      "nodes": [
+        {
+          "id": 1,
+          "label": "1. Mulai\nn = matrix.length",
+          "line": 33
+        },
+        {
+          "id": 2,
+          "label": "2. P1: n === 0",
+          "line": 34,
+          "decision": true
+        },
+        {
+          "id": 3,
+          "label": "3. return bobot kosong",
+          "line": 35
+        },
+        {
+          "id": 4,
+          "label": "4. P2: n === 1",
+          "line": 36,
+          "decision": true
+        },
+        {
+          "id": 5,
+          "label": "5. return bobot [1]",
+          "line": 37
+        },
+        {
+          "id": 6,
+          "label": "6. L1: map baris",
+          "line": 40,
+          "decision": true
+        },
+        {
+          "id": 7,
+          "label": "7. L2: map sel",
+          "line": 40,
+          "decision": true
+        },
+        {
+          "id": 8,
+          "label": "8. L3: for j colSums",
+          "line": 44,
+          "decision": true
+        },
+        {
+          "id": 9,
+          "label": "9. L4: for i jumlah kolom",
+          "line": 46,
+          "decision": true
+        },
+        {
+          "id": 10,
+          "label": "10. L5: for i normalisasi",
+          "line": 52,
+          "decision": true
+        },
+        {
+          "id": 11,
+          "label": "11. L6: for j normalisasi",
+          "line": 53,
+          "decision": true
+        },
+        {
+          "id": 12,
+          "label": "12. L7: for i bobot",
+          "line": 60,
+          "decision": true
+        },
+        {
+          "id": 13,
+          "label": "13. L8: for j bobot",
+          "line": 62,
+          "decision": true
+        },
+        {
+          "id": 14,
+          "label": "14. L9: for i aw",
+          "line": 69,
+          "decision": true
+        },
+        {
+          "id": 15,
+          "label": "15. L10: for j aw",
+          "line": 71,
+          "decision": true
+        },
+        {
+          "id": 16,
+          "label": "16. P11: RANDOM_INDEX[n] || 0",
+          "line": 84,
+          "decision": true
+        },
+        {
+          "id": 17,
+          "label": "17. ri = RANDOM_INDEX[n]",
+          "line": 84
+        },
+        {
+          "id": 18,
+          "label": "18. ri = 0",
+          "line": 84
+        },
+        {
+          "id": 19,
+          "label": "19. P12: ri ? ... : 0",
+          "line": 85,
+          "decision": true
+        },
+        {
+          "id": 20,
+          "label": "20. cr = bulat(ci / ri)",
+          "line": 85
+        },
+        {
+          "id": 21,
+          "label": "21. cr = 0",
+          "line": 85
+        },
+        {
+          "id": 22,
+          "label": "22. return hasil",
+          "line": 87
+        },
+        {
+          "id": 23,
+          "label": "23. Selesai",
+          "line": 94
+        }
+      ],
+      "edges": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          23
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          23
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          8
+        ],
+        [
+          7,
+          7
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          9
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          9,
+          9
+        ],
+        [
+          9,
+          8
+        ],
+        [
+          10,
+          11
+        ],
+        [
+          10,
+          12
+        ],
+        [
+          11,
+          11
+        ],
+        [
+          11,
+          10
+        ],
+        [
+          12,
+          13
+        ],
+        [
+          12,
+          14
+        ],
+        [
+          13,
+          13
+        ],
+        [
+          13,
+          12
+        ],
+        [
+          14,
+          15
+        ],
+        [
+          14,
+          16
+        ],
+        [
+          15,
+          15
+        ],
+        [
+          15,
+          14
+        ],
+        [
+          16,
+          17
+        ],
+        [
+          16,
+          18
+        ],
+        [
+          17,
+          19
+        ],
+        [
+          18,
+          19
+        ],
+        [
+          19,
+          20
+        ],
+        [
+          19,
+          21
+        ],
+        [
+          20,
+          22
+        ],
+        [
+          21,
+          22
+        ],
+        [
+          22,
+          23
+        ]
+      ],
+      "N": 23,
+      "E": 36,
+      "P": 14,
+      "vg": 15,
+      "dot": "digraph G {\n  rankdir=TB;\n  graph [fontname=\"Times New Roman\", fontsize=10, nodesep=0.25, ranksep=0.28, bgcolor=\"white\"];\n  node [shape=box, style=\"rounded,filled\", fillcolor=\"#F7F7F7\", color=\"#333333\", fontname=\"Times New Roman\", fontsize=9, margin=\"0.08,0.04\"];\n  edge [color=\"#333333\", arrowsize=0.6];\n  1 [label=\"1. Mulai\\nn = matrix.length\", shape=box, fillcolor=\"#F7F7F7\"];\n  2 [label=\"2. P1: n === 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  3 [label=\"3. return bobot kosong\", shape=box, fillcolor=\"#F7F7F7\"];\n  4 [label=\"4. P2: n === 1\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  5 [label=\"5. return bobot [1]\", shape=box, fillcolor=\"#F7F7F7\"];\n  6 [label=\"6. L1: map baris\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  7 [label=\"7. L2: map sel\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  8 [label=\"8. L3: for j colSums\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  9 [label=\"9. L4: for i jumlah kolom\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  10 [label=\"10. L5: for i normalisasi\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  11 [label=\"11. L6: for j normalisasi\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  12 [label=\"12. L7: for i bobot\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  13 [label=\"13. L8: for j bobot\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  14 [label=\"14. L9: for i aw\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  15 [label=\"15. L10: for j aw\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  16 [label=\"16. P11: RANDOM_INDEX[n] || 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  17 [label=\"17. ri = RANDOM_INDEX[n]\", shape=box, fillcolor=\"#F7F7F7\"];\n  18 [label=\"18. ri = 0\", shape=box, fillcolor=\"#F7F7F7\"];\n  19 [label=\"19. P12: ri ? ... : 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  20 [label=\"20. cr = bulat(ci / ri)\", shape=box, fillcolor=\"#F7F7F7\"];\n  21 [label=\"21. cr = 0\", shape=box, fillcolor=\"#F7F7F7\"];\n  22 [label=\"22. return hasil\", shape=box, fillcolor=\"#F7F7F7\"];\n  23 [label=\"23. Selesai\", shape=box, fillcolor=\"#F7F7F7\"];\n  1 -> 2;\n  2 -> 3;\n  2 -> 4;\n  3 -> 23;\n  4 -> 5;\n  4 -> 6;\n  5 -> 23;\n  6 -> 7;\n  6 -> 8;\n  7 -> 7;\n  7 -> 6;\n  8 -> 9;\n  8 -> 10;\n  9 -> 9;\n  9 -> 8;\n  10 -> 11;\n  10 -> 12;\n  11 -> 11;\n  11 -> 10;\n  12 -> 13;\n  12 -> 14;\n  13 -> 13;\n  13 -> 12;\n  14 -> 15;\n  14 -> 16;\n  15 -> 15;\n  15 -> 14;\n  16 -> 17;\n  16 -> 18;\n  17 -> 19;\n  18 -> 19;\n  19 -> 20;\n  19 -> 21;\n  20 -> 22;\n  21 -> 22;\n  22 -> 23;\n}",
+      "image": "gambar/flowgraph-calculateAHP.png",
+      "totalPathsFound": 974,
+      "paths": [
+        [
+          1,
+          2,
+          3,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          5,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          17,
+          19,
+          21,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          18,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          7,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          11,
+          10,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          13,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          15,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          9,
+          8,
+          10,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          7,
+          7,
+          6,
+          8,
+          10,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          11,
+          11,
+          10,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          13,
+          13,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          10,
+          12,
+          14,
+          15,
+          15,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          8,
+          9,
+          9,
+          8,
+          10,
+          12,
+          14,
+          16,
+          17,
+          19,
+          20,
+          22,
+          23
+        ]
+      ]
+    },
+    {
+      "name": "normalisasiMatriks",
+      "title": "Flow Graph normalisasiMatriks",
+      "nodes": [
+        {
+          "id": 1,
+          "label": "1. Mulai",
+          "line": 123
+        },
+        {
+          "id": 2,
+          "label": "2. P1: matriks.length === 0",
+          "line": 124,
+          "decision": true
+        },
+        {
+          "id": 3,
+          "label": "3. return []",
+          "line": 124
+        },
+        {
+          "id": 4,
+          "label": "4. L1: for j",
+          "line": 129,
+          "decision": true
+        },
+        {
+          "id": 5,
+          "label": "5. L2: for i",
+          "line": 131,
+          "decision": true
+        },
+        {
+          "id": 6,
+          "label": "6. L3: map baris",
+          "line": 137,
+          "decision": true
+        },
+        {
+          "id": 7,
+          "label": "7. L4: map sel",
+          "line": 138,
+          "decision": true
+        },
+        {
+          "id": 8,
+          "label": "8. P2: pembagi[j] === 0",
+          "line": 138,
+          "decision": true
+        },
+        {
+          "id": 9,
+          "label": "9. nilai = 0",
+          "line": 138
+        },
+        {
+          "id": 10,
+          "label": "10. nilai = bulat(nilai / pembagi[j])",
+          "line": 138
+        },
+        {
+          "id": 11,
+          "label": "11. return matriks hasil",
+          "line": 137
+        },
+        {
+          "id": 12,
+          "label": "12. Selesai",
+          "line": 140
+        }
+      ],
+      "edges": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          4
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          6
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          6,
+          11
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          6
+        ],
+        [
+          8,
+          9
+        ],
+        [
+          8,
+          10
+        ],
+        [
+          9,
+          7
+        ],
+        [
+          10,
+          7
+        ],
+        [
+          11,
+          12
+        ]
+      ],
+      "N": 12,
+      "E": 17,
+      "P": 6,
+      "vg": 7,
+      "dot": "digraph G {\n  rankdir=TB;\n  graph [fontname=\"Times New Roman\", fontsize=10, nodesep=0.25, ranksep=0.28, bgcolor=\"white\"];\n  node [shape=box, style=\"rounded,filled\", fillcolor=\"#F7F7F7\", color=\"#333333\", fontname=\"Times New Roman\", fontsize=9, margin=\"0.08,0.04\"];\n  edge [color=\"#333333\", arrowsize=0.6];\n  1 [label=\"1. Mulai\", shape=box, fillcolor=\"#F7F7F7\"];\n  2 [label=\"2. P1: matriks.length === 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  3 [label=\"3. return []\", shape=box, fillcolor=\"#F7F7F7\"];\n  4 [label=\"4. L1: for j\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  5 [label=\"5. L2: for i\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  6 [label=\"6. L3: map baris\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  7 [label=\"7. L4: map sel\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  8 [label=\"8. P2: pembagi[j] === 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  9 [label=\"9. nilai = 0\", shape=box, fillcolor=\"#F7F7F7\"];\n  10 [label=\"10. nilai = bulat(nilai / pembagi[j])\", shape=box, fillcolor=\"#F7F7F7\"];\n  11 [label=\"11. return matriks hasil\", shape=box, fillcolor=\"#F7F7F7\"];\n  12 [label=\"12. Selesai\", shape=box, fillcolor=\"#F7F7F7\"];\n  1 -> 2;\n  2 -> 3;\n  2 -> 4;\n  3 -> 12;\n  4 -> 5;\n  4 -> 6;\n  5 -> 5;\n  5 -> 4;\n  6 -> 7;\n  6 -> 11;\n  7 -> 8;\n  7 -> 6;\n  8 -> 9;\n  8 -> 10;\n  9 -> 7;\n  10 -> 7;\n  11 -> 12;\n}",
+      "image": "gambar/flowgraph-normalisasiMatriks.png",
+      "totalPathsFound": 13,
+      "paths": [
+        [
+          1,
+          2,
+          3,
+          12
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          11,
+          12
+        ],
+        [
+          1,
+          2,
+          4,
+          5,
+          4,
+          6,
+          11,
+          12
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          7,
+          6,
+          11,
+          12
+        ],
+        [
+          1,
+          2,
+          4,
+          5,
+          5,
+          4,
+          6,
+          11,
+          12
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          7,
+          8,
+          10,
+          7,
+          6,
+          11,
+          12
+        ],
+        [
+          1,
+          2,
+          4,
+          6,
+          7,
+          8,
+          9,
+          7,
+          6,
+          11,
+          12
+        ]
+      ]
+    },
+    {
+      "name": "hitungMoora",
+      "title": "Flow Graph hitungMoora",
+      "nodes": [
+        {
+          "id": 1,
+          "label": "1. Mulai\nsusunMatriksKeputusan",
+          "line": 156
+        },
+        {
+          "id": 2,
+          "label": "2. L1: filter lengkap",
+          "line": 157,
+          "decision": true
+        },
+        {
+          "id": 3,
+          "label": "3. P1: ahpSiap",
+          "line": 162,
+          "decision": true
+        },
+        {
+          "id": 4,
+          "label": "4. P2: lengkap.length > 0",
+          "line": 162,
+          "decision": true
+        },
+        {
+          "id": 5,
+          "label": "5. L2: map lengkap",
+          "line": 163,
+          "decision": true
+        },
+        {
+          "id": 6,
+          "label": "6. panggil normalisasiMatriks",
+          "line": 163
+        },
+        {
+          "id": 7,
+          "label": "7. L3: map normalisasi",
+          "line": 164,
+          "decision": true
+        },
+        {
+          "id": 8,
+          "label": "8. L4: map sel",
+          "line": 165,
+          "decision": true
+        },
+        {
+          "id": 9,
+          "label": "9. P3: bobot[j] ?? 0",
+          "line": 165,
+          "decision": true
+        },
+        {
+          "id": 10,
+          "label": "10. bobot[j]",
+          "line": 165
+        },
+        {
+          "id": 11,
+          "label": "11. 0",
+          "line": 165
+        },
+        {
+          "id": 12,
+          "label": "12. L5: map barisLengkap",
+          "line": 169,
+          "decision": true
+        },
+        {
+          "id": 13,
+          "label": "13. P4: nilaiBerbobot[index] ?? null",
+          "line": 170,
+          "decision": true
+        },
+        {
+          "id": 14,
+          "label": "14. nilaiBerbobot[index]",
+          "line": 170
+        },
+        {
+          "id": 15,
+          "label": "15. null",
+          "line": 170
+        },
+        {
+          "id": 16,
+          "label": "16. P5: ahpSiap",
+          "line": 173,
+          "decision": true
+        },
+        {
+          "id": 17,
+          "label": "17. P6: berbobot",
+          "line": 173,
+          "decision": true
+        },
+        {
+          "id": 18,
+          "label": "18. L6: forEach kriteria",
+          "line": 175,
+          "decision": true
+        },
+        {
+          "id": 19,
+          "label": "19. P7: jenis === cost",
+          "line": 176,
+          "decision": true
+        },
+        {
+          "id": 20,
+          "label": "20. total -= berbobot[j]",
+          "line": 176
+        },
+        {
+          "id": 21,
+          "label": "21. total += berbobot[j]",
+          "line": 176
+        },
+        {
+          "id": 22,
+          "label": "22. yi = bulat(total)",
+          "line": 178
+        },
+        {
+          "id": 23,
+          "label": "23. return objek baris",
+          "line": 181
+        },
+        {
+          "id": 24,
+          "label": "24. L7: sort Yi",
+          "line": 190,
+          "decision": true
+        },
+        {
+          "id": 25,
+          "label": "25. P8: b.yi ?? 0",
+          "line": 190,
+          "decision": true
+        },
+        {
+          "id": 26,
+          "label": "26. b.yi",
+          "line": 190
+        },
+        {
+          "id": 27,
+          "label": "27. 0",
+          "line": 190
+        },
+        {
+          "id": 28,
+          "label": "28. P9: a.yi ?? 0",
+          "line": 190,
+          "decision": true
+        },
+        {
+          "id": 29,
+          "label": "29. a.yi",
+          "line": 190
+        },
+        {
+          "id": 30,
+          "label": "30. 0",
+          "line": 190
+        },
+        {
+          "id": 31,
+          "label": "31. L8: forEach ranking",
+          "line": 192,
+          "decision": true
+        },
+        {
+          "id": 32,
+          "label": "32. P10: yi === null",
+          "line": 193,
+          "decision": true
+        },
+        {
+          "id": 33,
+          "label": "33. return (lewati)",
+          "line": 193
+        },
+        {
+          "id": 34,
+          "label": "34. P11: sebelumnya",
+          "line": 195,
+          "decision": true
+        },
+        {
+          "id": 35,
+          "label": "35. P12: yi sama",
+          "line": 195,
+          "decision": true
+        },
+        {
+          "id": 36,
+          "label": "36. ranking = sebelumnya.ranking",
+          "line": 196
+        },
+        {
+          "id": 37,
+          "label": "37. ranking = index + 1",
+          "line": 198
+        },
+        {
+          "id": 38,
+          "label": "38. L9: filter belum lengkap",
+          "line": 203,
+          "decision": true
+        },
+        {
+          "id": 39,
+          "label": "39. L10: map belum lengkap",
+          "line": 204,
+          "decision": true
+        },
+        {
+          "id": 40,
+          "label": "40. L11: sort nama",
+          "line": 211,
+          "decision": true
+        },
+        {
+          "id": 41,
+          "label": "41. P13: a.nama || \"\"",
+          "line": 211,
+          "decision": true
+        },
+        {
+          "id": 42,
+          "label": "42. a.nama",
+          "line": 211
+        },
+        {
+          "id": 43,
+          "label": "43. string kosong",
+          "line": 211
+        },
+        {
+          "id": 44,
+          "label": "44. P14: b.nama || \"\"",
+          "line": 211,
+          "decision": true
+        },
+        {
+          "id": 45,
+          "label": "45. b.nama",
+          "line": 211
+        },
+        {
+          "id": 46,
+          "label": "46. string kosong",
+          "line": 211
+        },
+        {
+          "id": 47,
+          "label": "47. return hasil akhir",
+          "line": 213
+        },
+        {
+          "id": 48,
+          "label": "48. Selesai",
+          "line": 220
+        }
+      ],
+      "edges": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          12
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          4,
+          12
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          5,
+          6
+        ],
+        [
+          6,
+          7
+        ],
+        [
+          7,
+          8
+        ],
+        [
+          7,
+          12
+        ],
+        [
+          8,
+          9
+        ],
+        [
+          8,
+          7
+        ],
+        [
+          9,
+          10
+        ],
+        [
+          9,
+          11
+        ],
+        [
+          10,
+          8
+        ],
+        [
+          11,
+          8
+        ],
+        [
+          12,
+          13
+        ],
+        [
+          12,
+          24
+        ],
+        [
+          13,
+          14
+        ],
+        [
+          13,
+          15
+        ],
+        [
+          14,
+          16
+        ],
+        [
+          15,
+          16
+        ],
+        [
+          16,
+          17
+        ],
+        [
+          16,
+          23
+        ],
+        [
+          17,
+          18
+        ],
+        [
+          17,
+          23
+        ],
+        [
+          18,
+          19
+        ],
+        [
+          18,
+          23
+        ],
+        [
+          19,
+          20
+        ],
+        [
+          19,
+          21
+        ],
+        [
+          20,
+          18
+        ],
+        [
+          21,
+          18
+        ],
+        [
+          22,
+          23
+        ],
+        [
+          23,
+          12
+        ],
+        [
+          24,
+          25
+        ],
+        [
+          24,
+          31
+        ],
+        [
+          25,
+          26
+        ],
+        [
+          25,
+          27
+        ],
+        [
+          26,
+          28
+        ],
+        [
+          27,
+          28
+        ],
+        [
+          28,
+          29
+        ],
+        [
+          28,
+          30
+        ],
+        [
+          29,
+          24
+        ],
+        [
+          30,
+          24
+        ],
+        [
+          31,
+          32
+        ],
+        [
+          31,
+          38
+        ],
+        [
+          32,
+          33
+        ],
+        [
+          32,
+          34
+        ],
+        [
+          33,
+          31
+        ],
+        [
+          34,
+          35
+        ],
+        [
+          34,
+          37
+        ],
+        [
+          35,
+          36
+        ],
+        [
+          35,
+          37
+        ],
+        [
+          36,
+          31
+        ],
+        [
+          37,
+          31
+        ],
+        [
+          38,
+          38
+        ],
+        [
+          38,
+          39
+        ],
+        [
+          39,
+          39
+        ],
+        [
+          39,
+          40
+        ],
+        [
+          40,
+          41
+        ],
+        [
+          40,
+          47
+        ],
+        [
+          41,
+          42
+        ],
+        [
+          41,
+          43
+        ],
+        [
+          42,
+          44
+        ],
+        [
+          43,
+          44
+        ],
+        [
+          44,
+          45
+        ],
+        [
+          44,
+          46
+        ],
+        [
+          45,
+          40
+        ],
+        [
+          46,
+          40
+        ],
+        [
+          47,
+          48
+        ]
+      ],
+      "N": 48,
+      "E": 72,
+      "P": 25,
+      "vg": 26,
+      "dot": "digraph G {\n  rankdir=TB;\n  graph [fontname=\"Times New Roman\", fontsize=10, nodesep=0.25, ranksep=0.28, bgcolor=\"white\"];\n  node [shape=box, style=\"rounded,filled\", fillcolor=\"#F7F7F7\", color=\"#333333\", fontname=\"Times New Roman\", fontsize=9, margin=\"0.08,0.04\"];\n  edge [color=\"#333333\", arrowsize=0.6];\n  1 [label=\"1. Mulai\\nsusunMatriksKeputusan\", shape=box, fillcolor=\"#F7F7F7\"];\n  2 [label=\"2. L1: filter lengkap\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  3 [label=\"3. P1: ahpSiap\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  4 [label=\"4. P2: lengkap.length > 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  5 [label=\"5. L2: map lengkap\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  6 [label=\"6. panggil normalisasiMatriks\", shape=box, fillcolor=\"#F7F7F7\"];\n  7 [label=\"7. L3: map normalisasi\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  8 [label=\"8. L4: map sel\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  9 [label=\"9. P3: bobot[j] ?? 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  10 [label=\"10. bobot[j]\", shape=box, fillcolor=\"#F7F7F7\"];\n  11 [label=\"11. 0\", shape=box, fillcolor=\"#F7F7F7\"];\n  12 [label=\"12. L5: map barisLengkap\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  13 [label=\"13. P4: nilaiBerbobot[index] ?? null\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  14 [label=\"14. nilaiBerbobot[index]\", shape=box, fillcolor=\"#F7F7F7\"];\n  15 [label=\"15. null\", shape=box, fillcolor=\"#F7F7F7\"];\n  16 [label=\"16. P5: ahpSiap\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  17 [label=\"17. P6: berbobot\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  18 [label=\"18. L6: forEach kriteria\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  19 [label=\"19. P7: jenis === cost\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  20 [label=\"20. total -= berbobot[j]\", shape=box, fillcolor=\"#F7F7F7\"];\n  21 [label=\"21. total += berbobot[j]\", shape=box, fillcolor=\"#F7F7F7\"];\n  22 [label=\"22. yi = bulat(total)\", shape=box, fillcolor=\"#F7F7F7\"];\n  23 [label=\"23. return objek baris\", shape=box, fillcolor=\"#F7F7F7\"];\n  24 [label=\"24. L7: sort Yi\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  25 [label=\"25. P8: b.yi ?? 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  26 [label=\"26. b.yi\", shape=box, fillcolor=\"#F7F7F7\"];\n  27 [label=\"27. 0\", shape=box, fillcolor=\"#F7F7F7\"];\n  28 [label=\"28. P9: a.yi ?? 0\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  29 [label=\"29. a.yi\", shape=box, fillcolor=\"#F7F7F7\"];\n  30 [label=\"30. 0\", shape=box, fillcolor=\"#F7F7F7\"];\n  31 [label=\"31. L8: forEach ranking\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  32 [label=\"32. P10: yi === null\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  33 [label=\"33. return (lewati)\", shape=box, fillcolor=\"#F7F7F7\"];\n  34 [label=\"34. P11: sebelumnya\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  35 [label=\"35. P12: yi sama\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  36 [label=\"36. ranking = sebelumnya.ranking\", shape=box, fillcolor=\"#F7F7F7\"];\n  37 [label=\"37. ranking = index + 1\", shape=box, fillcolor=\"#F7F7F7\"];\n  38 [label=\"38. L9: filter belum lengkap\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  39 [label=\"39. L10: map belum lengkap\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  40 [label=\"40. L11: sort nama\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  41 [label=\"41. P13: a.nama || \\\"\\\"\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  42 [label=\"42. a.nama\", shape=box, fillcolor=\"#F7F7F7\"];\n  43 [label=\"43. string kosong\", shape=box, fillcolor=\"#F7F7F7\"];\n  44 [label=\"44. P14: b.nama || \\\"\\\"\", shape=diamond, fillcolor=\"#FFF2CC\"];\n  45 [label=\"45. b.nama\", shape=box, fillcolor=\"#F7F7F7\"];\n  46 [label=\"46. string kosong\", shape=box, fillcolor=\"#F7F7F7\"];\n  47 [label=\"47. return hasil akhir\", shape=box, fillcolor=\"#F7F7F7\"];\n  48 [label=\"48. Selesai\", shape=box, fillcolor=\"#F7F7F7\"];\n  1 -> 2;\n  2 -> 2;\n  2 -> 3;\n  3 -> 4;\n  3 -> 12;\n  4 -> 5;\n  4 -> 12;\n  5 -> 5;\n  5 -> 6;\n  6 -> 7;\n  7 -> 8;\n  7 -> 12;\n  8 -> 9;\n  8 -> 7;\n  9 -> 10;\n  9 -> 11;\n  10 -> 8;\n  11 -> 8;\n  12 -> 13;\n  12 -> 24;\n  13 -> 14;\n  13 -> 15;\n  14 -> 16;\n  15 -> 16;\n  16 -> 17;\n  16 -> 23;\n  17 -> 18;\n  17 -> 23;\n  18 -> 19;\n  18 -> 23;\n  19 -> 20;\n  19 -> 21;\n  20 -> 18;\n  21 -> 18;\n  22 -> 23;\n  23 -> 12;\n  24 -> 25;\n  24 -> 31;\n  25 -> 26;\n  25 -> 27;\n  26 -> 28;\n  27 -> 28;\n  28 -> 29;\n  28 -> 30;\n  29 -> 24;\n  30 -> 24;\n  31 -> 32;\n  31 -> 38;\n  32 -> 33;\n  32 -> 34;\n  33 -> 31;\n  34 -> 35;\n  34 -> 37;\n  35 -> 36;\n  35 -> 37;\n  36 -> 31;\n  37 -> 31;\n  38 -> 38;\n  38 -> 39;\n  39 -> 39;\n  39 -> 40;\n  40 -> 41;\n  40 -> 47;\n  41 -> 42;\n  41 -> 43;\n  42 -> 44;\n  43 -> 44;\n  44 -> 45;\n  44 -> 46;\n  45 -> 40;\n  46 -> 40;\n  47 -> 48;\n}",
+      "image": "gambar/flowgraph-hitungMoora.png",
+      "totalPathsFound": 110000,
+      "paths": [
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          2,
+          3,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          38,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          38,
+          39,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          32,
+          33,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          32,
+          34,
+          37,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          13,
+          14,
+          16,
+          23,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          13,
+          15,
+          16,
+          23,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          25,
+          26,
+          28,
+          29,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          25,
+          26,
+          28,
+          30,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          25,
+          27,
+          28,
+          29,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          32,
+          34,
+          35,
+          36,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          32,
+          34,
+          35,
+          37,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          41,
+          42,
+          44,
+          45,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          41,
+          42,
+          44,
+          46,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          41,
+          43,
+          44,
+          45,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          5,
+          6,
+          7,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          13,
+          14,
+          16,
+          17,
+          23,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          7,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          13,
+          14,
+          16,
+          17,
+          18,
+          23,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          8,
+          7,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          11,
+          8,
+          7,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          13,
+          14,
+          16,
+          17,
+          18,
+          19,
+          20,
+          18,
+          23,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ],
+        [
+          1,
+          2,
+          3,
+          12,
+          13,
+          14,
+          16,
+          17,
+          18,
+          19,
+          21,
+          18,
+          23,
+          12,
+          24,
+          31,
+          38,
+          39,
+          40,
+          47,
+          48
+        ]
+      ]
+    }
+  ]
+}

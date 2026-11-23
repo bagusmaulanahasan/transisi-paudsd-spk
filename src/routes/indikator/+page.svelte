@@ -1,6 +1,5 @@
 <script>
   import { supabase } from '$lib/db/supabase';
-  import { aturPoinOpsi } from '$lib/domain/opsi';
   import { cachedFetch, peekMemoryCache, invalidateDataCache } from '$lib/db/cache';
   import { notifyError, notifySuccess } from '$lib/notifications';
   import { confirmAction } from '$lib/confirm';
@@ -24,6 +23,7 @@
   let currentOpsiId = null;
   let opsiText = '';
   let keteranganText = '';
+  let poinValue = 1;
 
   // ==================== SECTION 2: INDIKATOR PERTANYAAN ====================
   let kriteriaList = kriteriaAwal || [];
@@ -138,6 +138,7 @@
     currentOpsiId = null;
     opsiText = '';
     keteranganText = '';
+    poinValue = masterOpsi.length + 1;
     showOpsiModal = true;
   }
 
@@ -149,6 +150,7 @@
     currentOpsiId = opsi.id;
     opsiText = opsi.opsi;
     keteranganText = opsi.keterangan || '';
+    poinValue = opsi.poin;
     showOpsiModal = true;
   }
 
@@ -168,12 +170,22 @@
       return;
     }
 
+    const poin = Number(poinValue);
+    if (!Number.isInteger(poin) || poin < 1) {
+      notifyError('Poin penilaian wajib berupa bilangan bulat minimal 1.');
+      return;
+    }
+
     saving = true;
 
     if (isEditingOpsi) {
       const { error } = await supabase
         .from('opsi_jawaban')
-        .update({ opsi: opsiText.trim(), keterangan: keteranganText.trim() || null })
+        .update({
+          opsi: opsiText.trim(),
+          keterangan: keteranganText.trim() || null,
+          poin
+        })
         .eq('id', currentOpsiId);
       if (error) {
         notifyError(error.message);
@@ -184,7 +196,7 @@
       const { error } = await supabase.from('opsi_jawaban').insert({
         opsi: opsiText.trim(),
         keterangan: keteranganText.trim() || null,
-        poin: masterOpsi.length + 1
+        poin
       });
       if (error) {
         notifyError(error.message);
@@ -200,7 +212,7 @@
   }
 
   /**
-   * Menghapus master opsi lalu menyinkronkan ulang poin menjadi 1..n berurutan.
+   * Menghapus master opsi jawaban.
    */
   async function deleteOpsi(opsi) {
     const confirmed = await confirmAction({
@@ -218,21 +230,6 @@
 
     notifySuccess('Berhasil menghapus opsi jawaban.');
     await invalidateDataCache();
-    await fetchMasterOpsi();
-    await syncPoinMaster();
-  }
-
-  /**
-   * Menyinkronkan ulang poin master opsi menjadi 1..n sesuai urutan.
-   */
-  async function syncPoinMaster() {
-    const tersinkron = aturPoinOpsi(masterOpsi);
-
-    for (let i = 0; i < tersinkron.length; i++) {
-      if (tersinkron[i].poin !== masterOpsi[i].poin) {
-        await supabase.from('opsi_jawaban').update({ poin: tersinkron[i].poin }).eq('id', masterOpsi[i].id);
-      }
-    }
     await fetchMasterOpsi();
   }
 
@@ -370,6 +367,7 @@
   isEditing={isEditingOpsi}
   bind:opsiText={opsiText}
   bind:keteranganText={keteranganText}
+  bind:poinValue={poinValue}
   {saving}
   on:close={closeOpsiModal}
   on:save={saveOpsi}
