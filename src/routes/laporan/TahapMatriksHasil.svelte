@@ -140,7 +140,7 @@
         {@const val = item[col.key]}
         {@const kat = getKategoriNilai(val)}
         <div class="flex items-center justify-center">
-          <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {formatAngka(val, 4)} ({kat.label})">
+          <span class="inline-block text-xs px-2 py-0.5 rounded text-[10px] font-bold border {kat.bgClass} {kat.textClass} {kat.borderClass}" title="Nilai: {formatAngka(val, 4)} ({kat.label})">
             {formatAngka(val, 4)}
           </span>
         </div>
